@@ -23,5 +23,3 @@ Use the sidebar to navigate between pages:
 """)
 
 st.info("This is the home page of the SRCS analytics platform.")
-
-st.sidebar.title("Home")
