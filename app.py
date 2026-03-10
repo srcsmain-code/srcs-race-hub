@@ -7,7 +7,7 @@ st.set_page_config(
     layout="wide"
 )
 
-LOGO = Path("assets/SRCS_logo.png")
+LOGO = Path("assets/SRCS.png")
 
 # Sidebar branding
 with st.sidebar:
