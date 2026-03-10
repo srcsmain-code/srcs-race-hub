@@ -61,22 +61,22 @@ def calculate_average_pace(laps_df):
     df["Position"] = df.index + 1
     return df
 
-
 def calculate_consistency(laps_df):
     if laps_df.empty:
         return pd.DataFrame()
 
     df = (
-        laps_df.groupby("DriverName")
+        laps_df.groupby("DriverName", as_index=False)
         .agg(
             StdDev=("LapTime", "std"),
             MeanLap=("LapTime", "mean"),
-            LapCount=("LapTime", "count")
+            LapCount=("LapTime", "count"),
         )
-        .reset_index()
+        .sort_values("StdDev", ascending=True)
+        .reset_index(drop=True)
     )
 
     df["StdDev"] = df["StdDev"].fillna(0)
-    df = df.sort_values("StdDev", ascending=True).reset_index(drop=True)
     df["Position"] = df.index + 1
+
     return df
