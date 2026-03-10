@@ -40,12 +40,18 @@ def ms_to_racetime(ms):
     millis = ms % 1000
     return f"{minutes}:{seconds:02d}.{millis:03d}"
 
+def extract_gp_name(file_path):
+    parts = file_path.stem.split("_")[2:]
+    if parts and parts[-1].lower() == "race":
+        parts = parts[:-1]
+    return " ".join(parts).replace("-", " ").title()
+
 def parse_round_label(filename):
     name = filename.stem
     parts = name.split("_")
     if len(parts) >= 3 and parts[1].startswith("round"):
         round_part = parts[1].replace("round", "Round ")
-        gp_part = " ".join(parts[2:]).replace("-", " ").title()
+        gp_part = extract_gp_name(filename)
         return f"{round_part} - {gp_part}"
     return filename.stem
 
