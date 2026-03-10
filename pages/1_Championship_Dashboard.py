@@ -8,6 +8,7 @@ st.set_page_config(page_title="Championship Dashboard", layout="wide")
 st.title("🏆 Championship Dashboard")
 
 DATA_DIR = Path("data")
+TEAM_MAP_FILE = DATA_DIR / "driver_team_map.csv"
 
 POINTS_MAP = {
     1: 25,
@@ -98,12 +99,14 @@ def load_race_file(file_path):
             results_df.loc[results_df["DriverName"] == fastest_lap_driver, "Points"] += 1
 
     round_label = parse_round_label(file_path)
+    grand_prix = " ".join(file_path.stem.split("_")[2:]).replace("-", " ").title()
 
     results_df["Round"] = round_label
+    results_df["Grand Prix"] = grand_prix
 
     round_summary = {
         "Round": round_label,
-        "Grand Prix": " ".join(file_path.stem.split("_")[2:]).replace("-", " ").title(),
+        "Grand Prix": grand_prix,
         "Track": race_data.get("TrackName", "-"),
         "Session Type": race_data.get("Type", "-"),
         "Fastest Lap Driver": fastest_lap_driver or "-",
@@ -137,60 +140,126 @@ if not all_results:
 
 season_results_df = pd.concat(all_results, ignore_index=True)
 
-standings_df = (
+# Add team mapping by Round + Driver
+if TEAM_MAP_FILE.exists():
+    team_map_df = pd.read_csv(TEAM_MAP_FILE)
+
+    season_results_df = season_results_df.merge(
+        team_map_df,
+        how="left",
+        left_on=["Round", "DriverName"],
+        right_on=["Round", "Driver"]
+    )
+    season_results_df["Team"] = season_results_df["Team"].fillna("Unknown")
+    season_results_df = season_results_df.drop(columns=["Driver"], errors="ignore")
+else:
+    season_results_df["Team"] = "Unknown"
+
+# Drivers' standings
+drivers_standings_df = (
     season_results_df.groupby("DriverName", as_index=False)["Points"]
     .sum()
     .sort_values(["Points", "DriverName"], ascending=[False, True])
     .reset_index(drop=True)
 )
 
-standings_df["Position"] = standings_df.index + 1
-standings_df = standings_df[["Position", "DriverName", "Points"]]
-standings_df.columns = ["Pos", "Driver", "Points"]
+drivers_standings_df["Position"] = drivers_standings_df.index + 1
+drivers_standings_df = drivers_standings_df[["Position", "DriverName", "Points"]]
+drivers_standings_df.columns = ["Pos", "Driver", "Points"]
+
+# Constructors' standings
+teams_standings_df = (
+    season_results_df.groupby("Team", as_index=False)["Points"]
+    .sum()
+    .sort_values(["Points", "Team"], ascending=[False, True])
+    .reset_index(drop=True)
+)
+
+teams_standings_df["Position"] = teams_standings_df.index + 1
+teams_standings_df = teams_standings_df[["Position", "Team", "Points"]]
+teams_standings_df.columns = ["Pos", "Team", "Points"]
 
 latest_round_df = all_results[-1].copy()
 latest_summary = round_summaries[-1]
 
+# Add team mapping to latest round too
+if TEAM_MAP_FILE.exists():
+    latest_round_df = latest_round_df.merge(
+        team_map_df,
+        how="left",
+        left_on=["Round", "DriverName"],
+        right_on=["Round", "Driver"]
+    )
+    latest_round_df["Team"] = latest_round_df["Team"].fillna("Unknown")
+    latest_round_df = latest_round_df.drop(columns=["Driver"], errors="ignore")
+else:
+    latest_round_df["Team"] = "Unknown"
+
 latest_display_df = latest_round_df[[
-    "Position", "DriverName", "GridPosition", "NumLaps", "BestLap", "TotalTime", "Points"
+    "Position", "DriverName", "Team", "GridPosition", "NumLaps", "BestLap", "TotalTime", "Points"
 ]].copy()
 
-latest_display_df.columns = ["Pos", "Driver", "Grid", "Laps", "Best Lap", "Race Time", "Points"]
+latest_display_df.columns = ["Pos", "Driver", "Team", "Grid", "Laps", "Best Lap", "Race Time", "Points"]
 latest_display_df["Best Lap"] = latest_display_df["Best Lap"].apply(ms_to_laptime)
 latest_display_df["Race Time"] = latest_display_df["Race Time"].apply(ms_to_racetime)
 
-col1, col2 = st.columns([2, 1])
+top_col1, top_col2 = st.columns([2, 1])
 
-with col1:
-    st.subheader("Drivers' Championship")
-    st.dataframe(standings_df, use_container_width=True, hide_index=True)
-
-with col2:
+with top_col1:
     st.subheader("Season Summary")
-    st.metric("Rounds Loaded", len(race_files))
-    st.metric("Latest Round", latest_summary["Round"])
-    st.metric("Latest GP", latest_summary["Grand Prix"])
+    stat1, stat2, stat3 = st.columns(3)
+    with stat1:
+        st.metric("Rounds Loaded", len(race_files))
+    with stat2:
+        st.metric("Latest Round", latest_summary["Round"])
+    with stat3:
+        st.metric("Latest GP", latest_summary["Grand Prix"])
+
+with top_col2:
+    st.subheader("Latest Fastest Lap")
+    st.metric("Driver", latest_summary["Fastest Lap Driver"])
+    st.caption(f"Time: {latest_summary['Fastest Lap Time']}")
+
+stand_col1, stand_col2 = st.columns(2)
+
+with stand_col1:
+    st.subheader("Drivers' Championship")
+    st.dataframe(drivers_standings_df, use_container_width=True, hide_index=True)
+
+with stand_col2:
+    st.subheader("Constructors' Championship")
+    st.dataframe(teams_standings_df, use_container_width=True, hide_index=True)
 
 st.subheader(f"Latest Round Results — {latest_summary['Round']}")
 st.dataframe(latest_display_df, use_container_width=True, hide_index=True)
 
-st.subheader("Points Progression by Driver")
-progression_df = season_results_df.pivot_table(
+st.subheader("Drivers' Points Progression")
+driver_progression_df = season_results_df.pivot_table(
     index="Round",
     columns="DriverName",
     values="Points",
     aggfunc="sum",
     fill_value=0
-)
+).cumsum()
 
-progression_df = progression_df.cumsum()
-st.line_chart(progression_df)
+st.line_chart(driver_progression_df)
+
+st.subheader("Teams' Points Progression")
+team_progression_df = season_results_df.pivot_table(
+    index="Round",
+    columns="Team",
+    values="Points",
+    aggfunc="sum",
+    fill_value=0
+).cumsum()
+
+st.line_chart(team_progression_df)
 
 st.subheader("Latest Round Summary")
 summary_df = pd.DataFrame([latest_summary])
 st.dataframe(summary_df, use_container_width=True, hide_index=True)
 
 st.subheader("Round-by-Round Points")
-round_points_df = season_results_df[["Round", "DriverName", "Points"]].copy()
-round_points_df.columns = ["Round", "Driver", "Points"]
+round_points_df = season_results_df[["Round", "DriverName", "Team", "Points"]].copy()
+round_points_df.columns = ["Round", "Driver", "Team", "Points"]
 st.dataframe(round_points_df, use_container_width=True, hide_index=True)
