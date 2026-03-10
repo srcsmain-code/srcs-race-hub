@@ -8,6 +8,12 @@ st.set_page_config(
     layout="wide"
 )
 
+LOGO = Path("assets/SRCS_logo.png")
+
+with st.sidebar:
+    if LOGO.exists():
+        st.image(str(LOGO), use_container_width=True)
+
 pages = {
     "HOME": [
         st.Page("pages/Home.py", title="Home", icon="🏠"),
