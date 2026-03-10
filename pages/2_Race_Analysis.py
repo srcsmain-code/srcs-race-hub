@@ -35,6 +35,17 @@ if laps_df.empty:
     st.warning("No lap data available for this round.")
     st.stop()
 
+# Normalize lap number column
+if "LapNumber" in laps_df.columns:
+    laps_df["LapNumber"] = laps_df["LapNumber"]
+elif "Lap" in laps_df.columns:
+    laps_df["LapNumber"] = laps_df["Lap"]
+elif "CurrentLap" in laps_df.columns:
+    laps_df["LapNumber"] = laps_df["CurrentLap"]
+else:
+    st.error(f"No lap number column found in lap data. Available columns: {list(laps_df.columns)}")
+    st.stop()
+
 laps_df = laps_df[
     (laps_df["DriverName"].notna()) &
     (laps_df["DriverName"] != "") &
@@ -42,6 +53,14 @@ laps_df = laps_df[
     (laps_df["LapTime"] < 999999999) &
     (laps_df["LapTime"] > 0)
 ].copy()
+
+# Clean types
+laps_df["LapNumber"] = pd.to_numeric(laps_df["LapNumber"], errors="coerce")
+laps_df["LapTime"] = pd.to_numeric(laps_df["LapTime"], errors="coerce")
+
+laps_df = laps_df.dropna(subset=["LapNumber", "LapTime"])
+laps_df["LapNumber"] = laps_df["LapNumber"].astype(int)
+laps_df["LapTime"] = laps_df["LapTime"].astype(int)
 
 st.subheader(f"Round Overview — {selected_summary['Round']}")
 
@@ -62,7 +81,7 @@ lap_chart_df = laps_df.pivot_table(
     columns="DriverName",
     values="LapTime",
     aggfunc="mean"
-)
+).sort_index()
 
 st.line_chart(lap_chart_df)
 
@@ -118,9 +137,7 @@ with col3:
     avg_driver_lap = int(round(driver_laps_df["LapTime"].mean()))
     st.metric("Average Lap", ms_to_laptime(avg_driver_lap))
 
-driver_chart_df = driver_laps_df[["LapNumber", "LapTime"]].copy()
-driver_chart_df = driver_chart_df.set_index("LapNumber")
-
+driver_chart_df = driver_laps_df[["LapNumber", "LapTime"]].copy().set_index("LapNumber")
 st.line_chart(driver_chart_df)
 
 st.subheader("Driver Lap Table")
