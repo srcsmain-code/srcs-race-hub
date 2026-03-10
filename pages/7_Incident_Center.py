@@ -3,8 +3,10 @@ import pandas as pd
 from pathlib import Path
 
 from engine.parser import load_all_race_results
+from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Incident Center", layout="wide")
+apply_srcs_style()
 
 st.title("🚨 Incident Center")
 
