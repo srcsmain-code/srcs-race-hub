@@ -1,3 +1,4 @@
+from utils.style import apply_srcs_style
 import streamlit as st
 import pandas as pd
 from pathlib import Path
@@ -13,6 +14,7 @@ from utils.standings import (
 )
 
 st.set_page_config(page_title="Championship Dashboard", layout="wide")
+apply_srcs_style()
 
 st.title("🏆 Championship Dashboard")
 
