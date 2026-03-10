@@ -10,8 +10,10 @@ from engine.race_metrics import (
     calculate_consistency,
 )
 from utils.formatting import ms_to_laptime
+from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Lap Time Lab", layout="wide")
+apply_srcs_style()
 
 st.title("⏱️ Lap Time Lab")
 
