@@ -13,6 +13,11 @@ st.set_page_config(
     layout="wide"
 )
 
+HEADER_IMAGE = Path("assets/header_HOME.png")
+
+if HEADER_IMAGE.exists():
+    st.image(str(HEADER_IMAGE), use_container_width=True)
+    
 DATA_DIR = Path("data")
 TEAM_MAP_FILE = DATA_DIR / "driver_team_map.csv"
 
