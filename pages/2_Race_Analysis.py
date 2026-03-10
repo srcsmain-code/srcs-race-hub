@@ -4,8 +4,10 @@ from pathlib import Path
 
 from utils.data_loader import load_all_race_results
 from utils.formatting import ms_to_laptime
+from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Race Analysis", layout="wide")
+apply_srcs_style()
 
 st.title("📊 Race Analysis")
 
