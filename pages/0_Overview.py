@@ -6,15 +6,9 @@ from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
 from utils.formatting import ms_to_laptime, ms_to_racetime
 from utils.style import apply_srcs_style
-import streamlit as st
 
-FAVICON = Path("../assets/SRCS_correct_favicon_256.png")
+st.set_page_config(page_title="Overview", layout="wide")
 
-st.set_page_config(
-    page_title="Overview",
-    page_icon=str(FAVICON),
-    layout="wide"
-)
 apply_srcs_style()
 
 st.title("🏁 Overview")
