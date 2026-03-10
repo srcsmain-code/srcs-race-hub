@@ -6,8 +6,10 @@ from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
 from engine.driver_metrics import calculate_driver_standings
 from utils.formatting import ms_to_laptime, ms_to_racetime
+from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Driver Analyzer", layout="wide")
+apply_srcs_style()
 
 st.title("🧑‍💼 Driver Analyzer")
 
