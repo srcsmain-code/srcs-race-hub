@@ -1,15 +1,15 @@
 import streamlit as st
 from pathlib import Path
-FAVICON = Path("assets/SRCS transparent.png")
 
 st.set_page_config(
     page_title="SRCS Race Hub",
-    page_icon=str(FAVICON),
+    page_icon="🏁",
     layout="wide"
 )
 
 LOGO = Path("assets/SRCS_logo.png")
 
+# Sidebar branding
 with st.sidebar:
     if LOGO.exists():
         st.image(str(LOGO), use_container_width=True)
