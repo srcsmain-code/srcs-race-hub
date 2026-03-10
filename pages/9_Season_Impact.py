@@ -6,8 +6,10 @@ from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
 from engine.driver_metrics import calculate_driver_standings
 from engine.team_metrics import calculate_team_standings
+from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Season Impact", layout="wide")
+apply_srcs_style()
 
 st.title("📈 Season Impact")
 
