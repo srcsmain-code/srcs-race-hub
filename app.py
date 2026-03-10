@@ -1,8 +1,10 @@
 import streamlit as st
+from pathlib import Path
+FAVICON = Path("assets/SRCS transparent.png")
 
 st.set_page_config(
     page_title="SRCS Race Hub",
-    page_icon="🏁",
+    page_icon=str(FAVICON),
     layout="wide"
 )
 
