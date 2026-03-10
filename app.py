@@ -21,6 +21,7 @@ pages = {
     "PERFORMANCE": [
         st.Page("pages/5_Driver_Analyzer.py", title="Driver Analyzer", icon="👤"),
         st.Page("pages/6_Team_Battle.py", title="Team Battle", icon="⚔️"),
+        st.Page("pages/2_Race_Analysis.py", title="Race Analysis", icon="⏱️"),
     ],
 
     "STEWARDING": [
