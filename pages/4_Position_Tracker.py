@@ -4,8 +4,10 @@ from pathlib import Path
 
 from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
+from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Position Tracker", layout="wide")
+apply_srcs_style()
 
 st.title("📍 Position Tracker")
 
