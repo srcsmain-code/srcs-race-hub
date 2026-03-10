@@ -65,18 +65,14 @@ def calculate_consistency(laps_df):
     if laps_df.empty:
         return pd.DataFrame()
 
-    df = (
-        laps_df.groupby("DriverName", as_index=False)
-        .agg(
-            StdDev=("LapTime", "std"),
-            MeanLap=("LapTime", "mean"),
-            LapCount=("LapTime", "count"),
-        )
-        .sort_values("StdDev", ascending=True)
-        .reset_index(drop=True)
-    )
+    std_df = laps_df.groupby("DriverName")["LapTime"].std().reset_index(name="StdDev")
+    mean_df = laps_df.groupby("DriverName")["LapTime"].mean().reset_index(name="MeanLap")
+    count_df = laps_df.groupby("DriverName")["LapTime"].count().reset_index(name="LapCount")
+
+    df = std_df.merge(mean_df, on="DriverName").merge(count_df, on="DriverName")
 
     df["StdDev"] = df["StdDev"].fillna(0)
+    df = df.sort_values("StdDev", ascending=True).reset_index(drop=True)
     df["Position"] = df.index + 1
 
     return df
