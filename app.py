@@ -28,6 +28,7 @@ pages = {
     ],
 
     "SEASON": [
+        st.Page("pages/1_Championship_Dashboard.py", title="Championship Dashboard", icon="👤"), 
         st.Page("pages/8_Awards.py", title="Awards", icon="🏆"),
         st.Page("pages/9_Season_Impact.py", title="Season Impact", icon="📈"),
         st.Page("pages/5_Race_Archive.py", title="Race Archive", icon="📚"),
