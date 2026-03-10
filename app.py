@@ -1,8 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="SRCS Race Hub",
-    page_icon="🏁",
+    page_title="Home",
     layout="wide"
 )
 
