@@ -25,7 +25,6 @@ round_options = [summary["Round"] for summary in round_summaries]
 selected_round = st.selectbox("Select Round", round_options, index=len(round_options) - 1)
 
 selected_index = round_options.index(selected_round)
-selected_results_df = all_results[selected_index].copy()
 selected_summary = round_summaries[selected_index]
 selected_race_data = raw_race_data[selected_index]
 
@@ -33,17 +32,6 @@ laps_df = pd.DataFrame(selected_race_data.get("Laps", []))
 
 if laps_df.empty:
     st.warning("No lap data available for this round.")
-    st.stop()
-
-# Normalize lap number column
-if "LapNumber" in laps_df.columns:
-    laps_df["LapNumber"] = laps_df["LapNumber"]
-elif "Lap" in laps_df.columns:
-    laps_df["LapNumber"] = laps_df["Lap"]
-elif "CurrentLap" in laps_df.columns:
-    laps_df["LapNumber"] = laps_df["CurrentLap"]
-else:
-    st.error(f"No lap number column found in lap data. Available columns: {list(laps_df.columns)}")
     st.stop()
 
 laps_df = laps_df[
@@ -54,13 +42,26 @@ laps_df = laps_df[
     (laps_df["LapTime"] > 0)
 ].copy()
 
-# Clean types
-laps_df["LapNumber"] = pd.to_numeric(laps_df["LapNumber"], errors="coerce")
-laps_df["LapTime"] = pd.to_numeric(laps_df["LapTime"], errors="coerce")
+if laps_df.empty:
+    st.warning("No valid lap data available for this round.")
+    st.stop()
 
-laps_df = laps_df.dropna(subset=["LapNumber", "LapTime"])
-laps_df["LapNumber"] = laps_df["LapNumber"].astype(int)
+# Build lap number from timestamp order per driver
+if "Timestamp" in laps_df.columns:
+    laps_df["Timestamp"] = pd.to_numeric(laps_df["Timestamp"], errors="coerce")
+    laps_df = laps_df.dropna(subset=["Timestamp"])
+    laps_df = laps_df.sort_values(["DriverName", "Timestamp"]).copy()
+else:
+    # fallback: keep original order if timestamp missing
+    laps_df = laps_df.reset_index(drop=True).copy()
+
+laps_df["LapNumber"] = laps_df.groupby("DriverName").cumcount() + 1
+
+# Clean numeric types
+laps_df["LapTime"] = pd.to_numeric(laps_df["LapTime"], errors="coerce")
+laps_df = laps_df.dropna(subset=["LapTime"])
 laps_df["LapTime"] = laps_df["LapTime"].astype(int)
+laps_df["LapNumber"] = laps_df["LapNumber"].astype(int)
 
 st.subheader(f"Round Overview — {selected_summary['Round']}")
 
@@ -118,6 +119,24 @@ average_display_df = average_pace_df[["Position", "DriverName", "AverageLapForma
 average_display_df.columns = ["Pos", "Driver", "Average Lap"]
 
 st.dataframe(average_display_df, use_container_width=True, hide_index=True)
+
+st.subheader("Consistency by Driver")
+
+consistency_df = (
+    laps_df.groupby("DriverName", as_index=False)["LapTime"]
+    .std()
+    .sort_values("LapTime", ascending=True)
+    .reset_index(drop=True)
+)
+
+consistency_df["Position"] = consistency_df.index + 1
+consistency_df["StdDevMs"] = consistency_df["LapTime"].fillna(0).round().astype(int)
+consistency_df["Std Dev"] = consistency_df["StdDevMs"].apply(ms_to_laptime)
+
+consistency_display_df = consistency_df[["Position", "DriverName", "Std Dev"]].copy()
+consistency_display_df.columns = ["Pos", "Driver", "Consistency"]
+
+st.dataframe(consistency_display_df, use_container_width=True, hide_index=True)
 
 st.subheader("Driver Drill-Down")
 
