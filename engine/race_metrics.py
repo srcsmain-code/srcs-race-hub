@@ -67,11 +67,15 @@ def calculate_consistency(laps_df):
         return pd.DataFrame()
 
     df = (
-        laps_df.groupby("DriverName", as_index=False)["LapTime"]
-        .agg(["std", "mean", "count"])
+        laps_df.groupby("DriverName")
+        .agg(
+            StdDev=("LapTime", "std"),
+            MeanLap=("LapTime", "mean"),
+            LapCount=("LapTime", "count")
+        )
         .reset_index()
     )
-    df.columns = ["DriverName", "StdDev", "MeanLap", "LapCount"]
+
     df["StdDev"] = df["StdDev"].fillna(0)
     df = df.sort_values("StdDev", ascending=True).reset_index(drop=True)
     df["Position"] = df.index + 1
