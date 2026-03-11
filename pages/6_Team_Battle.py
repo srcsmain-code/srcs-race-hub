@@ -4,12 +4,19 @@ from pathlib import Path
 
 from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping, calculate_team_standings
+from engine.race_metrics import prepare_laps_dataframe
+from utils.formatting import ms_to_laptime
 from utils.style import apply_srcs_style
 
-st.set_page_config(page_title="Team Battle", layout="wide")
+st.set_page_config(page_title="Team Battle", page_icon="🏎️", layout="wide")
 apply_srcs_style()
 
-st.title("🏎️ Team Battle")
+st.markdown("""
+<div class="srcs-hero">
+    <div class="srcs-hero-title">TEAM BATTLE</div>
+    <div class="srcs-hero-subtitle">Constructors' championship, driver contribution, and teammate pace comparison</div>
+</div>
+""", unsafe_allow_html=True)
 
 DATA_DIR = Path("data")
 TEAM_MAP_FILE = DATA_DIR / "driver_team_map.csv"
@@ -40,11 +47,11 @@ if not teams:
 # Constructors standings
 team_standings_df = calculate_team_standings(season_results_df)
 
-st.subheader("Constructors' Championship")
+st.markdown('<div class="srcs-section">Constructors\' Championship</div>', unsafe_allow_html=True)
 st.dataframe(team_standings_df, use_container_width=True, hide_index=True)
 
 # Team points progression
-st.subheader("Team Points Progression")
+st.markdown('<div class="srcs-section">Team Points Progression</div>', unsafe_allow_html=True)
 
 team_progression_df = season_results_df.pivot_table(
     index="Round",
@@ -54,7 +61,6 @@ team_progression_df = season_results_df.pivot_table(
     fill_value=0
 ).cumsum()
 
-# sort rounds properly if possible
 round_sort = (
     team_progression_df.index.to_series()
     .str.extract(r"Round (\d+)")[0]
@@ -65,7 +71,6 @@ team_progression_df = team_progression_df.sort_values("_RoundSort").drop(columns
 
 st.line_chart(team_progression_df)
 
-# Team selector
 selected_team = st.selectbox("Select Team", teams)
 
 team_df = season_results_df[season_results_df["Team"] == selected_team].copy()
@@ -100,7 +105,7 @@ with c4:
 st.caption(f"Average finish across all team entries: {avg_finish}")
 
 # Team points by round
-st.subheader("Points by Round")
+st.markdown('<div class="srcs-section">Points by Round</div>', unsafe_allow_html=True)
 
 team_points_round_df = (
     team_df.groupby("Round", as_index=False)["Points"]
@@ -115,7 +120,7 @@ points_chart_df = team_points_round_df.set_index("Round")
 st.bar_chart(points_chart_df)
 
 # Driver contribution
-st.subheader("Driver Contribution")
+st.markdown('<div class="srcs-section">Driver Contribution</div>', unsafe_allow_html=True)
 
 driver_contrib_df = (
     team_df.groupby("DriverName", as_index=False)["Points"]
@@ -130,8 +135,103 @@ st.dataframe(driver_contrib_df, use_container_width=True, hide_index=True)
 driver_contrib_chart_df = driver_contrib_df.set_index("Driver")
 st.bar_chart(driver_contrib_chart_df)
 
+# Teammate pace comparison
+st.markdown('<div class="srcs-section">Teammate Pace Comparison</div>', unsafe_allow_html=True)
+
+pace_rows = []
+
+for round_summary, race_data in zip(round_summaries, raw_race_data):
+    round_name = round_summary["Round"]
+
+    round_team_entries = team_df[team_df["Round"] == round_name].copy()
+    round_team_entries = round_team_entries.sort_values("DriverName").reset_index(drop=True)
+
+    if len(round_team_entries) < 2:
+        continue
+
+    laps_df = prepare_laps_dataframe(race_data)
+    if laps_df.empty:
+        continue
+
+    team_drivers = round_team_entries["DriverName"].dropna().unique().tolist()
+
+    if len(team_drivers) < 2:
+        continue
+
+    driver_averages = []
+    for driver in team_drivers:
+        driver_laps = laps_df[laps_df["DriverName"] == driver].copy()
+        if driver_laps.empty:
+            continue
+
+        avg_lap = driver_laps["LapTime"].mean()
+        best_lap = driver_laps["LapTime"].min()
+        lap_count = len(driver_laps)
+
+        driver_averages.append({
+            "Round": round_name,
+            "Driver": driver,
+            "AverageLapMs": avg_lap,
+            "BestLapMs": best_lap,
+            "LapCount": lap_count
+        })
+
+    if len(driver_averages) < 2:
+        continue
+
+    round_pace_df = pd.DataFrame(driver_averages).sort_values("AverageLapMs", ascending=True).reset_index(drop=True)
+
+    fastest_avg = round_pace_df.iloc[0]["AverageLapMs"]
+
+    for _, row in round_pace_df.iterrows():
+        pace_rows.append({
+            "Round": row["Round"],
+            "Driver": row["Driver"],
+            "AverageLapMs": row["AverageLapMs"],
+            "BestLapMs": row["BestLapMs"],
+            "LapCount": int(row["LapCount"]),
+            "DeltaToTeammateMs": row["AverageLapMs"] - fastest_avg
+        })
+
+if pace_rows:
+    teammate_pace_df = pd.DataFrame(pace_rows)
+
+    teammate_pace_df["Average Lap"] = teammate_pace_df["AverageLapMs"].round().astype(int).apply(ms_to_laptime)
+    teammate_pace_df["Best Lap"] = teammate_pace_df["BestLapMs"].round().astype(int).apply(ms_to_laptime)
+
+    def format_delta(ms):
+        ms = int(round(ms))
+        if ms <= 0:
+            return "0:00.000"
+        return ms_to_laptime(ms)
+
+    teammate_pace_df["Delta to Teammate"] = teammate_pace_df["DeltaToTeammateMs"].apply(format_delta)
+
+    pace_display_df = teammate_pace_df[[
+        "Round", "Driver", "LapCount", "Average Lap", "Best Lap", "Delta to Teammate"
+    ]].copy()
+
+    pace_display_df.columns = [
+        "Round", "Driver", "Laps Counted", "Average Lap", "Best Lap", "Delta to Teammate"
+    ]
+
+    st.dataframe(pace_display_df, use_container_width=True, hide_index=True)
+
+    st.markdown('<div class="srcs-section">Teammate Average Pace Delta Chart</div>', unsafe_allow_html=True)
+
+    pace_chart_df = teammate_pace_df[["Round", "Driver", "DeltaToTeammateMs"]].copy()
+    pace_chart_df["RoundDriver"] = pace_chart_df["Round"] + " — " + pace_chart_df["Driver"]
+    pace_chart_df = pace_chart_df[["RoundDriver", "DeltaToTeammateMs"]].set_index("RoundDriver")
+    pace_chart_df.columns = ["Average Pace Delta to Team Benchmark (ms)"]
+
+    st.bar_chart(pace_chart_df)
+
+    st.caption("Delta is measured to the faster average-lap teammate entry for that team in that round.")
+else:
+    st.info("No teammate pace comparison available yet. This usually requires at least two mapped team drivers with valid lap data in the same round.")
+
 # Round-by-round team history
-st.subheader("Round-by-Round Team History")
+st.markdown('<div class="srcs-section">Round-by-Round Team History</div>', unsafe_allow_html=True)
 
 team_history_df = team_df[[
     "Round",
@@ -148,7 +248,7 @@ team_history_df = team_history_df.sort_values(["Round", "Driver"]).reset_index(d
 st.dataframe(team_history_df, use_container_width=True, hide_index=True)
 
 # Team average finish by round
-st.subheader("Average Finish by Round")
+st.markdown('<div class="srcs-section">Average Finish by Round</div>', unsafe_allow_html=True)
 
 avg_finish_round_df = (
     team_df.groupby("Round", as_index=False)["Position"]
@@ -163,7 +263,7 @@ avg_finish_chart_df = avg_finish_round_df.set_index("Round")
 st.line_chart(avg_finish_chart_df)
 
 # Team notes
-st.subheader("Team Notes")
+st.markdown('<div class="srcs-section">Team Notes</div>', unsafe_allow_html=True)
 
 top_driver = driver_contrib_df.iloc[0]["Driver"] if not driver_contrib_df.empty else "N/A"
 top_driver_points = int(driver_contrib_df.iloc[0]["Points"]) if not driver_contrib_df.empty else 0
