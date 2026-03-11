@@ -3,15 +3,26 @@ import pandas as pd
 from pathlib import Path
 
 from engine.parser import load_all_race_results
+from engine.incident_metrics import (
+    prepare_events_dataframe,
+    filter_incident_events,
+    calculate_impact_speed_ranking,
+    calculate_incident_type_breakdown,
+    calculate_driver_incident_counts,
+)
 from utils.style import apply_srcs_style
 
-st.set_page_config(page_title="Incident Center", layout="wide")
+st.set_page_config(page_title="Incident Center", page_icon="⚠️", layout="wide")
 apply_srcs_style()
 
-st.title("🚨 Incident Center")
+st.markdown("""
+<div class="srcs-hero">
+    <div class="srcs-hero-title">INCIDENT CENTER</div>
+    <div class="srcs-hero-subtitle">Incident log, impact speed ranking, and incident type breakdown</div>
+</div>
+""", unsafe_allow_html=True)
 
 DATA_DIR = Path("data")
-INCIDENTS_FILE = DATA_DIR / "incidents_log.csv"
 
 if not DATA_DIR.exists():
     st.error("Data folder not found.")
@@ -29,8 +40,12 @@ selected_round = st.selectbox("Select Round", round_options, index=len(round_opt
 selected_index = round_options.index(selected_round)
 selected_summary = round_summaries[selected_index]
 selected_results_df = all_results[selected_index].copy()
+selected_race_data = raw_race_data[selected_index]
 
-st.subheader("Round Context")
+events_df = prepare_events_dataframe(selected_race_data)
+incident_df = filter_incident_events(events_df)
+
+st.markdown('<div class="srcs-section">Round Context</div>', unsafe_allow_html=True)
 
 c1, c2, c3, c4 = st.columns(4)
 with c1:
@@ -48,114 +63,117 @@ st.caption(
     f"{selected_summary['Track']}"
 )
 
-st.subheader("Incident Log")
+if incident_df.empty:
+    st.info("No incident events found in the race data for this round.")
+    st.stop()
 
-if INCIDENTS_FILE.exists():
-    incidents_df = pd.read_csv(INCIDENTS_FILE)
+# Headline incident metrics
+max_impact = float(incident_df["ImpactSpeed"].max()) if "ImpactSpeed" in incident_df.columns else 0.0
+incident_count = len(incident_df)
 
-    required_columns = [
-        "Round",
-        "Lap",
-        "Driver",
-        "Team",
-        "Incident Type",
-        "Severity",
-        "Decision",
-        "Penalty",
-        "Notes"
-    ]
+top_impact_row = incident_df.sort_values("ImpactSpeed", ascending=False).iloc[0]
+top_driver_name = top_impact_row["DriverName"]
+top_incident_type = top_impact_row["Type"]
 
-    missing_columns = [col for col in required_columns if col not in incidents_df.columns]
+st.markdown('<div class="srcs-section">Incident Summary</div>', unsafe_allow_html=True)
 
-    if missing_columns:
-        st.error(
-            "The incidents_log.csv file is missing required columns: "
-            + ", ".join(missing_columns)
-        )
-        st.stop()
+m1, m2, m3, m4 = st.columns(4)
+with m1:
+    st.metric("Incident Count", incident_count)
+with m2:
+    st.metric("Max Impact Speed", round(max_impact, 1))
+with m3:
+    st.metric("Top Impact Driver", top_driver_name)
+with m4:
+    st.metric("Top Impact Type", top_incident_type)
 
-    round_incidents_df = incidents_df[incidents_df["Round"] == selected_round].copy()
+# Incident log
+st.markdown('<div class="srcs-section">Incident Log</div>', unsafe_allow_html=True)
 
-    if round_incidents_df.empty:
-        st.info("No incidents recorded for this round yet.")
-    else:
-        round_incidents_df = round_incidents_df.sort_values(
-            by=["Lap", "Driver"],
-            ascending=[True, True]
-        ).reset_index(drop=True)
+incident_log_df = incident_df[[
+    "Timestamp",
+    "DriverName",
+    "OtherDriverName",
+    "Type",
+    "ImpactSpeed",
+    "AfterSessionEnd"
+]].copy()
 
-        st.dataframe(round_incidents_df, use_container_width=True, hide_index=True)
+incident_log_df.columns = [
+    "Timestamp",
+    "Driver",
+    "Other Driver",
+    "Incident Type",
+    "Impact Speed",
+    "After Session End"
+]
 
-        st.subheader("Penalty Summary")
+incident_log_df["Impact Speed"] = incident_log_df["Impact Speed"].round(1)
 
-        penalties_df = round_incidents_df[
-            round_incidents_df["Penalty"].notna() &
-            (round_incidents_df["Penalty"].astype(str).str.strip() != "")
-        ].copy()
+st.dataframe(incident_log_df, use_container_width=True, hide_index=True)
 
-        if penalties_df.empty:
-            st.info("No penalties recorded for this round.")
-        else:
-            penalty_summary_df = penalties_df[[
-                "Lap", "Driver", "Team", "Decision", "Penalty"
-            ]].copy()
+# Impact speed ranking
+st.markdown('<div class="srcs-section">Impact Speed Ranking</div>', unsafe_allow_html=True)
 
-            st.dataframe(penalty_summary_df, use_container_width=True, hide_index=True)
+impact_df = calculate_impact_speed_ranking(incident_df)
 
-        st.subheader("Severity Breakdown")
+impact_display_df = impact_df[[
+    "Position",
+    "DriverName",
+    "OtherDriverName",
+    "Type",
+    "ImpactSpeed"
+]].copy()
 
-        severity_df = (
-            round_incidents_df.groupby("Severity", as_index=False)
-            .size()
-            .rename(columns={"size": "Count"})
-            .sort_values(["Count", "Severity"], ascending=[False, True])
-        )
+impact_display_df.columns = [
+    "Pos",
+    "Driver",
+    "Other Driver",
+    "Incident Type",
+    "Impact Speed"
+]
 
-        if not severity_df.empty:
-            severity_chart_df = severity_df.set_index("Severity")
-            st.bar_chart(severity_chart_df)
+impact_display_df["Impact Speed"] = impact_display_df["Impact Speed"].round(1)
 
-        st.subheader("Incident Type Breakdown")
+st.dataframe(impact_display_df, use_container_width=True, hide_index=True)
 
-        incident_type_df = (
-            round_incidents_df.groupby("Incident Type", as_index=False)
-            .size()
-            .rename(columns={"size": "Count"})
-            .sort_values(["Count", "Incident Type"], ascending=[False, True])
-        )
+impact_chart_df = impact_df[["DriverName", "ImpactSpeed"]].copy()
+impact_chart_df.columns = ["Driver", "Impact Speed"]
+impact_chart_df = impact_chart_df.sort_values("Impact Speed", ascending=False).set_index("Driver")
 
-        if not incident_type_df.empty:
-            incident_type_chart_df = incident_type_df.set_index("Incident Type")
-            st.bar_chart(incident_type_chart_df)
+st.bar_chart(impact_chart_df)
 
+# Incident type chart
+st.markdown('<div class="srcs-section">Incident Type Chart</div>', unsafe_allow_html=True)
+
+incident_type_df = calculate_incident_type_breakdown(incident_df)
+
+if not incident_type_df.empty:
+    st.dataframe(incident_type_df, use_container_width=True, hide_index=True)
+
+    incident_type_chart_df = incident_type_df.set_index("Type")
+    st.bar_chart(incident_type_chart_df)
 else:
-    st.info(
-        "No incidents_log.csv file found yet. Create data/incidents_log.csv to track "
-        "steward notes, penalties, and incident outcomes."
-    )
+    st.info("No incident type breakdown available.")
 
-st.subheader("Suggested CSV Structure")
+# Driver incident counts
+st.markdown('<div class="srcs-section">Driver Incident Counts</div>', unsafe_allow_html=True)
 
-template_df = pd.DataFrame([
-    {
-        "Round": selected_round,
-        "Lap": 1,
-        "Driver": "Example Driver",
-        "Team": "Example Team",
-        "Incident Type": "Avoidable Contact",
-        "Severity": "Medium",
-        "Decision": "Warning",
-        "Penalty": "",
-        "Notes": "Light contact into Turn 1, no lasting damage."
-    }
-])
+driver_incident_df = calculate_driver_incident_counts(incident_df)
 
-st.dataframe(template_df, use_container_width=True, hide_index=True)
+if not driver_incident_df.empty:
+    driver_incident_display_df = driver_incident_df[[
+        "Position", "DriverName", "IncidentCount"
+    ]].copy()
 
-st.subheader("Stewarding Notes")
+    driver_incident_display_df.columns = ["Pos", "Driver", "Incident Count"]
 
-st.write(
-    "Use this page as the SRCS stewarding hub for incident tracking. "
-    "If no CSV is present yet, this page acts as the framework for future penalties, "
-    "warnings, and race review decisions."
-)
+    st.dataframe(driver_incident_display_df, use_container_width=True, hide_index=True)
+
+    driver_incident_chart_df = driver_incident_df[["DriverName", "IncidentCount"]].copy()
+    driver_incident_chart_df.columns = ["Driver", "Incident Count"]
+    driver_incident_chart_df = driver_incident_chart_df.set_index("Driver")
+
+    st.bar_chart(driver_incident_chart_df)
+
+st.caption("SRCS Incident Center — event-driven incident analysis from official race export data.")
