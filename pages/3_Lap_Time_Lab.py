@@ -15,6 +15,22 @@ from utils.style import apply_srcs_style
 st.set_page_config(page_title="Lap Time Lab", layout="wide")
 apply_srcs_style()
 
+from data.lap_benchmarks import get_track_options
+from components.track_benchmark_cards import render_track_benchmark_cards
+
+track_options = get_track_options()
+
+selected_track_label = st.selectbox(
+    "Select Track",
+    options=list(track_options.keys()),
+    index=0,
+    key="lap_time_lab_track"
+)
+
+selected_track_key = track_options[selected_track_label]
+
+render_track_benchmark_cards(selected_track_key, title="LAP TIME BENCHMARKS")
+
 st.title("⏱️ Lap Time Lab")
 
 DATA_DIR = Path("data")
