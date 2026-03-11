@@ -132,25 +132,63 @@ selected_gp = selected_round_row["Grand Prix"]
 # MAP GRAND PRIX TO TRACK KEY
 # =========================
 
-def map_grand_prix_to_track_key(grand_prix_name: str) -> str | None:
-    gp = str(grand_prix_name).strip().lower()
+def map_grand_prix_to_track_key(value: str) -> str | None:
+    text = str(value).strip().lower()
 
     mapping = {
+        "australia": "melbourne",
         "australian grand prix": "melbourne",
+        "melbourne": "melbourne",
+        "albert park": "melbourne",
+
+        "bahrain": "bahrain",
         "bahrain grand prix": "bahrain",
+        "sakhir": "bahrain",
+
+        "miami": "miami",
         "miami grand prix": "miami",
+
+        "monaco": "monaco",
         "monaco grand prix": "monaco",
+        "monte carlo": "monaco",
+
+        "britain": "silverstone",
+        "great britain": "silverstone",
         "british grand prix": "silverstone",
+        "silverstone": "silverstone",
+
+        "netherlands": "zandvoort",
         "dutch grand prix": "zandvoort",
+        "zandvoort": "zandvoort",
+
+        "italy": "monza",
         "italian grand prix": "monza",
+        "monza": "monza",
+
+        "singapore": "singapore",
         "singapore grand prix": "singapore",
+        "marina bay": "singapore",
+
+        "brazil": "interlagos",
         "brazilian grand prix": "interlagos",
+        "interlagos": "interlagos",
+        "sao paulo": "interlagos",
+
+        "abu dhabi": "abu_dhabi",
         "abu dhabi grand prix": "abu_dhabi",
+        "yas marina": "abu_dhabi",
     }
 
-    return mapping.get(gp)
+    for key, track_key in mapping.items():
+        if key in text:
+            return track_key
+
+    return None
 
 selected_track_key = map_grand_prix_to_track_key(selected_gp)
+
+if not selected_track_key:
+    selected_track_key = map_grand_prix_to_track_key(selected_round)
 
 # =========================
 # BENCHMARK BLOCK
