@@ -8,6 +8,9 @@ from engine.driver_metrics import calculate_driver_standings
 from utils.formatting import ms_to_laptime, ms_to_racetime
 from utils.style import apply_srcs_style
 
+from components.track_benchmark_cards import render_track_benchmark_compact
+from data.lap_benchmarks import TRACK_BENCHMARKS
+
 st.set_page_config(page_title="Driver Analyzer", layout="wide")
 apply_srcs_style()
 
@@ -102,6 +105,108 @@ with q4:
     best_points = int(driver_df["Points"].max())
     st.metric("Best Points Haul", best_points)
 
+# =========================
+# DRIVER / ROUND SELECTION
+# =========================
+
+st.subheader("Round Analysis")
+
+round_options = driver_df["Round"].dropna().tolist()
+selected_round = st.selectbox(
+    "Select Round",
+    round_options,
+    index=len(round_options) - 1 if round_options else 0,
+    key="driver_analysis_round"
+)
+
+selected_round_df = driver_df[driver_df["Round"] == selected_round].copy()
+
+if selected_round_df.empty:
+    st.warning("No round data available.")
+    st.stop()
+
+selected_round_row = selected_round_df.iloc[0]
+selected_gp = selected_round_row["Grand Prix"]
+
+# =========================
+# MAP GRAND PRIX TO TRACK KEY
+# =========================
+
+def map_grand_prix_to_track_key(grand_prix_name: str) -> str | None:
+    gp = str(grand_prix_name).strip().lower()
+
+    mapping = {
+        "australian grand prix": "melbourne",
+        "bahrain grand prix": "bahrain",
+        "miami grand prix": "miami",
+        "monaco grand prix": "monaco",
+        "british grand prix": "silverstone",
+        "dutch grand prix": "zandvoort",
+        "italian grand prix": "monza",
+        "singapore grand prix": "singapore",
+        "brazilian grand prix": "interlagos",
+        "abu dhabi grand prix": "abu_dhabi",
+    }
+
+    return mapping.get(gp)
+
+selected_track_key = map_grand_prix_to_track_key(selected_gp)
+
+# =========================
+# BENCHMARK BLOCK
+# =========================
+
+st.markdown(f"#### {selected_round} • {selected_gp}")
+
+if selected_track_key:
+    render_track_benchmark_compact(selected_track_key)
+else:
+    st.info("No track benchmark found for this round yet.")
+
+# =========================
+# DRIVER VS BENCHMARKS
+# =========================
+
+def lap_time_to_seconds(lap_str: str) -> float | None:
+    try:
+        mins, secs = str(lap_str).split(":")
+        return int(mins) * 60 + float(secs)
+    except Exception:
+        return None
+
+driver_bestlap_ms = selected_round_row.get("BestLap", None)
+
+if pd.notna(driver_bestlap_ms):
+    driver_bestlap_str = ms_to_laptime(driver_bestlap_ms)
+else:
+    driver_bestlap_str = None
+
+if selected_track_key and driver_bestlap_str and selected_track_key in TRACK_BENCHMARKS:
+    benchmark = TRACK_BENCHMARKS[selected_track_key]
+
+    real_life_lap = benchmark["real_life_lap_record"]
+    srcs_target_lap = benchmark["srcs_target_lap_time"]
+
+    driver_bestlap_sec = lap_time_to_seconds(driver_bestlap_str)
+    real_life_sec = lap_time_to_seconds(real_life_lap)
+    srcs_target_sec = lap_time_to_seconds(srcs_target_lap)
+
+    if (
+        driver_bestlap_sec is not None
+        and real_life_sec is not None
+        and srcs_target_sec is not None
+    ):
+        delta_to_real_life = round(driver_bestlap_sec - real_life_sec, 3)
+        delta_to_srcs_target = round(driver_bestlap_sec - srcs_target_sec, 3)
+
+        b1, b2, b3 = st.columns(3)
+        with b1:
+            st.metric("Driver Best Lap", driver_bestlap_str)
+        with b2:
+            st.metric("Vs Real Life Record", f"+{delta_to_real_life:.3f}s")
+        with b3:
+            st.metric("Vs SRCS Target", f"{delta_to_srcs_target:+.3f}s")
+
 # Points trend
 st.subheader("Points by Round")
 
@@ -155,6 +260,12 @@ note_parts = [
 
 if fastest_lap_count > 0:
     note_parts.append(f"plus {fastest_lap_count} fastest lap(s)")
+
+if selected_track_key and driver_bestlap_str and selected_track_key in TRACK_BENCHMARKS:
+    benchmark = TRACK_BENCHMARKS[selected_track_key]
+    note_parts.append(
+        f"for {selected_round}, the benchmark lap record is {benchmark['real_life_lap_record']} and the SRCS target is {benchmark['srcs_target_lap_time']}"
+    )
 
 st.write(", ".join(note_parts) + ".")
 
