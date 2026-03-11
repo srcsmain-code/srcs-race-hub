@@ -43,13 +43,13 @@ else:
     selected_results_df["Team"] = "Unknown"
 
 selected_results_df = selected_results_df.sort_values("Position").reset_index(drop=True)
-
 selected_results_df["Positions Gained"] = (
     selected_results_df["GridPosition"] - selected_results_df["Position"]
 )
 
 winner_row = selected_results_df.iloc[0]
 winner_time = int(winner_row["TotalTime"])
+winner_laps = int(winner_row["NumLaps"])
 
 def ms_to_gap(ms):
     if ms is None:
@@ -65,13 +65,24 @@ def ms_to_gap(ms):
         return f"+{minutes}:{seconds:02d}.{millis:03d}"
     return f"+{seconds}.{millis:03d}"
 
+def calculate_classification_gap(row):
+    driver_laps = int(row["NumLaps"])
+    lap_deficit = winner_laps - driver_laps
+
+    if lap_deficit > 0:
+        if lap_deficit == 1:
+            return "+1 Lap"
+        return f"+{lap_deficit} Laps"
+
+    gap_ms = int(row["TotalTime"]) - winner_time
+    return ms_to_gap(gap_ms)
+
 selected_results_df["GapMs"] = selected_results_df["TotalTime"] - winner_time
-selected_results_df["Gap"] = selected_results_df["GapMs"].apply(ms_to_gap)
+selected_results_df["Gap"] = selected_results_df.apply(calculate_classification_gap, axis=1)
 
 pole_row = selected_results_df.sort_values("GridPosition").iloc[0]
 fastest_lap_driver = selected_summary["Fastest Lap Driver"]
 
-# Summary strip
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric("Winner", winner_row["DriverName"])
@@ -87,7 +98,6 @@ st.caption(
     f"{selected_summary['Track']} • {selected_summary['Session Type']}"
 )
 
-# Official classification
 st.markdown('<div class="srcs-section">Official Classification</div>', unsafe_allow_html=True)
 
 classification_df = selected_results_df[[
@@ -95,6 +105,7 @@ classification_df = selected_results_df[[
     "DriverName",
     "Team",
     "GridPosition",
+    "NumLaps",
     "Gap",
     "BestLap",
     "Points",
@@ -106,6 +117,7 @@ classification_df.columns = [
     "Driver",
     "Team",
     "Grid",
+    "Laps",
     "Gap",
     "Best Lap",
     "Pts",
@@ -116,25 +128,25 @@ classification_df["Best Lap"] = classification_df["Best Lap"].apply(ms_to_laptim
 
 st.dataframe(classification_df, use_container_width=True, hide_index=True)
 
-# Finish gap chart
-st.markdown('<div class="srcs-section">Finish Gap Chart</div>', unsafe_allow_html=True)
+st.markdown('<div class="srcs-section">Finish Gap Chart (Same-Lap Drivers)</div>', unsafe_allow_html=True)
 
-gap_chart_df = selected_results_df[["DriverName", "GapMs"]].copy()
+same_lap_df = selected_results_df[selected_results_df["NumLaps"] == winner_laps].copy()
+gap_chart_df = same_lap_df[["DriverName", "GapMs"]].copy()
 gap_chart_df.columns = ["Driver", "Gap to Winner (ms)"]
 gap_chart_df = gap_chart_df.sort_values("Gap to Winner (ms)", ascending=False).set_index("Driver")
 
-st.bar_chart(gap_chart_df)
+if not gap_chart_df.empty:
+    st.bar_chart(gap_chart_df)
+else:
+    st.info("No same-lap finishers available for gap chart.")
 
-# Positions gained chart
 st.markdown('<div class="srcs-section">Positions Gained Chart</div>', unsafe_allow_html=True)
 
 pos_chart_df = selected_results_df[["DriverName", "Positions Gained"]].copy()
 pos_chart_df.columns = ["Driver", "Positions Gained"]
 pos_chart_df = pos_chart_df.sort_values("Positions Gained", ascending=True).set_index("Driver")
-
 st.bar_chart(pos_chart_df)
 
-# Race result summary
 st.markdown('<div class="srcs-section">Race Result Summary</div>', unsafe_allow_html=True)
 
 summary_col1, summary_col2 = st.columns(2)
@@ -154,7 +166,6 @@ with summary_col2:
     top3_df.columns = ["Pos", "Driver", "Team", "Gap", "Points"]
     st.dataframe(top3_df, use_container_width=True, hide_index=True)
 
-# Team result breakdown
 st.markdown('<div class="srcs-section">Team Results This Round</div>', unsafe_allow_html=True)
 
 team_round_df = (
@@ -166,7 +177,6 @@ team_round_df = (
 
 team_round_df["Pos"] = team_round_df.index + 1
 team_round_df = team_round_df[["Pos", "Team", "Points"]]
-
 st.dataframe(team_round_df, use_container_width=True, hide_index=True)
 
 st.caption("SRCS Results Center — official classification and gap-based round analysis.")
