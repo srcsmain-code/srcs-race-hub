@@ -93,40 +93,35 @@ if not team_points_df.empty:
     top_team = team_points_df.iloc[0]["Team"]
     top_team_points = int(team_points_df.iloc[0]["Points"])
 
-# Clean driver + chaos leader
+# Cleanest driver + chaos leader
 clean_driver = "-"
-clean_driver_note = "No incident-free ranking available"
+clean_driver_note = "No incident data available"
 chaos_leader = "-"
 chaos_leader_note = "No incident data available"
 
 if not incident_df.empty:
+
     incident_counts_df = calculate_driver_incident_counts(incident_df)
 
-    # Chaos leader = highest incident count
     if not incident_counts_df.empty:
+
+        # Chaos Leader (most incidents)
         chaos_row = incident_counts_df.sort_values(
-            ["IncidentCount", "DriverName"], ascending=[False, True]
+            ["IncidentCount", "DriverName"],
+            ascending=[False, True]
         ).iloc[0]
+
         chaos_leader = chaos_row["DriverName"]
         chaos_leader_note = f"{int(chaos_row['IncidentCount'])} incident(s)"
 
-    # Clean driver = classified driver with zero incidents, best finish tie-break
-    classified_drivers = selected_results_df[["DriverName", "Position"]].copy()
+        # Cleanest Driver (least incidents)
+        clean_row = incident_counts_df.sort_values(
+            ["IncidentCount", "DriverName"],
+            ascending=[True, True]
+        ).iloc[0]
 
-    incident_drivers = set(incident_df["DriverName"].dropna().tolist())
-    clean_candidates = classified_drivers[~classified_drivers["DriverName"].isin(incident_drivers)].copy()
-
-    if not clean_candidates.empty:
-        clean_candidates = clean_candidates.sort_values(
-            ["Position", "DriverName"], ascending=[True, True]
-        ).reset_index(drop=True)
-        clean_driver = clean_candidates.iloc[0]["DriverName"]
-        clean_driver_note = "No recorded incident involvement"
-else:
-    # If no incidents exist at all, classify best finisher as clean driver
-    if not selected_results_df.empty:
-        clean_driver = winner_row["DriverName"]
-        clean_driver_note = "No incidents recorded this round"
+        clean_driver = clean_row["DriverName"]
+        clean_driver_note = f"{int(clean_row['IncidentCount'])} incident(s)"
 
 # Awards strip
 st.markdown('<div class="srcs-section">Round Awards</div>', unsafe_allow_html=True)
