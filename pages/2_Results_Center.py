@@ -7,10 +7,15 @@ from engine.team_metrics import apply_team_mapping
 from utils.formatting import ms_to_laptime, ms_to_racetime
 from utils.style import apply_srcs_style
 
-st.set_page_config(page_title="Results Center", layout="wide")
+st.set_page_config(page_title="Results Center", page_icon="🏁", layout="wide")
 apply_srcs_style()
 
-st.title("🏁 Results Center")
+st.markdown("""
+<div class="srcs-hero">
+    <div class="srcs-hero-title">RESULTS CENTER</div>
+    <div class="srcs-hero-subtitle">Official race classification, finish gaps, and points</div>
+</div>
+""", unsafe_allow_html=True)
 
 DATA_DIR = Path("data")
 TEAM_MAP_FILE = DATA_DIR / "driver_team_map.csv"
@@ -44,12 +49,30 @@ selected_results_df["Positions Gained"] = (
 )
 
 winner_row = selected_results_df.iloc[0]
+winner_time = int(winner_row["TotalTime"])
+
+def ms_to_gap(ms):
+    if ms is None:
+        return "-"
+    ms = int(ms)
+    if ms == 0:
+        return "WIN"
+    total_seconds = ms // 1000
+    minutes = total_seconds // 60
+    seconds = total_seconds % 60
+    millis = ms % 1000
+    if minutes > 0:
+        return f"+{minutes}:{seconds:02d}.{millis:03d}"
+    return f"+{seconds}.{millis:03d}"
+
+selected_results_df["GapMs"] = selected_results_df["TotalTime"] - winner_time
+selected_results_df["Gap"] = selected_results_df["GapMs"].apply(ms_to_gap)
+
 pole_row = selected_results_df.sort_values("GridPosition").iloc[0]
 fastest_lap_driver = selected_summary["Fastest Lap Driver"]
 
 # Summary strip
 col1, col2, col3, col4 = st.columns(4)
-
 with col1:
     st.metric("Winner", winner_row["DriverName"])
 with col2:
@@ -65,16 +88,15 @@ st.caption(
 )
 
 # Official classification
-st.subheader("Official Classification")
+st.markdown('<div class="srcs-section">Official Classification</div>', unsafe_allow_html=True)
 
 classification_df = selected_results_df[[
     "Position",
     "DriverName",
     "Team",
     "GridPosition",
-    "NumLaps",
+    "Gap",
     "BestLap",
-    "TotalTime",
     "Points",
     "Positions Gained"
 ]].copy()
@@ -84,26 +106,43 @@ classification_df.columns = [
     "Driver",
     "Team",
     "Grid",
-    "Laps",
+    "Gap",
     "Best Lap",
-    "Race Time",
-    "Points",
+    "Pts",
     "Pos Gained"
 ]
 
 classification_df["Best Lap"] = classification_df["Best Lap"].apply(ms_to_laptime)
-classification_df["Race Time"] = classification_df["Race Time"].apply(ms_to_racetime)
 
 st.dataframe(classification_df, use_container_width=True, hide_index=True)
 
-# Result summary cards
-st.subheader("Race Result Summary")
+# Finish gap chart
+st.markdown('<div class="srcs-section">Finish Gap Chart</div>', unsafe_allow_html=True)
+
+gap_chart_df = selected_results_df[["DriverName", "GapMs"]].copy()
+gap_chart_df.columns = ["Driver", "Gap to Winner (ms)"]
+gap_chart_df = gap_chart_df.sort_values("Gap to Winner (ms)", ascending=False).set_index("Driver")
+
+st.bar_chart(gap_chart_df)
+
+# Positions gained chart
+st.markdown('<div class="srcs-section">Positions Gained Chart</div>', unsafe_allow_html=True)
+
+pos_chart_df = selected_results_df[["DriverName", "Positions Gained"]].copy()
+pos_chart_df.columns = ["Driver", "Positions Gained"]
+pos_chart_df = pos_chart_df.sort_values("Positions Gained", ascending=True).set_index("Driver")
+
+st.bar_chart(pos_chart_df)
+
+# Race result summary
+st.markdown('<div class="srcs-section">Race Result Summary</div>', unsafe_allow_html=True)
 
 summary_col1, summary_col2 = st.columns(2)
 
 with summary_col1:
     summary_table = pd.DataFrame([
         {"Item": "Winner", "Value": winner_row["DriverName"]},
+        {"Item": "Winning Time", "Value": ms_to_racetime(winner_row["TotalTime"])},
         {"Item": "Pole", "Value": pole_row["DriverName"]},
         {"Item": "Fastest Lap Driver", "Value": selected_summary["Fastest Lap Driver"]},
         {"Item": "Fastest Lap Time", "Value": selected_summary["Fastest Lap Time"]},
@@ -111,34 +150,12 @@ with summary_col1:
     st.dataframe(summary_table, use_container_width=True, hide_index=True)
 
 with summary_col2:
-    top3_df = selected_results_df.head(3)[["Position", "DriverName", "Team", "Points"]].copy()
-    top3_df.columns = ["Pos", "Driver", "Team", "Points"]
+    top3_df = selected_results_df.head(3)[["Position", "DriverName", "Team", "Gap", "Points"]].copy()
+    top3_df.columns = ["Pos", "Driver", "Team", "Gap", "Points"]
     st.dataframe(top3_df, use_container_width=True, hide_index=True)
 
-# Grid vs Finish
-st.subheader("Grid vs Finish")
-
-grid_finish_df = selected_results_df[[
-    "DriverName", "GridPosition", "Position", "Positions Gained"
-]].copy()
-
-grid_finish_df.columns = ["Driver", "Grid", "Finish", "Net Gain/Loss"]
-st.dataframe(grid_finish_df, use_container_width=True, hide_index=True)
-
-# Points awarded
-st.subheader("Points Awarded")
-
-points_df = selected_results_df[selected_results_df["Points"] > 0][[
-    "DriverName", "Points"
-]].copy()
-
-points_df.columns = ["Driver", "Points"]
-points_df = points_df.sort_values("Points", ascending=False).set_index("Driver")
-
-st.bar_chart(points_df)
-
-# Team result breakdown for the round
-st.subheader("Team Results This Round")
+# Team result breakdown
+st.markdown('<div class="srcs-section">Team Results This Round</div>', unsafe_allow_html=True)
 
 team_round_df = (
     selected_results_df.groupby("Team", as_index=False)["Points"]
@@ -152,14 +169,4 @@ team_round_df = team_round_df[["Pos", "Team", "Points"]]
 
 st.dataframe(team_round_df, use_container_width=True, hide_index=True)
 
-# Movers
-st.subheader("Positions Gained / Lost")
-
-movers_df = selected_results_df[[
-    "DriverName", "Team", "GridPosition", "Position", "Positions Gained"
-]].copy()
-
-movers_df.columns = ["Driver", "Team", "Grid", "Finish", "Net Gain/Loss"]
-movers_df = movers_df.sort_values("Net Gain/Loss", ascending=False)
-
-st.dataframe(movers_df, use_container_width=True, hide_index=True)
+st.caption("SRCS Results Center — official classification and gap-based round analysis.")
