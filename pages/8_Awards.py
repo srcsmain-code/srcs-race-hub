@@ -3,18 +3,26 @@ import pandas as pd
 from pathlib import Path
 
 from engine.parser import load_all_race_results
-from engine.team_metrics import apply_team_mapping
-from engine.race_metrics import prepare_laps_dataframe
-from utils.formatting import ms_to_laptime
+from engine.incident_metrics import (
+    prepare_events_dataframe,
+    filter_incident_events,
+    calculate_impact_speed_ranking,
+    calculate_incident_type_breakdown,
+    calculate_driver_incident_counts,
+)
 from utils.style import apply_srcs_style
 
-st.set_page_config(page_title="Awards", layout="wide")
+st.set_page_config(page_title="Incident Center", page_icon="⚠️", layout="wide")
 apply_srcs_style()
 
-st.title("🏆 Awards")
+st.markdown("""
+<div class="srcs-hero">
+    <div class="srcs-hero-title">INCIDENT CENTER</div>
+    <div class="srcs-hero-subtitle">Incident log, impact speed ranking, and incident type breakdown</div>
+</div>
+""", unsafe_allow_html=True)
 
 DATA_DIR = Path("data")
-TEAM_MAP_FILE = DATA_DIR / "driver_team_map.csv"
 
 if not DATA_DIR.exists():
     st.error("Data folder not found.")
@@ -30,155 +38,142 @@ round_options = [summary["Round"] for summary in round_summaries]
 selected_round = st.selectbox("Select Round", round_options, index=len(round_options) - 1)
 
 selected_index = round_options.index(selected_round)
-selected_results_df = all_results[selected_index].copy()
 selected_summary = round_summaries[selected_index]
+selected_results_df = all_results[selected_index].copy()
 selected_race_data = raw_race_data[selected_index]
 
-if TEAM_MAP_FILE.exists():
-    selected_results_df = apply_team_mapping(selected_results_df, TEAM_MAP_FILE)
-else:
-    selected_results_df["Team"] = "Unknown"
+events_df = prepare_events_dataframe(selected_race_data)
+incident_df = filter_incident_events(events_df)
 
-selected_results_df = selected_results_df.sort_values("Position").reset_index(drop=True)
-selected_results_df["Positions Gained"] = (
-    selected_results_df["GridPosition"] - selected_results_df["Position"]
-)
+st.markdown('<div class="srcs-section">Round Context</div>', unsafe_allow_html=True)
 
-laps_df = prepare_laps_dataframe(selected_race_data)
-
-winner_row = selected_results_df.iloc[0]
-pole_row = selected_results_df.sort_values("GridPosition").iloc[0]
-biggest_mover_row = selected_results_df.sort_values("Positions Gained", ascending=False).iloc[0]
-
-# Most consistent driver
-most_consistent_driver = "-"
-most_consistent_value = "-"
-
-if not laps_df.empty:
-    consistency_df = (
-        laps_df.groupby("DriverName")["LapTime"]
-        .std()
-        .reset_index(name="StdDev")
-        .fillna(0)
-        .sort_values("StdDev", ascending=True)
-        .reset_index(drop=True)
-    )
-    if not consistency_df.empty:
-        most_consistent_driver = consistency_df.iloc[0]["DriverName"]
-        most_consistent_value = ms_to_laptime(int(round(consistency_df.iloc[0]["StdDev"])))
-
-# Top scoring team
-team_points_df = (
-    selected_results_df.groupby("Team", as_index=False)["Points"]
-    .sum()
-    .sort_values(["Points", "Team"], ascending=[False, True])
-    .reset_index(drop=True)
-)
-
-top_team = "-"
-top_team_points = 0
-if not team_points_df.empty:
-    top_team = team_points_df.iloc[0]["Team"]
-    top_team_points = int(team_points_df.iloc[0]["Points"])
-
-# Awards strip
-st.subheader("Round Awards")
-
-c1, c2, c3 = st.columns(3)
+c1, c2, c3, c4 = st.columns(4)
 with c1:
-    st.metric("Race Winner", winner_row["DriverName"])
+    st.metric("Grand Prix", selected_summary["Grand Prix"])
 with c2:
-    st.metric("Pole Award", pole_row["DriverName"])
+    st.metric("Track", selected_summary["Track"])
 with c3:
-    st.metric("Fastest Lap Award", selected_summary["Fastest Lap Driver"])
-
-c4, c5, c6 = st.columns(3)
+    st.metric("Session Type", selected_summary["Session Type"])
 with c4:
-    st.metric("Biggest Mover", biggest_mover_row["DriverName"])
-with c5:
-    st.metric("Most Consistent", most_consistent_driver)
-with c6:
-    st.metric("Top Scoring Team", top_team)
+    st.metric("Classified Drivers", len(selected_results_df))
 
 st.caption(
-    f"{selected_summary['Round']} • {selected_summary['Grand Prix']} • "
-    f"{selected_summary['Track']} • {selected_summary['Session Type']}"
+    f"{selected_summary['Round']} • "
+    f"{selected_summary['Grand Prix']} • "
+    f"{selected_summary['Track']}"
 )
 
-# Awards detail table
-st.subheader("Awards Summary")
+if incident_df.empty:
+    st.info("No incident events found in the race data for this round.")
+    st.stop()
 
-awards_df = pd.DataFrame([
-    {
-        "Award": "Race Winner",
-        "Winner": winner_row["DriverName"],
-        "Detail": f"P1 finish, {winner_row['Points']} point(s)"
-    },
-    {
-        "Award": "Pole Award",
-        "Winner": pole_row["DriverName"],
-        "Detail": f"Started from P{int(pole_row['GridPosition'])}"
-    },
-    {
-        "Award": "Fastest Lap Award",
-        "Winner": selected_summary["Fastest Lap Driver"],
-        "Detail": selected_summary["Fastest Lap Time"]
-    },
-    {
-        "Award": "Biggest Mover",
-        "Winner": biggest_mover_row["DriverName"],
-        "Detail": f"{int(biggest_mover_row['Positions Gained'])} place(s) gained"
-    },
-    {
-        "Award": "Most Consistent",
-        "Winner": most_consistent_driver,
-        "Detail": f"Lap-time std dev: {most_consistent_value}"
-    },
-    {
-        "Award": "Top Scoring Team",
-        "Winner": top_team,
-        "Detail": f"{top_team_points} point(s)"
-    },
-])
+# Headline incident metrics
+max_impact = float(incident_df["ImpactSpeed"].max()) if "ImpactSpeed" in incident_df.columns else 0.0
+incident_count = len(incident_df)
 
-st.dataframe(awards_df, use_container_width=True, hide_index=True)
+top_impact_row = incident_df.sort_values("ImpactSpeed", ascending=False).iloc[0]
+top_driver_name = top_impact_row["DriverName"]
+top_incident_type = top_impact_row["Type"]
 
-# Podium spotlight
-st.subheader("Podium Spotlight")
+st.markdown('<div class="srcs-section">Incident Summary</div>', unsafe_allow_html=True)
 
-podium_df = selected_results_df.head(3)[[
-    "Position", "DriverName", "Team", "Points"
+m1, m2, m3, m4 = st.columns(4)
+with m1:
+    st.metric("Incident Count", incident_count)
+with m2:
+    st.metric("Max Impact Speed", round(max_impact, 1))
+with m3:
+    st.metric("Top Impact Driver", top_driver_name)
+with m4:
+    st.metric("Top Impact Type", top_incident_type)
+
+# Incident log
+st.markdown('<div class="srcs-section">Incident Log</div>', unsafe_allow_html=True)
+
+incident_log_df = incident_df[[
+    "Timestamp",
+    "DriverName",
+    "OtherDriverName",
+    "Type",
+    "ImpactSpeed",
+    "AfterSessionEnd"
 ]].copy()
 
-podium_df.columns = ["Pos", "Driver", "Team", "Points"]
-st.dataframe(podium_df, use_container_width=True, hide_index=True)
+incident_log_df.columns = [
+    "Timestamp",
+    "Driver",
+    "Other Driver",
+    "Incident Type",
+    "Impact Speed",
+    "After Session End"
+]
 
-# Movers spotlight
-st.subheader("Biggest Movers and Losers")
+incident_log_df["Impact Speed"] = incident_log_df["Impact Speed"].round(1)
 
-movers_df = selected_results_df[[
-    "DriverName", "Team", "GridPosition", "Position", "Positions Gained"
+st.dataframe(incident_log_df, use_container_width=True, hide_index=True)
+
+# Impact speed ranking
+st.markdown('<div class="srcs-section">Impact Speed Ranking</div>', unsafe_allow_html=True)
+
+impact_df = calculate_impact_speed_ranking(incident_df)
+
+impact_display_df = impact_df[[
+    "Position",
+    "DriverName",
+    "OtherDriverName",
+    "Type",
+    "ImpactSpeed"
 ]].copy()
 
-movers_df.columns = ["Driver", "Team", "Grid", "Finish", "Net Gain/Loss"]
-movers_df = movers_df.sort_values("Net Gain/Loss", ascending=False)
+impact_display_df.columns = [
+    "Pos",
+    "Driver",
+    "Other Driver",
+    "Incident Type",
+    "Impact Speed"
+]
 
-st.dataframe(movers_df, use_container_width=True, hide_index=True)
+impact_display_df["Impact Speed"] = impact_display_df["Impact Speed"].round(1)
 
-# Team awards breakdown
-st.subheader("Team Awards Breakdown")
+st.dataframe(impact_display_df, use_container_width=True, hide_index=True)
 
-team_awards_df = team_points_df.copy()
-team_awards_df["Position"] = team_awards_df.index + 1
-team_awards_df = team_awards_df[["Position", "Team", "Points"]]
-team_awards_df.columns = ["Pos", "Team", "Round Points"]
+impact_chart_df = impact_df[["DriverName", "ImpactSpeed"]].copy()
+impact_chart_df.columns = ["Driver", "Impact Speed"]
+impact_chart_df = impact_chart_df.sort_values("Impact Speed", ascending=False).set_index("Driver")
 
-st.dataframe(team_awards_df, use_container_width=True, hide_index=True)
+st.bar_chart(impact_chart_df)
 
-# Notes
-st.subheader("Awards Notes")
+# Incident type chart
+st.markdown('<div class="srcs-section">Incident Type Chart</div>', unsafe_allow_html=True)
 
-st.write(
-    "This page highlights the standout performers and team outcomes for the selected round, "
-    "turning the race data into a clear post-race awards summary."
-)
+incident_type_df = calculate_incident_type_breakdown(incident_df)
+
+if not incident_type_df.empty:
+    st.dataframe(incident_type_df, use_container_width=True, hide_index=True)
+
+    incident_type_chart_df = incident_type_df.set_index("Type")
+    st.bar_chart(incident_type_chart_df)
+else:
+    st.info("No incident type breakdown available.")
+
+# Driver incident counts
+st.markdown('<div class="srcs-section">Driver Incident Counts</div>', unsafe_allow_html=True)
+
+driver_incident_df = calculate_driver_incident_counts(incident_df)
+
+if not driver_incident_df.empty:
+    driver_incident_display_df = driver_incident_df[[
+        "Position", "DriverName", "IncidentCount"
+    ]].copy()
+
+    driver_incident_display_df.columns = ["Pos", "Driver", "Incident Count"]
+
+    st.dataframe(driver_incident_display_df, use_container_width=True, hide_index=True)
+
+    driver_incident_chart_df = driver_incident_df[["DriverName", "IncidentCount"]].copy()
+    driver_incident_chart_df.columns = ["Driver", "Incident Count"]
+    driver_incident_chart_df = driver_incident_chart_df.set_index("Driver")
+
+    st.bar_chart(driver_incident_chart_df)
+
+st.caption("SRCS Incident Center — event-driven incident analysis from official race export data.")
