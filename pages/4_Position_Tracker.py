@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 from pathlib import Path
 
 from engine.parser import load_all_race_results
@@ -167,7 +168,97 @@ if not position_df.empty:
         if team_drivers:
             filtered_chart_df = filtered_chart_df[team_drivers]
 
-    st.line_chart(filtered_chart_df)
+    # Build long dataframe for Altair
+    chart_df = filtered_chart_df.reset_index().melt(
+        "LapNumber",
+        var_name="Driver",
+        value_name="Position"
+    )
+
+    chart_df = chart_df.merge(
+        driver_team_df,
+        left_on="Driver",
+        right_on="DriverName",
+        how="left"
+    )
+
+    chart_df = chart_df.drop(columns=["DriverName"], errors="ignore")
+    chart_df = chart_df.dropna(subset=["Position"]).copy()
+
+    # SRCS team accent registry
+    team_colors = {
+        "McLaren": "#FF8700",
+        "Ferrari": "#C00000",
+        "Mercedes": "#00A19B",
+        "Red Bull": "#0B1E3C",
+        "Williams": "#005AFF",
+        "Aston Martin": "#006F62",
+        "Alpine": "#0090FF",
+        "Haas": "#8B0000",
+        "Audi": "#BB0A30",
+        "Racing Bulls": "#1A1F3B",
+        "Unknown": "#C0C0C0",
+    }
+
+    # End-of-line labels
+    last_points_df = chart_df.sort_values(["Driver", "LapNumber"]).groupby("Driver", as_index=False).tail(1).copy()
+
+    # Dynamic color domain/range based on filtered teams actually present
+    teams_present = chart_df["Team"].fillna("Unknown").unique().tolist()
+    domain = [t for t in team_colors.keys() if t in teams_present]
+    range_colors = [team_colors[t] for t in domain]
+
+    # fallback if something unexpected appears
+    for team in teams_present:
+        if team not in domain:
+            domain.append(team)
+            range_colors.append("#C0C0C0")
+
+    color_scale = alt.Scale(domain=domain, range=range_colors)
+
+    line_chart = alt.Chart(chart_df).mark_line(point=True).encode(
+        x=alt.X("LapNumber:Q", title="Lap"),
+        y=alt.Y(
+            "Position:Q",
+            title="Position",
+            scale=alt.Scale(reverse=True, zero=False)
+        ),
+        color=alt.Color(
+            "Team:N",
+            scale=color_scale,
+            legend=alt.Legend(title="Team")
+        ),
+        detail="Driver:N",
+        tooltip=[
+            alt.Tooltip("Driver:N"),
+            alt.Tooltip("Team:N"),
+            alt.Tooltip("LapNumber:Q", title="Lap"),
+            alt.Tooltip("Position:Q", title="Estimated Position")
+        ]
+    )
+
+    label_chart = alt.Chart(last_points_df).mark_text(
+        align="left",
+        baseline="middle",
+        dx=8,
+        fontSize=12,
+        fontWeight="bold"
+    ).encode(
+        x=alt.X("LapNumber:Q"),
+        y=alt.Y("Position:Q", scale=alt.Scale(reverse=True, zero=False)),
+        text="Driver:N",
+        color=alt.Color("Team:N", scale=color_scale, legend=None),
+        tooltip=[
+            alt.Tooltip("Driver:N"),
+            alt.Tooltip("Team:N"),
+            alt.Tooltip("LapNumber:Q", title="Lap"),
+            alt.Tooltip("Position:Q", title="Estimated Position")
+        ]
+    )
+
+    chart = (line_chart + label_chart).properties(height=520)
+
+    st.altair_chart(chart, use_container_width=True)
 
     st.caption(
         "Estimated lap-end position based on cumulative lap time after each completed lap. "
