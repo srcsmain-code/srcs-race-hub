@@ -184,14 +184,14 @@ if not fastest_laps_df.empty:
     fastest_laps_df["Gap"] = fastest_laps_df["GapMs"].apply(
         lambda x: "0:00.000" if int(round(x)) == 0 else ms_to_laptime(int(round(x)))
     )
-    fastest_laps_df["Marker"] = fastest_laps_df["DriverName"].apply(
+    fastest_laps_df["Fastest Lap"] = fastest_laps_df["DriverName"].apply(
         lambda x: "⭐" if x == selected_summary["Fastest Lap Driver"] else ""
     )
 
     fastest_display_df = fastest_laps_df[[
-        "Position", "DriverName", "Team", "Fastest Lap", "Gap", "Marker"
+        "Position", "DriverName", "Team", "Fastest Lap", "Gap", "Fastest Lap"
     ]].copy()
-    fastest_display_df.columns = ["Pos", "Driver", "Team", "Fastest Lap", "Gap", "Marker"]
+    fastest_display_df.columns = ["Pos", "Driver", "Team", "Fastest Lap", "Gap", "Fastest Lap"]
 
     st.dataframe(fastest_display_df, use_container_width=True, hide_index=True)
 
@@ -285,7 +285,7 @@ with d4:
 
 drilldown_chart_df = driver_laps_df[["LapNumber", "LapTime"]].copy()
 drilldown_chart_df["Lap Time Label"] = drilldown_chart_df["LapTime"].apply(ms_to_laptime)
-drilldown_chart_df["Marker"] = drilldown_chart_df["LapTime"].apply(
+drilldown_chart_df["Fastest Lap"] = drilldown_chart_df["LapTime"].apply(
     lambda x: "⭐" if x == best_driver_lap else ""
 )
 
@@ -295,7 +295,7 @@ driver_chart = alt.Chart(drilldown_chart_df).mark_line(point=True).encode(
     tooltip=[
         alt.Tooltip("LapNumber:Q", title="Lap"),
         alt.Tooltip("Lap Time Label:N", title="Lap Time"),
-        alt.Tooltip("Marker:N", title="")
+        alt.Tooltip("Fastest Lap:N", title="")
     ]
 ).properties(height=360)
 
@@ -305,10 +305,10 @@ st.markdown('<div class="srcs-section">Driver Lap Table</div>', unsafe_allow_htm
 
 driver_table_df = driver_laps_df[["LapNumber", "LapTime"]].copy()
 driver_table_df["LapTime"] = driver_table_df["LapTime"].apply(ms_to_laptime)
-driver_table_df["Marker"] = driver_laps_df["LapTime"].apply(
+driver_table_df["Fastest Lap"] = driver_laps_df["LapTime"].apply(
     lambda x: "⭐" if x == best_driver_lap else ""
 )
-driver_table_df.columns = ["Lap", "Lap Time", "Marker"]
+driver_table_df.columns = ["Lap", "Lap Time", "Fastest Lap"]
 
 st.dataframe(driver_table_df, use_container_width=True, hide_index=True)
 
