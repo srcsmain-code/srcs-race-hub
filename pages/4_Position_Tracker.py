@@ -70,7 +70,6 @@ laps_df = prepare_laps_dataframe(selected_race_data)
 position_df = build_estimated_position_by_lap(laps_df)
 changes_df = build_estimated_overtake_summary(position_df)
 
-# Header summary
 st.markdown('<div class="srcs-section">Round Movement Summary</div>', unsafe_allow_html=True)
 
 c1, c2, c3, c4 = st.columns(4)
@@ -123,11 +122,9 @@ position_chart_df.columns = ["Driver", "Net Gain/Loss"]
 position_chart_df = position_chart_df.sort_values("Net Gain/Loss", ascending=True).set_index("Driver")
 st.bar_chart(position_chart_df)
 
-# Estimated position by lap
 st.markdown('<div class="srcs-section">Estimated Position by Lap</div>', unsafe_allow_html=True)
 
 if not position_df.empty:
-
     pos_chart_df = position_df.pivot_table(
         index="LapNumber",
         columns="DriverName",
@@ -135,49 +132,42 @@ if not position_df.empty:
         aggfunc="first"
     ).sort_index()
 
-    # ---- Build driver/team lookup ----
     driver_team_df = selected_results_df[["DriverName", "Team"]].drop_duplicates()
+    drivers = sorted(driver_team_df["DriverName"].dropna().unique().tolist())
+    teams = sorted(driver_team_df["Team"].dropna().unique().tolist())
 
-    drivers = sorted(driver_team_df["DriverName"].unique())
-    teams = sorted(driver_team_df["Team"].unique())
+    f1, f2 = st.columns(2)
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        selected_driver = st.selectbox(
+    with f1:
+        selected_driver_filter = st.selectbox(
             "Focus on Driver",
-            ["All Drivers"] + drivers
+            ["All Drivers"] + drivers,
+            key="position_tracker_driver_filter"
         )
 
-    with col2:
-        selected_team = st.selectbox(
+    with f2:
+        selected_team_filter = st.selectbox(
             "Focus on Team",
-            ["All Teams"] + teams
+            ["All Teams"] + teams,
+            key="position_tracker_team_filter"
         )
 
-    filtered_chart = pos_chart_df.copy()
+    filtered_chart_df = pos_chart_df.copy()
 
-    # ---- Driver filter ----
-    if selected_driver != "All Drivers":
-        filtered_chart = filtered_chart[[selected_driver]]
-
-    # ---- Team filter ----
-    elif selected_team != "All Teams":
+    if selected_driver_filter != "All Drivers":
+        if selected_driver_filter in filtered_chart_df.columns:
+            filtered_chart_df = filtered_chart_df[[selected_driver_filter]]
+    elif selected_team_filter != "All Teams":
         team_drivers = driver_team_df[
-            driver_team_df["Team"] == selected_team
+            driver_team_df["Team"] == selected_team_filter
         ]["DriverName"].tolist()
 
-        filtered_chart = filtered_chart[team_drivers]
+        team_drivers = [d for d in team_drivers if d in filtered_chart_df.columns]
 
-    # ---- Plot chart ----
-    st.line_chart(filtered_chart)
+        if team_drivers:
+            filtered_chart_df = filtered_chart_df[team_drivers]
 
-    st.caption(
-        "Estimated lap-end position based on cumulative lap time after each completed lap."
-    )
-
-else:
-    st.info("Not enough lap data available to build a position chart.")
+    st.line_chart(filtered_chart_df)
 
     st.caption(
         "Estimated lap-end position based on cumulative lap time after each completed lap. "
@@ -186,7 +176,6 @@ else:
 else:
     st.info("Not enough lap data available to build an estimated position-by-lap chart.")
 
-# Race evolution heatmap table
 st.markdown('<div class="srcs-section">Race Evolution Heatmap Table</div>', unsafe_allow_html=True)
 
 if not position_df.empty:
@@ -202,7 +191,6 @@ if not position_df.empty:
 else:
     st.info("No estimated lap-by-lap position table available.")
 
-# Estimated position changes summary
 st.markdown('<div class="srcs-section">Estimated Position Change Summary</div>', unsafe_allow_html=True)
 
 if not changes_df.empty:
@@ -221,7 +209,6 @@ if not changes_df.empty:
 else:
     st.info("No estimated lap-to-lap position changes available.")
 
-# Estimated overtakes / losses by lap-end movement
 st.markdown('<div class="srcs-section">Estimated Overtake Activity</div>', unsafe_allow_html=True)
 
 if not changes_df.empty:
@@ -246,7 +233,6 @@ if not changes_df.empty:
 else:
     st.info("No estimated overtake activity available.")
 
-# Team movement summary
 st.markdown('<div class="srcs-section">Team Movement Summary</div>', unsafe_allow_html=True)
 
 team_movement_df = (
@@ -275,7 +261,6 @@ team_movement_display_df.columns = [
 
 st.dataframe(team_movement_display_df, use_container_width=True, hide_index=True)
 
-# Position gain bands
 st.markdown('<div class="srcs-section">Position Gain Bands</div>', unsafe_allow_html=True)
 
 def movement_band(x):
