@@ -61,6 +61,7 @@ def calculate_average_pace(laps_df):
     df["Position"] = df.index + 1
     return df
 
+
 def calculate_consistency(laps_df):
     if laps_df.empty:
         return pd.DataFrame()
@@ -70,9 +71,69 @@ def calculate_consistency(laps_df):
     count_df = laps_df.groupby("DriverName")["LapTime"].count().reset_index(name="LapCount")
 
     df = std_df.merge(mean_df, on="DriverName").merge(count_df, on="DriverName")
-
     df["StdDev"] = df["StdDev"].fillna(0)
     df = df.sort_values("StdDev", ascending=True).reset_index(drop=True)
     df["Position"] = df.index + 1
 
     return df
+
+
+def build_estimated_position_by_lap(laps_df):
+    """
+    Build an estimated lap-end running order.
+
+    Logic:
+    - sort laps per driver by timestamp
+    - assign LapNumber
+    - compute cumulative elapsed race time after each completed lap
+    - for each lap number, rank drivers by:
+        1) laps completed (all rows in that slice have completed that lap)
+        2) cumulative elapsed time after completing that lap
+    This produces an estimated position at the end of each lap.
+    """
+    if laps_df.empty:
+        return pd.DataFrame()
+
+    work_df = laps_df.copy()
+
+    work_df = work_df.sort_values(["DriverName", "LapNumber"]).reset_index(drop=True)
+    work_df["CumulativeTimeMs"] = work_df.groupby("DriverName")["LapTime"].cumsum()
+
+    ranked_frames = []
+
+    for lap_num, lap_slice in work_df.groupby("LapNumber"):
+        lap_slice = lap_slice.copy()
+        lap_slice = lap_slice.sort_values(
+            ["CumulativeTimeMs", "DriverName"],
+            ascending=[True, True]
+        ).reset_index(drop=True)
+
+        lap_slice["EstimatedPosition"] = lap_slice.index + 1
+        ranked_frames.append(lap_slice)
+
+    if not ranked_frames:
+        return pd.DataFrame()
+
+    result_df = pd.concat(ranked_frames, ignore_index=True)
+    return result_df
+
+
+def build_estimated_overtake_summary(position_df):
+    """
+    Estimate position changes between completed laps.
+    This is not a true on-track overtake log, but a lap-end position change summary.
+    """
+    if position_df.empty:
+        return pd.DataFrame()
+
+    work_df = position_df[["DriverName", "LapNumber", "EstimatedPosition"]].copy()
+    work_df = work_df.sort_values(["DriverName", "LapNumber"]).reset_index(drop=True)
+
+    work_df["PrevPosition"] = work_df.groupby("DriverName")["EstimatedPosition"].shift(1)
+    work_df["PositionDelta"] = work_df["PrevPosition"] - work_df["EstimatedPosition"]
+
+    changes_df = work_df.dropna(subset=["PrevPosition"]).copy()
+    changes_df["PrevPosition"] = changes_df["PrevPosition"].astype(int)
+    changes_df["PositionDelta"] = changes_df["PositionDelta"].astype(int)
+
+    return changes_df
