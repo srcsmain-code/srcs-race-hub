@@ -4,6 +4,11 @@ from pathlib import Path
 
 from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
+from engine.race_metrics import (
+    prepare_laps_dataframe,
+    build_estimated_position_by_lap,
+    build_estimated_overtake_summary,
+)
 from utils.style import apply_srcs_style
 
 st.set_page_config(page_title="Position Tracker", page_icon="📍", layout="wide")
@@ -12,7 +17,7 @@ apply_srcs_style()
 st.markdown("""
 <div class="srcs-hero">
     <div class="srcs-hero-title">POSITION TRACKER</div>
-    <div class="srcs-hero-subtitle">Grid vs finish, net movement, and racecraft summary</div>
+    <div class="srcs-hero-subtitle">Estimated lap-end running order, net movement, and race evolution</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -35,6 +40,7 @@ selected_round = st.selectbox("Select Round", round_options, index=len(round_opt
 selected_index = round_options.index(selected_round)
 selected_results_df = all_results[selected_index].copy()
 selected_summary = round_summaries[selected_index]
+selected_race_data = raw_race_data[selected_index]
 
 if TEAM_MAP_FILE.exists():
     selected_results_df = apply_team_mapping(selected_results_df, TEAM_MAP_FILE)
@@ -42,11 +48,9 @@ else:
     selected_results_df["Team"] = "Unknown"
 
 selected_results_df = selected_results_df.sort_values("Position").reset_index(drop=True)
-
 selected_results_df["Positions Gained"] = (
     selected_results_df["GridPosition"] - selected_results_df["Position"]
 )
-
 selected_results_df["Movement"] = selected_results_df["Positions Gained"].apply(
     lambda x: "Gained" if x > 0 else ("Lost" if x < 0 else "No Change")
 )
@@ -61,6 +65,10 @@ biggest_loser_row = selected_results_df.sort_values(
 
 winner_row = selected_results_df.sort_values("Position").iloc[0]
 pole_row = selected_results_df.sort_values("GridPosition").iloc[0]
+
+laps_df = prepare_laps_dataframe(selected_race_data)
+position_df = build_estimated_position_by_lap(laps_df)
+changes_df = build_estimated_overtake_summary(position_df)
 
 # Header summary
 st.markdown('<div class="srcs-section">Round Movement Summary</div>', unsafe_allow_html=True)
@@ -80,25 +88,6 @@ st.caption(
     f"{selected_summary['Track']} • {selected_summary['Session Type']}"
 )
 
-# Racecraft spotlight
-st.markdown('<div class="srcs-section">Racecraft Spotlight</div>', unsafe_allow_html=True)
-
-spot1, spot2, spot3 = st.columns(3)
-with spot1:
-    st.metric(
-        "Positions Gained",
-        int(biggest_mover_row["Positions Gained"])
-    )
-with spot2:
-    st.metric(
-        "Positions Lost",
-        abs(int(biggest_loser_row["Positions Gained"]))
-    )
-with spot3:
-    avg_movement = round(selected_results_df["Positions Gained"].mean(), 2)
-    st.metric("Average Net Movement", avg_movement)
-
-# Main tracker table
 st.markdown('<div class="srcs-section">Grid vs Finish Tracker</div>', unsafe_allow_html=True)
 
 tracker_df = selected_results_df[[
@@ -123,7 +112,6 @@ tracker_df.columns = [
 
 st.dataframe(tracker_df, use_container_width=True, hide_index=True)
 
-# Net movement chart
 st.markdown('<div class="srcs-section">Net Position Change Chart</div>', unsafe_allow_html=True)
 
 position_chart_df = selected_results_df[[
@@ -133,39 +121,87 @@ position_chart_df = selected_results_df[[
 
 position_chart_df.columns = ["Driver", "Net Gain/Loss"]
 position_chart_df = position_chart_df.sort_values("Net Gain/Loss", ascending=True).set_index("Driver")
-
 st.bar_chart(position_chart_df)
 
-# Movement distribution
-st.markdown('<div class="srcs-section">Movement Distribution</div>', unsafe_allow_html=True)
+# Estimated position by lap
+st.markdown('<div class="srcs-section">Estimated Position by Lap</div>', unsafe_allow_html=True)
 
-movement_dist_df = (
-    tracker_df.groupby("Movement", as_index=False)
-    .size()
-    .rename(columns={"size": "Count"})
-    .sort_values(["Count", "Movement"], ascending=[False, True])
-)
+if not position_df.empty:
+    pos_chart_df = position_df.pivot_table(
+        index="LapNumber",
+        columns="DriverName",
+        values="EstimatedPosition",
+        aggfunc="first"
+    ).sort_index()
 
-if not movement_dist_df.empty:
-    movement_dist_chart_df = movement_dist_df.set_index("Movement")
-    st.bar_chart(movement_dist_chart_df)
+    st.line_chart(pos_chart_df)
 
-# Biggest movers table
-st.markdown('<div class="srcs-section">Biggest Movers</div>', unsafe_allow_html=True)
+    st.caption(
+        "Estimated lap-end position based on cumulative lap time after each completed lap. "
+        "This is a reconstruction, not official running-order timing."
+    )
+else:
+    st.info("Not enough lap data available to build an estimated position-by-lap chart.")
 
-movers_df = selected_results_df.sort_values(
-    ["Positions Gained", "Position"], ascending=[False, True]
-)[[
-    "DriverName",
-    "Team",
-    "GridPosition",
-    "Position",
-    "Positions Gained",
-    "Points"
-]].copy()
+# Race evolution heatmap table
+st.markdown('<div class="srcs-section">Race Evolution Heatmap Table</div>', unsafe_allow_html=True)
 
-movers_df.columns = ["Driver", "Team", "Grid", "Finish", "Net Gain/Loss", "Points"]
-st.dataframe(movers_df, use_container_width=True, hide_index=True)
+if not position_df.empty:
+    heatmap_df = position_df.pivot_table(
+        index="DriverName",
+        columns="LapNumber",
+        values="EstimatedPosition",
+        aggfunc="first"
+    )
+
+    heatmap_df = heatmap_df.sort_index()
+    st.dataframe(heatmap_df, use_container_width=True)
+else:
+    st.info("No estimated lap-by-lap position table available.")
+
+# Estimated position changes summary
+st.markdown('<div class="srcs-section">Estimated Position Change Summary</div>', unsafe_allow_html=True)
+
+if not changes_df.empty:
+    gain_summary_df = (
+        changes_df.groupby("DriverName", as_index=False)["PositionDelta"]
+        .sum()
+        .sort_values(["PositionDelta", "DriverName"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
+
+    gain_summary_df["Position"] = gain_summary_df.index + 1
+    gain_summary_df = gain_summary_df[["Position", "DriverName", "PositionDelta"]]
+    gain_summary_df.columns = ["Pos", "Driver", "Net Estimated Change"]
+
+    st.dataframe(gain_summary_df, use_container_width=True, hide_index=True)
+else:
+    st.info("No estimated lap-to-lap position changes available.")
+
+# Estimated overtakes / losses by lap-end movement
+st.markdown('<div class="srcs-section">Estimated Overtake Activity</div>', unsafe_allow_html=True)
+
+if not changes_df.empty:
+    overtakes_df = changes_df[changes_df["PositionDelta"] > 0].copy()
+    overtakes_df["Estimated Moves"] = overtakes_df["PositionDelta"]
+
+    if not overtakes_df.empty:
+        overtakes_summary_df = (
+            overtakes_df.groupby("DriverName", as_index=False)["Estimated Moves"]
+            .sum()
+            .sort_values(["Estimated Moves", "DriverName"], ascending=[False, True])
+            .reset_index(drop=True)
+        )
+
+        overtakes_summary_df.columns = ["Driver", "Estimated Moves Gained"]
+        st.dataframe(overtakes_summary_df, use_container_width=True, hide_index=True)
+
+        overtakes_chart_df = overtakes_summary_df.set_index("Driver")
+        st.bar_chart(overtakes_chart_df)
+    else:
+        st.info("No positive lap-end position changes detected.")
+else:
+    st.info("No estimated overtake activity available.")
 
 # Team movement summary
 st.markdown('<div class="srcs-section">Team Movement Summary</div>', unsafe_allow_html=True)
@@ -196,22 +232,7 @@ team_movement_display_df.columns = [
 
 st.dataframe(team_movement_display_df, use_container_width=True, hide_index=True)
 
-# Grid / finish comparison
-st.markdown('<div class="srcs-section">Grid and Finish Comparison</div>', unsafe_allow_html=True)
-
-comparison_df = selected_results_df[[
-    "DriverName",
-    "GridPosition",
-    "Position",
-    "Positions Gained"
-]].copy()
-
-comparison_df.columns = ["Driver", "Grid", "Finish", "Net Gain/Loss"]
-comparison_df = comparison_df.sort_values(["Finish", "Driver"], ascending=[True, True])
-
-st.dataframe(comparison_df, use_container_width=True, hide_index=True)
-
-# Position gain banding
+# Position gain bands
 st.markdown('<div class="srcs-section">Position Gain Bands</div>', unsafe_allow_html=True)
 
 def movement_band(x):
@@ -235,14 +256,11 @@ band_summary_df = (
     .sort_values(["Count", "Movement Band"], ascending=[False, True])
 )
 
-if not band_summary_df.empty:
-    st.dataframe(band_summary_df, use_container_width=True, hide_index=True)
+st.dataframe(band_summary_df, use_container_width=True, hide_index=True)
 
-# Tracker notes
 st.markdown('<div class="srcs-section">Tracker Notes</div>', unsafe_allow_html=True)
 
 st.write(
-    "This page tracks grid-to-finish movement and racecraft impact for the selected round. "
-    "A true lap-by-lap position trace is not yet available from the current export format, "
-    "so this version focuses on official classification movement, biggest movers, and team-level racecraft trends."
+    "This page now includes an estimated lap-end running order built from cumulative completed lap times. "
+    "It is suitable for race-story analysis and movement trends, but it is not an official timing feed."
 )
