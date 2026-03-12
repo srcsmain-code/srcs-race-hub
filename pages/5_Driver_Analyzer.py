@@ -70,7 +70,7 @@ best_finish = int(driver_df["Position"].min())
 avg_finish = round(driver_df["Position"].mean(),2)
 
 driver_position = driver_standings.loc[
-    driver_standings["DriverName"] == selected_driver,
+    driver_standings["Driver"] == selected_driver,
     "Pos"
 ].iloc[0]
 
