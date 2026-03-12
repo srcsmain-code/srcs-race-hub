@@ -29,6 +29,7 @@ pages = {
     "PERFORMANCE": [
         st.Page("pages/5_Driver_Analyzer.py", title="Driver Analyzer", icon="👤"),
         st.Page("pages/10_Driver_Pace_Ranking.py", title="Driver Pace Ranking", icon="⚡"),
+        st.Page("pages/11_Team_Pace_Ranking.py", title="Team Pace Ranking", icon="🏁"),
         st.Page("pages/6_Team_Battle.py", title="Team Battle", icon="⚔️"),
         st.Page("pages/2_Race_Analysis.py", title="Race Analysis", icon="⏱️"),
     ],
