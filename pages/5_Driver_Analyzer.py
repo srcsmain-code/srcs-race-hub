@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import plotly.graph_objects as go
 from pathlib import Path
 
 from engine.parser import load_all_race_results
@@ -213,10 +212,10 @@ with profile_left:
     st.dataframe(profile_df, use_container_width=True, hide_index=True)
 
 # ---------------------------------------------------
-# RADAR CHART
+# DRIVER PROFILE SCORES
 # ---------------------------------------------------
 with profile_right:
-    st.markdown("#### Performance Radar")
+    st.markdown("#### Performance Profile")
 
     # Build season-wide driver metrics for normalization
     all_driver_metrics = []
@@ -231,9 +230,9 @@ with profile_right:
 
         avg_lap_driver = d_laps["LapTime"].mean() if not d_laps.empty else None
         std_driver = d_laps["LapTime"].std() if not d_laps.empty else None
-        best_lap_driver = d_laps["LapTime"].min() if not d_laps.empty else None
 
         incident_rate_driver = (len(d_incidents) / max(len(d_results), 1)) if not d_results.empty else 0
+        avg_grid_driver = d_results["GridPosition"].mean() if not d_results.empty else None
 
         all_driver_metrics.append({
             "DriverName": driver_name,
@@ -241,8 +240,8 @@ with profile_right:
             "PosGainAvg": pos_gain_driver,
             "AvgLapMs": avg_lap_driver,
             "StdDevMs": 0 if pd.isna(std_driver) else std_driver if std_driver is not None else None,
-            "BestLapMs": best_lap_driver,
             "IncidentRate": incident_rate_driver,
+            "AvgGrid": avg_grid_driver,
         })
 
     metrics_df = pd.DataFrame(all_driver_metrics)
@@ -255,7 +254,6 @@ with profile_right:
         max_v = valid.max()
         if max_v == min_v:
             return 100
-        # lower is better
         return round(100 * (max_v - value) / (max_v - min_v), 1)
 
     def normalize_direct(series, value):
@@ -266,46 +264,44 @@ with profile_right:
         max_v = valid.max()
         if max_v == min_v:
             return 100
-        # higher is better
         return round(100 * (value - min_v) / (max_v - min_v), 1)
 
     selected_metric_row = metrics_df[metrics_df["DriverName"] == selected_driver].iloc[0]
 
-    radar_values = {
-        "Pace": normalize_inverse(metrics_df["AvgLapMs"], selected_metric_row["AvgLapMs"]) if pd.notna(selected_metric_row["AvgLapMs"]) else 0,
-        "Consistency": normalize_inverse(metrics_df["StdDevMs"], selected_metric_row["StdDevMs"]) if pd.notna(selected_metric_row["StdDevMs"]) else 0,
-        "Racecraft": normalize_direct(metrics_df["PosGainAvg"], selected_metric_row["PosGainAvg"]),
-        "Cleanliness": normalize_inverse(metrics_df["IncidentRate"], selected_metric_row["IncidentRate"]),
-        "Qualifying": normalize_inverse(season_results_df.groupby("DriverName")["GridPosition"].mean(), driver_df["GridPosition"].mean()),
-        "Results": normalize_inverse(metrics_df["AvgFinish"], selected_metric_row["AvgFinish"]) if pd.notna(selected_metric_row["AvgFinish"]) else 0,
-    }
+    profile_scores_df = pd.DataFrame([
+        {
+            "Metric": "Pace",
+            "Score": normalize_inverse(metrics_df["AvgLapMs"], selected_metric_row["AvgLapMs"]) if pd.notna(selected_metric_row["AvgLapMs"]) else 0
+        },
+        {
+            "Metric": "Consistency",
+            "Score": normalize_inverse(metrics_df["StdDevMs"], selected_metric_row["StdDevMs"]) if pd.notna(selected_metric_row["StdDevMs"]) else 0
+        },
+        {
+            "Metric": "Racecraft",
+            "Score": normalize_direct(metrics_df["PosGainAvg"], selected_metric_row["PosGainAvg"])
+        },
+        {
+            "Metric": "Cleanliness",
+            "Score": normalize_inverse(metrics_df["IncidentRate"], selected_metric_row["IncidentRate"])
+        },
+        {
+            "Metric": "Qualifying",
+            "Score": normalize_inverse(metrics_df["AvgGrid"], selected_metric_row["AvgGrid"]) if pd.notna(selected_metric_row["AvgGrid"]) else 0
+        },
+        {
+            "Metric": "Results",
+            "Score": normalize_inverse(metrics_df["AvgFinish"], selected_metric_row["AvgFinish"]) if pd.notna(selected_metric_row["AvgFinish"]) else 0
+        },
+    ])
 
-    categories = list(radar_values.keys())
-    values = list(radar_values.values())
-    categories_closed = categories + [categories[0]]
-    values_closed = values + [values[0]]
+    profile_chart = alt.Chart(profile_scores_df).mark_bar().encode(
+        x=alt.X("Score:Q", scale=alt.Scale(domain=[0, 100]), title="Score"),
+        y=alt.Y("Metric:N", sort="-x", title=""),
+        tooltip=["Metric", "Score"]
+    ).properties(height=320)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatterpolar(
-        r=values_closed,
-        theta=categories_closed,
-        fill="toself",
-        name=selected_driver
-    ))
-
-    fig.update_layout(
-        polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[0, 100]
-            )
-        ),
-        showlegend=False,
-        margin=dict(l=30, r=30, t=30, b=30),
-        height=420
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
+    st.altair_chart(profile_chart, use_container_width=True)
 
 # ---------------------------------------------------
 # RACE RESULTS HISTORY
