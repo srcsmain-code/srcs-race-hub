@@ -47,6 +47,45 @@ def apply_srcs_style():
         padding: 12px 14px;
         border-radius: 14px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* Metric label */
+    div[data-testid="stMetric"] label,
+    div[data-testid="stMetricLabel"] {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Metric value */
+    div[data-testid="stMetricValue"] {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        word-break: break-word !important;
+        line-height: 1.05 !important;
+    }
+
+    div[data-testid="stMetricValue"] > div {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        word-break: break-word !important;
+        font-size: 2.1rem !important;
+        line-height: 1.05 !important;
+    }
+
+    /* Smaller metric number on narrower screens */
+    @media (max-width: 1200px) {
+        div[data-testid="stMetricValue"] > div {
+            font-size: 1.8rem !important;
+        }
     }
 
     /* Dataframes and tables */
@@ -59,7 +98,8 @@ def apply_srcs_style():
 
     /* Charts */
     div[data-testid="stVegaLiteChart"],
-    div[data-testid="stPlotlyChart"] {
+    div[data-testid="stPlotlyChart"],
+    div[data-testid="stAltairChart"] {
         border: 1px solid rgba(192,192,192,0.14);
         border-radius: 14px;
         padding: 0.4rem;
@@ -83,7 +123,7 @@ def apply_srcs_style():
         border: 1px solid rgba(192,192,192,0.22);
     }
 
-    /* Info/success/warning boxes softer */
+    /* Alerts */
     div[data-testid="stAlert"] {
         border-radius: 12px;
     }
