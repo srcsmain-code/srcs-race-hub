@@ -7,18 +7,20 @@ from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
 from engine.race_metrics import (
     prepare_laps_dataframe,
-    build_estimated_position_by_lap,
-    build_estimated_overtake_summary,
+    calculate_fastest_laps,
+    calculate_average_pace,
+    calculate_consistency,
 )
+from utils.formatting import ms_to_laptime
 from utils.style import apply_srcs_style
 
-st.set_page_config(page_title="Position Tracker", page_icon="📍", layout="wide")
+st.set_page_config(page_title="Lap Time Lab", page_icon="⏱️", layout="wide")
 apply_srcs_style()
 
 st.markdown("""
 <div class="srcs-hero">
-    <div class="srcs-hero-title">POSITION TRACKER</div>
-    <div class="srcs-hero-subtitle">Estimated lap-end running order, net movement, and race evolution</div>
+    <div class="srcs-hero-title">LAP TIME LAB</div>
+    <div class="srcs-hero-subtitle">Pace analysis, fastest laps, average pace, and driver lap traces</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -49,191 +51,106 @@ else:
     selected_results_df["Team"] = "Unknown"
 
 selected_results_df = selected_results_df.sort_values("Position").reset_index(drop=True)
-selected_results_df["Positions Gained"] = (
-    selected_results_df["GridPosition"] - selected_results_df["Position"]
-)
-selected_results_df["Movement"] = selected_results_df["Positions Gained"].apply(
-    lambda x: "Gained" if x > 0 else ("Lost" if x < 0 else "No Change")
-)
-
-biggest_mover_row = selected_results_df.sort_values(
-    ["Positions Gained", "Position"], ascending=[False, True]
-).iloc[0]
-
-biggest_loser_row = selected_results_df.sort_values(
-    ["Positions Gained", "Position"], ascending=[True, True]
-).iloc[0]
-
-winner_row = selected_results_df.sort_values("Position").iloc[0]
-pole_row = selected_results_df.sort_values("GridPosition").iloc[0]
 
 laps_df = prepare_laps_dataframe(selected_race_data)
-position_df = build_estimated_position_by_lap(laps_df)
-changes_df = build_estimated_overtake_summary(position_df)
 
-st.markdown('<div class="srcs-section">Round Movement Summary</div>', unsafe_allow_html=True)
+if laps_df.empty:
+    st.warning("No valid lap data available for this round.")
+    st.stop()
+
+driver_team_df = selected_results_df[["DriverName", "Team"]].drop_duplicates()
+laps_df = laps_df.merge(driver_team_df, on="DriverName", how="left")
+laps_df["Team"] = laps_df["Team"].fillna("Unknown")
+
+# SRCS team accent registry
+team_colors = {
+    "McLaren": "#FF8700",
+    "Ferrari": "#C00000",
+    "Mercedes": "#00A19B",
+    "Red Bull": "#0B1E3C",
+    "Williams": "#005AFF",
+    "Aston Martin": "#006F62",
+    "Alpine": "#0090FF",
+    "Haas": "#8B0000",
+    "Audi": "#BB0A30",
+    "Racing Bulls": "#1A1F3B",
+    "Unknown": "#C0C0C0",
+}
+
+teams_present = laps_df["Team"].dropna().unique().tolist()
+color_domain = [t for t in team_colors.keys() if t in teams_present]
+color_range = [team_colors[t] for t in color_domain]
+for team in teams_present:
+    if team not in color_domain:
+        color_domain.append(team)
+        color_range.append("#C0C0C0")
+
+color_scale = alt.Scale(domain=color_domain, range=color_range)
+
+# Round overview
+st.markdown('<div class="srcs-section">Round Overview</div>', unsafe_allow_html=True)
 
 c1, c2, c3, c4 = st.columns(4)
 with c1:
-    st.metric("Winner", winner_row["DriverName"])
+    st.metric("Grand Prix", selected_summary["Grand Prix"])
 with c2:
-    st.metric("Pole", pole_row["DriverName"])
+    st.metric("Track", selected_summary["Track"])
 with c3:
-    st.metric("Biggest Mover", biggest_mover_row["DriverName"])
+    st.metric("Fastest Lap", selected_summary["Fastest Lap Driver"])
 with c4:
-    st.metric("Biggest Loser", biggest_loser_row["DriverName"])
+    st.metric("Fastest Time", selected_summary["Fastest Lap Time"])
 
-st.caption(
-    f"{selected_summary['Round']} • {selected_summary['Grand Prix']} • "
-    f"{selected_summary['Track']} • {selected_summary['Session Type']}"
-)
+# Filters
+st.markdown('<div class="srcs-section">Lap Trace Filters</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="srcs-section">Grid vs Finish Tracker</div>', unsafe_allow_html=True)
+drivers = sorted(laps_df["DriverName"].dropna().unique().tolist())
+teams = sorted(laps_df["Team"].dropna().unique().tolist())
 
-tracker_df = selected_results_df[[
-    "DriverName",
-    "Team",
-    "GridPosition",
-    "Position",
-    "Positions Gained",
-    "Movement",
-    "Points"
-]].copy()
-
-tracker_df.columns = [
-    "Driver",
-    "Team",
-    "Grid",
-    "Finish",
-    "Net Gain/Loss",
-    "Movement",
-    "Points"
-]
-
-st.dataframe(tracker_df, use_container_width=True, hide_index=True)
-
-st.markdown('<div class="srcs-section">Net Position Change Chart</div>', unsafe_allow_html=True)
-
-position_chart_df = selected_results_df[[
-    "DriverName",
-    "Positions Gained"
-]].copy()
-
-position_chart_df.columns = ["Driver", "Net Gain/Loss"]
-position_chart_df = position_chart_df.sort_values("Net Gain/Loss", ascending=True).set_index("Driver")
-st.bar_chart(position_chart_df)
-
-st.markdown('<div class="srcs-section">Estimated Position by Lap</div>', unsafe_allow_html=True)
-
-if not position_df.empty:
-    pos_chart_df = position_df.pivot_table(
-        index="LapNumber",
-        columns="DriverName",
-        values="EstimatedPosition",
-        aggfunc="first"
-    ).sort_index()
-
-    driver_team_df = selected_results_df[["DriverName", "Team"]].drop_duplicates()
-    drivers = sorted(driver_team_df["DriverName"].dropna().unique().tolist())
-    teams = sorted(driver_team_df["Team"].dropna().unique().tolist())
-
-    f1, f2 = st.columns(2)
-
-    with f1:
-        selected_driver_filter = st.selectbox(
-            "Focus on Driver",
-            ["All Drivers"] + drivers,
-            key="position_tracker_driver_filter"
-        )
-
-    with f2:
-        selected_team_filter = st.selectbox(
-            "Focus on Team",
-            ["All Teams"] + teams,
-            key="position_tracker_team_filter"
-        )
-
-    filtered_chart_df = pos_chart_df.copy()
-
-    if selected_driver_filter != "All Drivers":
-        if selected_driver_filter in filtered_chart_df.columns:
-            filtered_chart_df = filtered_chart_df[[selected_driver_filter]]
-    elif selected_team_filter != "All Teams":
-        team_drivers = driver_team_df[
-            driver_team_df["Team"] == selected_team_filter
-        ]["DriverName"].tolist()
-
-        team_drivers = [d for d in team_drivers if d in filtered_chart_df.columns]
-
-        if team_drivers:
-            filtered_chart_df = filtered_chart_df[team_drivers]
-
-    # Build long dataframe for Altair
-    chart_df = filtered_chart_df.reset_index().melt(
-        "LapNumber",
-        var_name="Driver",
-        value_name="Position"
+f1, f2 = st.columns(2)
+with f1:
+    selected_driver_filter = st.selectbox(
+        "Focus on Driver",
+        ["All Drivers"] + drivers,
+        key="lap_lab_driver_filter"
+    )
+with f2:
+    selected_team_filter = st.selectbox(
+        "Focus on Team",
+        ["All Teams"] + teams,
+        key="lap_lab_team_filter"
     )
 
-    chart_df = chart_df.merge(
-        driver_team_df,
-        left_on="Driver",
-        right_on="DriverName",
-        how="left"
+filtered_laps_df = laps_df.copy()
+
+if selected_driver_filter != "All Drivers":
+    filtered_laps_df = filtered_laps_df[filtered_laps_df["DriverName"] == selected_driver_filter].copy()
+elif selected_team_filter != "All Teams":
+    filtered_laps_df = filtered_laps_df[filtered_laps_df["Team"] == selected_team_filter].copy()
+
+# Lap time trend
+st.markdown('<div class="srcs-section">Lap Time Trend by Driver</div>', unsafe_allow_html=True)
+
+if not filtered_laps_df.empty:
+    chart_df = filtered_laps_df[["LapNumber", "DriverName", "LapTime", "Team"]].copy()
+    chart_df["Lap Time Label"] = chart_df["LapTime"].apply(ms_to_laptime)
+
+    last_points_df = (
+        chart_df.sort_values(["DriverName", "LapNumber"])
+        .groupby("DriverName", as_index=False)
+        .tail(1)
+        .copy()
     )
-
-    chart_df = chart_df.drop(columns=["DriverName"], errors="ignore")
-    chart_df = chart_df.dropna(subset=["Position"]).copy()
-
-    # SRCS team accent registry
-    team_colors = {
-        "McLaren": "#FF8700",
-        "Ferrari": "#C00000",
-        "Mercedes": "#00A19B",
-        "Red Bull": "#0B1E3C",
-        "Williams": "#005AFF",
-        "Aston Martin": "#006F62",
-        "Alpine": "#0090FF",
-        "Haas": "#8B0000",
-        "Audi": "#BB0A30",
-        "Racing Bulls": "#1A1F3B",
-        "Unknown": "#C0C0C0",
-    }
-
-    # End-of-line labels
-    last_points_df = chart_df.sort_values(["Driver", "LapNumber"]).groupby("Driver", as_index=False).tail(1).copy()
-
-    # Dynamic color domain/range based on filtered teams actually present
-    teams_present = chart_df["Team"].fillna("Unknown").unique().tolist()
-    domain = [t for t in team_colors.keys() if t in teams_present]
-    range_colors = [team_colors[t] for t in domain]
-
-    # fallback if something unexpected appears
-    for team in teams_present:
-        if team not in domain:
-            domain.append(team)
-            range_colors.append("#C0C0C0")
-
-    color_scale = alt.Scale(domain=domain, range=range_colors)
 
     line_chart = alt.Chart(chart_df).mark_line(point=True).encode(
         x=alt.X("LapNumber:Q", title="Lap"),
-        y=alt.Y(
-            "Position:Q",
-            title="Position",
-            scale=alt.Scale(reverse=True, zero=False)
-        ),
-        color=alt.Color(
-            "Team:N",
-            scale=color_scale,
-            legend=alt.Legend(title="Team")
-        ),
-        detail="Driver:N",
+        y=alt.Y("LapTime:Q", title="Lap Time (ms)"),
+        color=alt.Color("Team:N", scale=color_scale, legend=alt.Legend(title="Team")),
+        detail="DriverName:N",
         tooltip=[
-            alt.Tooltip("Driver:N"),
-            alt.Tooltip("Team:N"),
+            alt.Tooltip("DriverName:N", title="Driver"),
+            alt.Tooltip("Team:N", title="Team"),
             alt.Tooltip("LapNumber:Q", title="Lap"),
-            alt.Tooltip("Position:Q", title="Estimated Position")
+            alt.Tooltip("Lap Time Label:N", title="Lap Time")
         ]
     )
 
@@ -245,141 +162,154 @@ if not position_df.empty:
         fontWeight="bold"
     ).encode(
         x=alt.X("LapNumber:Q"),
-        y=alt.Y("Position:Q", scale=alt.Scale(reverse=True, zero=False)),
-        text="Driver:N",
-        color=alt.Color("Team:N", scale=color_scale, legend=None),
-        tooltip=[
-            alt.Tooltip("Driver:N"),
-            alt.Tooltip("Team:N"),
-            alt.Tooltip("LapNumber:Q", title="Lap"),
-            alt.Tooltip("Position:Q", title="Estimated Position")
-        ]
+        y=alt.Y("LapTime:Q"),
+        text="DriverName:N",
+        color=alt.Color("Team:N", scale=color_scale, legend=None)
     )
 
-    chart = (line_chart + label_chart).properties(height=520)
-
-    st.altair_chart(chart, use_container_width=True)
-
-    st.caption(
-        "Estimated lap-end position based on cumulative lap time after each completed lap. "
-        "This is a reconstruction, not official running-order timing."
-    )
+    st.altair_chart((line_chart + label_chart).properties(height=520), use_container_width=True)
 else:
-    st.info("Not enough lap data available to build an estimated position-by-lap chart.")
+    st.info("No lap data available for the selected filter.")
 
-st.markdown('<div class="srcs-section">Race Evolution Heatmap Table</div>', unsafe_allow_html=True)
+# Fastest laps
+st.markdown('<div class="srcs-section">Fastest Lap Ranking</div>', unsafe_allow_html=True)
 
-if not position_df.empty:
-    heatmap_df = position_df.pivot_table(
-        index="DriverName",
-        columns="LapNumber",
-        values="EstimatedPosition",
-        aggfunc="first"
+fastest_laps_df = calculate_fastest_laps(laps_df)
+
+if not fastest_laps_df.empty:
+    fastest_laps_df = fastest_laps_df.merge(driver_team_df, on="DriverName", how="left")
+    fastest_laps_df["Team"] = fastest_laps_df["Team"].fillna("Unknown")
+    fastest_laps_df["GapMs"] = fastest_laps_df["LapTime"] - fastest_laps_df["LapTime"].min()
+    fastest_laps_df["Fastest Lap"] = fastest_laps_df["LapTime"].apply(ms_to_laptime)
+    fastest_laps_df["Gap"] = fastest_laps_df["GapMs"].apply(
+        lambda x: "0:00.000" if int(round(x)) == 0 else ms_to_laptime(int(round(x)))
+    )
+    fastest_laps_df["Marker"] = fastest_laps_df["DriverName"].apply(
+        lambda x: "⭐" if x == selected_summary["Fastest Lap Driver"] else ""
     )
 
-    heatmap_df = heatmap_df.sort_index()
-    st.dataframe(heatmap_df, use_container_width=True)
-else:
-    st.info("No estimated lap-by-lap position table available.")
+    fastest_display_df = fastest_laps_df[[
+        "Position", "DriverName", "Team", "Fastest Lap", "Gap", "Marker"
+    ]].copy()
+    fastest_display_df.columns = ["Pos", "Driver", "Team", "Fastest Lap", "Gap", "Marker"]
 
-st.markdown('<div class="srcs-section">Estimated Position Change Summary</div>', unsafe_allow_html=True)
+    st.dataframe(fastest_display_df, use_container_width=True, hide_index=True)
 
-if not changes_df.empty:
-    gain_summary_df = (
-        changes_df.groupby("DriverName", as_index=False)["PositionDelta"]
-        .sum()
-        .sort_values(["PositionDelta", "DriverName"], ascending=[False, True])
-        .reset_index(drop=True)
+# Average pace
+st.markdown('<div class="srcs-section">Average Pace Ranking</div>', unsafe_allow_html=True)
+
+average_pace_df = calculate_average_pace(laps_df)
+
+if not average_pace_df.empty:
+    average_pace_df = average_pace_df.merge(driver_team_df, on="DriverName", how="left")
+    average_pace_df["Team"] = average_pace_df["Team"].fillna("Unknown")
+    average_pace_df["Average Lap"] = average_pace_df["LapTime"].round().astype(int).apply(ms_to_laptime)
+
+    average_display_df = average_pace_df[[
+        "Position", "DriverName", "Team", "Average Lap"
+    ]].copy()
+    average_display_df.columns = ["Pos", "Driver", "Team", "Average Lap"]
+
+    st.dataframe(average_display_df, use_container_width=True, hide_index=True)
+
+# Pace delta to winner
+st.markdown('<div class="srcs-section">Average Pace Delta to Race Winner</div>', unsafe_allow_html=True)
+
+winner_name = None
+if not selected_results_df.empty:
+    winner_row = selected_results_df.sort_values("Position").iloc[0]
+    winner_name = winner_row["DriverName"]
+
+if not average_pace_df.empty and winner_name in average_pace_df["DriverName"].values:
+    winner_avg = average_pace_df.loc[
+        average_pace_df["DriverName"] == winner_name, "LapTime"
+    ].iloc[0]
+
+    delta_df = average_pace_df.copy()
+    delta_df["DeltaMs"] = (delta_df["LapTime"] - winner_avg).round().astype(int)
+    delta_df["Delta to Winner"] = delta_df["DeltaMs"].apply(
+        lambda x: "0:00.000" if int(x) == 0 else ms_to_laptime(int(x))
     )
 
-    gain_summary_df["Position"] = gain_summary_df.index + 1
-    gain_summary_df = gain_summary_df[["Position", "DriverName", "PositionDelta"]]
-    gain_summary_df.columns = ["Pos", "Driver", "Net Estimated Change"]
+    delta_display_df = delta_df[[
+        "Position", "DriverName", "Team", "Average Lap", "Delta to Winner"
+    ]].copy()
+    delta_display_df.columns = ["Pos", "Driver", "Team", "Average Lap", "Delta to Winner"]
 
-    st.dataframe(gain_summary_df, use_container_width=True, hide_index=True)
-else:
-    st.info("No estimated lap-to-lap position changes available.")
+    st.dataframe(delta_display_df, use_container_width=True, hide_index=True)
 
-st.markdown('<div class="srcs-section">Estimated Overtake Activity</div>', unsafe_allow_html=True)
+# Consistency
+st.markdown('<div class="srcs-section">Consistency Ranking</div>', unsafe_allow_html=True)
 
-if not changes_df.empty:
-    overtakes_df = changes_df[changes_df["PositionDelta"] > 0].copy()
-    overtakes_df["Estimated Moves"] = overtakes_df["PositionDelta"]
+consistency_df = calculate_consistency(laps_df)
 
-    if not overtakes_df.empty:
-        overtakes_summary_df = (
-            overtakes_df.groupby("DriverName", as_index=False)["Estimated Moves"]
-            .sum()
-            .sort_values(["Estimated Moves", "DriverName"], ascending=[False, True])
-            .reset_index(drop=True)
-        )
+if not consistency_df.empty:
+    consistency_df = consistency_df.merge(driver_team_df, on="DriverName", how="left")
+    consistency_df["Team"] = consistency_df["Team"].fillna("Unknown")
+    consistency_df["Consistency"] = consistency_df["StdDev"].round().astype(int).apply(ms_to_laptime)
 
-        overtakes_summary_df.columns = ["Driver", "Estimated Moves Gained"]
-        st.dataframe(overtakes_summary_df, use_container_width=True, hide_index=True)
+    consistency_display_df = consistency_df[[
+        "Position", "DriverName", "Team", "LapCount", "Consistency"
+    ]].copy()
+    consistency_display_df.columns = ["Pos", "Driver", "Team", "Laps Counted", "Consistency"]
 
-        overtakes_chart_df = overtakes_summary_df.set_index("Driver")
-        st.bar_chart(overtakes_chart_df)
-    else:
-        st.info("No positive lap-end position changes detected.")
-else:
-    st.info("No estimated overtake activity available.")
+    st.dataframe(consistency_display_df, use_container_width=True, hide_index=True)
 
-st.markdown('<div class="srcs-section">Team Movement Summary</div>', unsafe_allow_html=True)
+# Driver drill-down
+st.markdown('<div class="srcs-section">Driver Drill-Down</div>', unsafe_allow_html=True)
 
-team_movement_df = (
-    selected_results_df.groupby("Team", as_index=False)
-    .agg(
-        AvgGrid=("GridPosition", "mean"),
-        AvgFinish=("Position", "mean"),
-        TotalPoints=("Points", "sum"),
-        TotalNetMovement=("Positions Gained", "sum")
-    )
-    .sort_values(["TotalNetMovement", "TotalPoints", "Team"], ascending=[False, False, True])
-    .reset_index(drop=True)
+selected_driver = st.selectbox("Select Driver", drivers, key="lap_lab_drilldown_driver")
+
+driver_laps_df = laps_df[laps_df["DriverName"] == selected_driver].copy()
+driver_laps_df = driver_laps_df.sort_values("LapNumber")
+
+if driver_laps_df.empty:
+    st.warning("No lap data available for the selected driver.")
+    st.stop()
+
+best_driver_lap = driver_laps_df["LapTime"].min()
+avg_driver_lap = int(round(driver_laps_df["LapTime"].mean()))
+driver_std = driver_laps_df["LapTime"].std()
+driver_std_ms = 0 if pd.isna(driver_std) else int(round(driver_std))
+driver_team = driver_laps_df["Team"].iloc[0] if "Team" in driver_laps_df.columns else "Unknown"
+
+d1, d2, d3, d4 = st.columns(4)
+with d1:
+    st.metric("Driver", selected_driver)
+with d2:
+    st.metric("Team", driver_team)
+with d3:
+    st.metric("Best Lap", ms_to_laptime(best_driver_lap))
+with d4:
+    st.metric("Consistency", ms_to_laptime(driver_std_ms))
+
+drilldown_chart_df = driver_laps_df[["LapNumber", "LapTime"]].copy()
+drilldown_chart_df["Lap Time Label"] = drilldown_chart_df["LapTime"].apply(ms_to_laptime)
+drilldown_chart_df["Marker"] = drilldown_chart_df["LapTime"].apply(
+    lambda x: "⭐" if x == best_driver_lap else ""
 )
 
-team_movement_df["Position"] = team_movement_df.index + 1
-team_movement_df["AvgGrid"] = team_movement_df["AvgGrid"].round(2)
-team_movement_df["AvgFinish"] = team_movement_df["AvgFinish"].round(2)
+driver_chart = alt.Chart(drilldown_chart_df).mark_line(point=True).encode(
+    x=alt.X("LapNumber:Q", title="Lap"),
+    y=alt.Y("LapTime:Q", title="Lap Time (ms)"),
+    tooltip=[
+        alt.Tooltip("LapNumber:Q", title="Lap"),
+        alt.Tooltip("Lap Time Label:N", title="Lap Time"),
+        alt.Tooltip("Marker:N", title="")
+    ]
+).properties(height=360)
 
-team_movement_display_df = team_movement_df[[
-    "Position", "Team", "AvgGrid", "AvgFinish", "TotalNetMovement", "TotalPoints"
-]].copy()
+st.altair_chart(driver_chart, use_container_width=True)
 
-team_movement_display_df.columns = [
-    "Pos", "Team", "Avg Grid", "Avg Finish", "Net Team Movement", "Points"
-]
+st.markdown('<div class="srcs-section">Driver Lap Table</div>', unsafe_allow_html=True)
 
-st.dataframe(team_movement_display_df, use_container_width=True, hide_index=True)
-
-st.markdown('<div class="srcs-section">Position Gain Bands</div>', unsafe_allow_html=True)
-
-def movement_band(x):
-    if x >= 4:
-        return "Major Gain (4+)"
-    if x >= 1:
-        return "Minor Gain (1-3)"
-    if x == 0:
-        return "No Change"
-    if x <= -4:
-        return "Major Loss (4+)"
-    return "Minor Loss (1-3)"
-
-band_df = selected_results_df[["DriverName", "Positions Gained"]].copy()
-band_df["Movement Band"] = band_df["Positions Gained"].apply(movement_band)
-
-band_summary_df = (
-    band_df.groupby("Movement Band", as_index=False)
-    .size()
-    .rename(columns={"size": "Count"})
-    .sort_values(["Count", "Movement Band"], ascending=[False, True])
+driver_table_df = driver_laps_df[["LapNumber", "LapTime"]].copy()
+driver_table_df["LapTime"] = driver_table_df["LapTime"].apply(ms_to_laptime)
+driver_table_df["Marker"] = driver_laps_df["LapTime"].apply(
+    lambda x: "⭐" if x == best_driver_lap else ""
 )
+driver_table_df.columns = ["Lap", "Lap Time", "Marker"]
 
-st.dataframe(band_summary_df, use_container_width=True, hide_index=True)
+st.dataframe(driver_table_df, use_container_width=True, hide_index=True)
 
-st.markdown('<div class="srcs-section">Tracker Notes</div>', unsafe_allow_html=True)
-
-st.write(
-    "This page now includes an estimated lap-end running order built from cumulative completed lap times. "
-    "It is suitable for race-story analysis and movement trends, but it is not an official timing feed."
-)
+st.caption("SRCS Lap Time Lab — pace analysis from official lap export data.")
