@@ -62,7 +62,6 @@ driver_team_df = selected_results_df[["DriverName", "Team"]].drop_duplicates()
 laps_df = laps_df.merge(driver_team_df, on="DriverName", how="left")
 laps_df["Team"] = laps_df["Team"].fillna("Unknown")
 
-# SRCS team accent registry
 team_colors = {
     "McLaren": "#FF8700",
     "Ferrari": "#C00000",
@@ -254,6 +253,148 @@ if not consistency_df.empty:
     consistency_display_df.columns = ["Pos", "Driver", "Team", "Laps Counted", "Consistency"]
 
     st.dataframe(consistency_display_df, use_container_width=True, hide_index=True)
+
+# Driver-vs-driver compare mode
+st.markdown('<div class="srcs-section">Driver-vs-Driver Compare Mode</div>', unsafe_allow_html=True)
+
+cmp1, cmp2 = st.columns(2)
+with cmp1:
+    compare_driver_1 = st.selectbox("Driver 1", drivers, key="lap_lab_compare_driver_1")
+with cmp2:
+    compare_driver_2_options = [d for d in drivers if d != compare_driver_1]
+    compare_driver_2 = st.selectbox("Driver 2", compare_driver_2_options, key="lap_lab_compare_driver_2")
+
+compare_df = laps_df[laps_df["DriverName"].isin([compare_driver_1, compare_driver_2])].copy()
+compare_df = compare_df.sort_values(["DriverName", "LapNumber"]).reset_index(drop=True)
+
+driver1_df = compare_df[compare_df["DriverName"] == compare_driver_1].copy()
+driver2_df = compare_df[compare_df["DriverName"] == compare_driver_2].copy()
+
+if not driver1_df.empty and not driver2_df.empty:
+    driver1_team = driver1_df["Team"].iloc[0]
+    driver2_team = driver2_df["Team"].iloc[0]
+
+    summary_col1, summary_col2 = st.columns(2)
+
+    with summary_col1:
+        best_1 = int(driver1_df["LapTime"].min())
+        avg_1 = int(round(driver1_df["LapTime"].mean()))
+        st.metric(f"{compare_driver_1} Best Lap", ms_to_laptime(best_1))
+        st.metric(f"{compare_driver_1} Avg Lap", ms_to_laptime(avg_1))
+        st.caption(f"Team: {driver1_team}")
+
+    with summary_col2:
+        best_2 = int(driver2_df["LapTime"].min())
+        avg_2 = int(round(driver2_df["LapTime"].mean()))
+        st.metric(f"{compare_driver_2} Best Lap", ms_to_laptime(best_2))
+        st.metric(f"{compare_driver_2} Avg Lap", ms_to_laptime(avg_2))
+        st.caption(f"Team: {driver2_team}")
+
+    # Compare chart
+    compare_chart_df = compare_df[["LapNumber", "DriverName", "LapTime", "Team"]].copy()
+    compare_chart_df["Lap Time Label"] = compare_chart_df["LapTime"].apply(ms_to_laptime)
+
+    compare_last_points_df = (
+        compare_chart_df.sort_values(["DriverName", "LapNumber"])
+        .groupby("DriverName", as_index=False)
+        .tail(1)
+        .copy()
+    )
+
+    compare_line_chart = alt.Chart(compare_chart_df).mark_line(point=True).encode(
+        x=alt.X("LapNumber:Q", title="Lap"),
+        y=alt.Y("LapTime:Q", title="Lap Time (ms)"),
+        color=alt.Color("Team:N", scale=color_scale, legend=alt.Legend(title="Team")),
+        detail="DriverName:N",
+        strokeDash=alt.StrokeDash("DriverName:N", legend=alt.Legend(title="Driver")),
+        tooltip=[
+            alt.Tooltip("DriverName:N", title="Driver"),
+            alt.Tooltip("Team:N", title="Team"),
+            alt.Tooltip("LapNumber:Q", title="Lap"),
+            alt.Tooltip("Lap Time Label:N", title="Lap Time")
+        ]
+    )
+
+    compare_label_chart = alt.Chart(compare_last_points_df).mark_text(
+        align="left",
+        baseline="middle",
+        dx=8,
+        fontSize=12,
+        fontWeight="bold"
+    ).encode(
+        x=alt.X("LapNumber:Q"),
+        y=alt.Y("LapTime:Q"),
+        text="DriverName:N",
+        color=alt.Color("Team:N", scale=color_scale, legend=None)
+    )
+
+    st.altair_chart((compare_line_chart + compare_label_chart).properties(height=440), use_container_width=True)
+
+    # Delta by lap
+    merged_delta_df = pd.merge(
+        driver1_df[["LapNumber", "LapTime"]].rename(columns={"LapTime": "LapTime1"}),
+        driver2_df[["LapNumber", "LapTime"]].rename(columns={"LapTime": "LapTime2"}),
+        on="LapNumber",
+        how="inner"
+    )
+
+    if not merged_delta_df.empty:
+        merged_delta_df["DeltaMs"] = merged_delta_df["LapTime1"] - merged_delta_df["LapTime2"]
+        merged_delta_df["Delta Label"] = merged_delta_df["DeltaMs"].apply(
+            lambda x: f"{'-' if x < 0 else '+'}{ms_to_laptime(abs(int(x)))}"
+        )
+        merged_delta_df["Leader"] = merged_delta_df["DeltaMs"].apply(
+            lambda x: compare_driver_1 if x < 0 else (compare_driver_2 if x > 0 else "Equal")
+        )
+
+        st.markdown('<div class="srcs-section">Lap-by-Lap Delta</div>', unsafe_allow_html=True)
+
+        delta_chart = alt.Chart(merged_delta_df).mark_bar().encode(
+            x=alt.X("LapNumber:Q", title="Lap"),
+            y=alt.Y("DeltaMs:Q", title=f"{compare_driver_1} minus {compare_driver_2} (ms)"),
+            color=alt.condition(
+                alt.datum.DeltaMs < 0,
+                alt.value("#007BFF"),
+                alt.value("#C00000")
+            ),
+            tooltip=[
+                alt.Tooltip("LapNumber:Q", title="Lap"),
+                alt.Tooltip("Delta Label:N", title="Delta"),
+                alt.Tooltip("Leader:N", title="Faster Driver")
+            ]
+        ).properties(height=300)
+
+        st.altair_chart(delta_chart, use_container_width=True)
+
+        st.markdown('<div class="srcs-section">Compare Summary</div>', unsafe_allow_html=True)
+
+        faster_laps_1 = int((merged_delta_df["DeltaMs"] < 0).sum())
+        faster_laps_2 = int((merged_delta_df["DeltaMs"] > 0).sum())
+        equal_laps = int((merged_delta_df["DeltaMs"] == 0).sum())
+
+        average_delta = int(round(merged_delta_df["DeltaMs"].mean()))
+        avg_delta_text = (
+            f"{compare_driver_1} faster by {ms_to_laptime(abs(average_delta))}"
+            if average_delta < 0
+            else (
+                f"{compare_driver_2} faster by {ms_to_laptime(abs(average_delta))}"
+                if average_delta > 0
+                else "Average pace equal"
+            )
+        )
+
+        summary_df = pd.DataFrame([
+            {"Metric": f"Laps Faster — {compare_driver_1}", "Value": faster_laps_1},
+            {"Metric": f"Laps Faster — {compare_driver_2}", "Value": faster_laps_2},
+            {"Metric": "Equal Laps", "Value": equal_laps},
+            {"Metric": "Average Delta", "Value": avg_delta_text},
+        ])
+
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No shared lap numbers available to compare these two drivers lap by lap.")
+else:
+    st.info("Not enough lap data available for one or both selected drivers.")
 
 # Driver drill-down
 st.markdown('<div class="srcs-section">Driver Drill-Down</div>', unsafe_allow_html=True)
