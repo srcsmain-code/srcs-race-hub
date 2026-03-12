@@ -1,20 +1,23 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 from pathlib import Path
 
 from engine.parser import load_all_race_results
 from engine.team_metrics import apply_team_mapping
 from engine.driver_metrics import calculate_driver_standings
-from utils.formatting import ms_to_laptime, ms_to_racetime
+from utils.formatting import ms_to_laptime
 from utils.style import apply_srcs_style
 
-from components.track_benchmark_cards import render_track_benchmark_compact
-from data.lap_benchmarks import TRACK_BENCHMARKS
-
-st.set_page_config(page_title="Driver Analyzer", layout="wide")
+st.set_page_config(page_title="Driver Analyzer", page_icon="🧑‍💼", layout="wide")
 apply_srcs_style()
 
-st.title("🧑‍💼 Driver Analyzer")
+st.markdown("""
+<div class="srcs-hero">
+<div class="srcs-hero-title">DRIVER ANALYZER</div>
+<div class="srcs-hero-subtitle">Season performance intelligence for every SRCS driver</div>
+</div>
+""", unsafe_allow_html=True)
 
 DATA_DIR = Path("data")
 TEAM_MAP_FILE = DATA_DIR / "driver_team_map.csv"
@@ -25,8 +28,8 @@ if not DATA_DIR.exists():
 
 race_files, all_results, round_summaries, raw_race_data = load_all_race_results(DATA_DIR)
 
-if not race_files or not all_results:
-    st.warning("No race data available yet.")
+if not race_files:
+    st.warning("No race data available.")
     st.stop()
 
 season_results_df = pd.concat(all_results, ignore_index=True)
@@ -36,290 +39,198 @@ if TEAM_MAP_FILE.exists():
 else:
     season_results_df["Team"] = "Unknown"
 
-drivers = sorted(season_results_df["DriverName"].unique().tolist())
-selected_driver = st.selectbox("Select Driver", drivers)
+driver_standings = calculate_driver_standings(season_results_df)
 
-driver_df = season_results_df[season_results_df["DriverName"] == selected_driver].copy()
+drivers = sorted(season_results_df["DriverName"].dropna().unique().tolist())
+
+selected_driver = st.selectbox(
+    "Select Driver",
+    drivers
+)
+
+driver_df = season_results_df[
+    season_results_df["DriverName"] == selected_driver
+].copy()
 
 if driver_df.empty:
-    st.warning("No data available for this driver.")
+    st.warning("No data for this driver yet.")
     st.stop()
 
-# Sort by round number if possible
-driver_df["RoundSort"] = driver_df["Round"].str.extract(r"Round (\d+)").astype(float)
-driver_df = driver_df.sort_values(["RoundSort", "Round"]).reset_index(drop=True)
+driver_df = driver_df.sort_values("Round")
 
-# Championship position
-driver_standings_df = calculate_driver_standings(season_results_df)
-champ_pos = driver_standings_df.loc[
-    driver_standings_df["Driver"] == selected_driver, "Pos"
+# ---------------------------------------------------
+# DRIVER SUMMARY
+# ---------------------------------------------------
+
+st.markdown('<div class="srcs-section">Driver Summary</div>', unsafe_allow_html=True)
+
+total_points = int(driver_df["Points"].sum())
+races = len(driver_df)
+best_finish = int(driver_df["Position"].min())
+avg_finish = round(driver_df["Position"].mean(),2)
+
+driver_position = driver_standings.loc[
+    driver_standings["DriverName"] == selected_driver,
+    "Pos"
 ].iloc[0]
 
-# Summary stats
-total_points = int(driver_df["Points"].sum())
-rounds_entered = int(driver_df["Round"].nunique())
-best_finish = int(driver_df["Position"].min())
-avg_finish = round(driver_df["Position"].mean(), 2)
-best_grid = int(driver_df["GridPosition"].min())
-avg_grid = round(driver_df["GridPosition"].mean(), 2)
+team = driver_df.iloc[-1]["Team"]
 
-# Fastest laps count from round summaries
-fastest_lap_count = sum(
-    1 for summary in round_summaries
-    if summary["Fastest Lap Driver"] == selected_driver
-)
+c1,c2,c3,c4,c5 = st.columns(5)
 
-# Latest team / teams used
-teams_used = sorted(driver_df["Team"].dropna().unique().tolist())
-teams_used_text = ", ".join(teams_used) if teams_used else "Unknown"
-
-# Summary row
-c1, c2, c3, c4, c5, c6 = st.columns(6)
 with c1:
-    st.metric("Championship Pos", int(champ_pos))
+    st.metric("Championship Pos", int(driver_position))
+
 with c2:
-    st.metric("Total Points", total_points)
+    st.metric("Team", team)
+
 with c3:
-    st.metric("Rounds Entered", rounds_entered)
+    st.metric("Points", total_points)
+
 with c4:
     st.metric("Best Finish", f"P{best_finish}")
+
 with c5:
-    st.metric("Avg Finish", avg_finish)
-with c6:
-    st.metric("Fastest Laps", fastest_lap_count)
+    st.metric("Average Finish", avg_finish)
 
-st.caption(f"Teams represented: {teams_used_text}")
+# ---------------------------------------------------
+# RACE RESULTS HISTORY
+# ---------------------------------------------------
 
-# Secondary stats
-st.subheader("Qualifying vs Race Snapshot")
+st.markdown('<div class="srcs-section">Race Results</div>', unsafe_allow_html=True)
 
-q1, q2, q3, q4 = st.columns(4)
-with q1:
-    st.metric("Best Grid", f"P{best_grid}")
-with q2:
-    st.metric("Avg Grid", avg_grid)
-with q3:
-    avg_gain = round((driver_df["GridPosition"] - driver_df["Position"]).mean(), 2)
-    st.metric("Avg Pos Gain/Loss", avg_gain)
-with q4:
-    best_points = int(driver_df["Points"].max())
-    st.metric("Best Points Haul", best_points)
-
-# =========================
-# DRIVER / ROUND SELECTION
-# =========================
-
-st.subheader("Round Analysis")
-
-round_options = driver_df["Round"].dropna().tolist()
-selected_round = st.selectbox(
-    "Select Round",
-    round_options,
-    index=len(round_options) - 1 if round_options else 0,
-    key="driver_analysis_round"
-)
-
-selected_round_df = driver_df[driver_df["Round"] == selected_round].copy()
-
-if selected_round_df.empty:
-    st.warning("No round data available.")
-    st.stop()
-
-selected_round_row = selected_round_df.iloc[0]
-selected_gp = selected_round_row["Grand Prix"]
-
-# =========================
-# MAP GRAND PRIX TO TRACK KEY
-# =========================
-
-def map_grand_prix_to_track_key(value: str) -> str | None:
-    text = str(value).strip().lower()
-
-    mapping = {
-        "australia": "melbourne",
-        "australian grand prix": "melbourne",
-        "melbourne": "melbourne",
-        "albert park": "melbourne",
-
-        "bahrain": "bahrain",
-        "bahrain grand prix": "bahrain",
-        "sakhir": "bahrain",
-
-        "miami": "miami",
-        "miami grand prix": "miami",
-
-        "monaco": "monaco",
-        "monaco grand prix": "monaco",
-        "monte carlo": "monaco",
-
-        "britain": "silverstone",
-        "great britain": "silverstone",
-        "british grand prix": "silverstone",
-        "silverstone": "silverstone",
-
-        "netherlands": "zandvoort",
-        "dutch grand prix": "zandvoort",
-        "zandvoort": "zandvoort",
-
-        "italy": "monza",
-        "italian grand prix": "monza",
-        "monza": "monza",
-
-        "singapore": "singapore",
-        "singapore grand prix": "singapore",
-        "marina bay": "singapore",
-
-        "brazil": "interlagos",
-        "brazilian grand prix": "interlagos",
-        "interlagos": "interlagos",
-        "sao paulo": "interlagos",
-
-        "abu dhabi": "abu_dhabi",
-        "abu dhabi grand prix": "abu_dhabi",
-        "yas marina": "abu_dhabi",
-    }
-
-    for key, track_key in mapping.items():
-        if key in text:
-            return track_key
-
-    return None
-
-selected_track_key = map_grand_prix_to_track_key(selected_gp)
-
-if not selected_track_key:
-    selected_track_key = map_grand_prix_to_track_key(selected_round)
-
-# =========================
-# BENCHMARK BLOCK
-# =========================
-
-st.markdown(f"#### {selected_round} • {selected_gp}")
-
-if selected_track_key:
-    render_track_benchmark_compact(selected_track_key)
-else:
-    st.info("No track benchmark found for this round yet.")
-
-# =========================
-# DRIVER VS BENCHMARKS
-# =========================
-
-def lap_time_to_seconds(lap_str: str) -> float | None:
-    try:
-        mins, secs = str(lap_str).split(":")
-        return int(mins) * 60 + float(secs)
-    except Exception:
-        return None
-
-driver_bestlap_ms = selected_round_row.get("BestLap", None)
-
-if pd.notna(driver_bestlap_ms):
-    driver_bestlap_str = ms_to_laptime(driver_bestlap_ms)
-else:
-    driver_bestlap_str = None
-
-if selected_track_key and driver_bestlap_str and selected_track_key in TRACK_BENCHMARKS:
-    benchmark = TRACK_BENCHMARKS[selected_track_key]
-
-    real_life_lap = benchmark["real_life_lap_record"]
-    srcs_target_lap = benchmark["srcs_target_lap_time"]
-
-    driver_bestlap_sec = lap_time_to_seconds(driver_bestlap_str)
-    real_life_sec = lap_time_to_seconds(real_life_lap)
-    srcs_target_sec = lap_time_to_seconds(srcs_target_lap)
-
-    if (
-        driver_bestlap_sec is not None
-        and real_life_sec is not None
-        and srcs_target_sec is not None
-    ):
-        delta_to_real_life = round(driver_bestlap_sec - real_life_sec, 3)
-        delta_to_srcs_target = round(driver_bestlap_sec - srcs_target_sec, 3)
-
-        b1, b2, b3 = st.columns(3)
-        with b1:
-            st.metric("Driver Best Lap", driver_bestlap_str)
-        with b2:
-            st.metric("Vs Real Life Record", f"+{delta_to_real_life:.3f}s")
-        with b3:
-            st.metric("Vs SRCS Target", f"{delta_to_srcs_target:+.3f}s")
-
-# Points trend
-st.subheader("Points by Round")
-
-points_chart_df = driver_df[["Round", "Points"]].copy().set_index("Round")
-st.bar_chart(points_chart_df)
-
-# Finish trend
-st.subheader("Finish Trend by Round")
-
-finish_chart_df = driver_df[["Round", "Position"]].copy().set_index("Round")
-st.line_chart(finish_chart_df)
-
-# Round-by-round breakdown
-st.subheader("Round-by-Round Breakdown")
-
-breakdown_df = driver_df[[
+history_df = driver_df[[
     "Round",
     "Grand Prix",
-    "Team",
     "GridPosition",
     "Position",
-    "Points",
-    "BestLap",
-    "TotalTime"
-]].copy()
-
-breakdown_df["BestLap"] = breakdown_df["BestLap"].apply(ms_to_laptime)
-breakdown_df["TotalTime"] = breakdown_df["TotalTime"].apply(ms_to_racetime)
-
-breakdown_df.columns = [
-    "Round",
-    "Grand Prix",
-    "Team",
-    "Grid",
-    "Finish",
-    "Points",
-    "Best Lap",
-    "Race Time"
-]
-
-st.dataframe(breakdown_df, use_container_width=True, hide_index=True)
-
-# Performance notes
-st.subheader("Driver Notes")
-
-note_parts = [
-    f"{selected_driver} is currently P{int(champ_pos)} in the championship",
-    f"with {total_points} point(s) from {rounds_entered} round(s)",
-    f"and a best finish of P{best_finish}"
-]
-
-if fastest_lap_count > 0:
-    note_parts.append(f"plus {fastest_lap_count} fastest lap(s)")
-
-if selected_track_key and driver_bestlap_str and selected_track_key in TRACK_BENCHMARKS:
-    benchmark = TRACK_BENCHMARKS[selected_track_key]
-    note_parts.append(
-        f"for {selected_round}, the benchmark lap record is {benchmark['real_life_lap_record']} and the SRCS target is {benchmark['srcs_target_lap_time']}"
-    )
-
-st.write(", ".join(note_parts) + ".")
-
-# Raw results table
-st.subheader("Detailed Race Results")
-
-detail_df = driver_df[[
-    "Round",
-    "DriverName",
-    "Team",
-    "GridPosition",
-    "Position",
-    "NumLaps",
     "Points"
 ]].copy()
 
-detail_df.columns = ["Round", "Driver", "Team", "Grid", "Finish", "Laps", "Points"]
+history_df.columns = [
+    "Round",
+    "Grand Prix",
+    "Grid",
+    "Finish",
+    "Points"
+]
 
-st.dataframe(detail_df, use_container_width=True, hide_index=True)
+st.dataframe(history_df, use_container_width=True, hide_index=True)
+
+# ---------------------------------------------------
+# FINISH TREND
+# ---------------------------------------------------
+
+st.markdown('<div class="srcs-section">Finish Position Trend</div>', unsafe_allow_html=True)
+
+trend_df = driver_df.copy()
+trend_df["RoundSort"] = trend_df["Round"].str.extract(r"Round (\d+)").astype(float)
+trend_df = trend_df.sort_values("RoundSort")
+
+finish_chart = alt.Chart(trend_df).mark_line(point=True).encode(
+    x=alt.X("Round:N", title="Round"),
+    y=alt.Y("Position:Q", title="Finish Position", scale=alt.Scale(reverse=True)),
+    tooltip=[
+        "Round",
+        "Grand Prix",
+        "Position",
+        "Points"
+    ]
+).properties(height=350)
+
+st.altair_chart(finish_chart, use_container_width=True)
+
+# ---------------------------------------------------
+# GRID VS FINISH
+# ---------------------------------------------------
+
+st.markdown('<div class="srcs-section">Grid vs Finish Performance</div>', unsafe_allow_html=True)
+
+grid_chart_df = driver_df.copy()
+
+grid_chart = alt.Chart(grid_chart_df).mark_circle(size=120).encode(
+    x=alt.X("GridPosition:Q", title="Grid Position"),
+    y=alt.Y("Position:Q", title="Finish Position", scale=alt.Scale(reverse=True)),
+    tooltip=[
+        "Round",
+        "Grand Prix",
+        "GridPosition",
+        "Position"
+    ]
+)
+
+st.altair_chart(grid_chart.properties(height=350), use_container_width=True)
+
+# ---------------------------------------------------
+# POSITION CHANGE
+# ---------------------------------------------------
+
+st.markdown('<div class="srcs-section">Racecraft: Positions Gained/Lost</div>', unsafe_allow_html=True)
+
+racecraft_df = driver_df.copy()
+racecraft_df["PositionChange"] = racecraft_df["GridPosition"] - racecraft_df["Position"]
+
+racecraft_chart = alt.Chart(racecraft_df).mark_bar().encode(
+    x="Round",
+    y="PositionChange",
+    tooltip=[
+        "Grand Prix",
+        "GridPosition",
+        "Position",
+        "PositionChange"
+    ]
+)
+
+st.altair_chart(racecraft_chart.properties(height=350), use_container_width=True)
+
+# ---------------------------------------------------
+# DRIVER PROFILE
+# ---------------------------------------------------
+
+st.markdown('<div class="srcs-section">Driver Profile</div>', unsafe_allow_html=True)
+
+positions_gained = racecraft_df["PositionChange"].sum()
+
+profile_data = pd.DataFrame({
+    "Metric":[
+        "Total Points",
+        "Races Entered",
+        "Best Finish",
+        "Average Finish",
+        "Positions Gained/Lost"
+    ],
+    "Value":[
+        total_points,
+        races,
+        f"P{best_finish}",
+        avg_finish,
+        positions_gained
+    ]
+})
+
+st.dataframe(profile_data, use_container_width=True, hide_index=True)
+
+# ---------------------------------------------------
+# DRIVER NOTES
+# ---------------------------------------------------
+
+st.markdown('<div class="srcs-section">Driver Insight</div>', unsafe_allow_html=True)
+
+if positions_gained > 0:
+    racecraft_comment = "gains positions on average during races."
+elif positions_gained < 0:
+    racecraft_comment = "tends to lose positions during races."
+else:
+    racecraft_comment = "typically finishes where they start."
+
+st.write(
+f"""
+**{selected_driver}** is currently **P{int(driver_position)}** in the championship with **{total_points} points**.
+
+Their best finish so far is **P{best_finish}** and they average **P{avg_finish}** across all races.
+
+Across the season they **{racecraft_comment}**
+"""
+)
+
+st.caption("SRCS Driver Analyzer — Season performance intelligence.")
