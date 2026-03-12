@@ -127,6 +127,7 @@ st.bar_chart(position_chart_df)
 st.markdown('<div class="srcs-section">Estimated Position by Lap</div>', unsafe_allow_html=True)
 
 if not position_df.empty:
+
     pos_chart_df = position_df.pivot_table(
         index="LapNumber",
         columns="DriverName",
@@ -134,7 +135,49 @@ if not position_df.empty:
         aggfunc="first"
     ).sort_index()
 
-    st.line_chart(pos_chart_df)
+    # ---- Build driver/team lookup ----
+    driver_team_df = selected_results_df[["DriverName", "Team"]].drop_duplicates()
+
+    drivers = sorted(driver_team_df["DriverName"].unique())
+    teams = sorted(driver_team_df["Team"].unique())
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        selected_driver = st.selectbox(
+            "Focus on Driver",
+            ["All Drivers"] + drivers
+        )
+
+    with col2:
+        selected_team = st.selectbox(
+            "Focus on Team",
+            ["All Teams"] + teams
+        )
+
+    filtered_chart = pos_chart_df.copy()
+
+    # ---- Driver filter ----
+    if selected_driver != "All Drivers":
+        filtered_chart = filtered_chart[[selected_driver]]
+
+    # ---- Team filter ----
+    elif selected_team != "All Teams":
+        team_drivers = driver_team_df[
+            driver_team_df["Team"] == selected_team
+        ]["DriverName"].tolist()
+
+        filtered_chart = filtered_chart[team_drivers]
+
+    # ---- Plot chart ----
+    st.line_chart(filtered_chart)
+
+    st.caption(
+        "Estimated lap-end position based on cumulative lap time after each completed lap."
+    )
+
+else:
+    st.info("Not enough lap data available to build a position chart.")
 
     st.caption(
         "Estimated lap-end position based on cumulative lap time after each completed lap. "
