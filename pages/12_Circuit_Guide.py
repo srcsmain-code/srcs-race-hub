@@ -1,6 +1,9 @@
 import streamlit as st
 
 from data.lap_benchmarks import get_track_options, get_track_benchmark
+from utils.style import apply_srcs_style
+
+apply_srcs_style()
 
 st.title("🛣️ Circuit Guide")
 st.caption("Track benchmarks, SRCS target lap times, and future race reference data.")
