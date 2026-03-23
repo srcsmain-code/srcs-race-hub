@@ -20,23 +20,23 @@ TRACK_BENCHMARKS = {
         "srcs_backmarker_pace": "1:29.0+",
     },
 
-    "bahrain": {
-        "round_name": "Round 2 — Bahrain Grand Prix",
-        "track_name": "Bahrain International Circuit, Sakhir",
+    "Japan": {
+        "round_name": "Round 2 — Japan Grand Prix",
+        "track_name": "Japan Circuit, Suzuka",
         "race_date": "2026-04-12",
 
         # Section 1 — Real-Life Reference (F1)
-        "official_race_lap_record": "1:31.447",
-        "lap_record_driver": "Pedro de la Rosa",
-        "lap_record_year": 2005,
-        "pole_position_benchmark": "~1:27.0 – 1:28.5",
+        "official_race_lap_record": "1:30.983",
+        "lap_record_driver": "Lewis Hamilton",
+        "lap_record_year": 2019,
+        "pole_position_benchmark": "~1:27.0 – 1:28.0",
 
         # Section 2 — SRCS Target Pace
-        "srcs_target_lap_time": "1:36.500",
-        "srcs_race_winning_pace": "1:36–1:37",
-        "srcs_podium_pace": "1:37–1:39",
-        "srcs_points_pace": "1:39–1:41",
-        "srcs_backmarker_pace": "1:41.0+",
+        "srcs_target_lap_time": "1:35.500",
+        "srcs_race_winning_pace": "1:35–1:36",
+        "srcs_podium_pace": "1:36–1:38",
+        "srcs_points_pace": "1:38–1:40",
+        "srcs_backmarker_pace": "1:40.0+",
     },
 
     "miami": {
@@ -200,7 +200,7 @@ def get_track_benchmark(track_key: str) -> dict:
 def get_track_options() -> dict:
     return {
         "Melbourne": "melbourne",
-        "Bahrain": "bahrain",
+        "Japan": "Japan",
         "Miami": "miami",
         "Monaco": "monaco",
         "Silverstone": "silverstone",
