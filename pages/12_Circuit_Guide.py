@@ -15,6 +15,9 @@ st.caption("Real-world F1 reference data, SRCS target pace guidance, and full dr
 track_options = get_track_options()
 selected_track_label = st.selectbox("Select a circuit", list(track_options.keys()))
 track_key = track_options[selected_track_label]
+track_map_paths = {
+    "suzuka": Path("assets/track_maps/suzuka.png"),
+}
 
 benchmark = get_track_benchmark(track_key)
 assistant = get_driver_assistant(track_key)
@@ -102,6 +105,17 @@ with col7:
 
 if not actual_summary["actual_available"]:
     st.info("No SRCS race result found yet for this circuit. After the round is uploaded, this section will fill automatically.")
+
+st.markdown("---")
+
+st.markdown("## Circuit Map")
+
+track_map = track_map_paths.get(track_key)
+
+if track_map and track_map.exists():
+    st.image(str(track_map), use_container_width=True)
+else:
+    st.info("Track map visual not yet added for this circuit.")
 
 st.markdown("---")
 
