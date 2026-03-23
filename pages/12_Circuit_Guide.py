@@ -1,7 +1,10 @@
 import streamlit as st
+from pathlib import Path
 
 from data.lap_benchmarks import get_track_options, get_track_benchmark
 from data.driver_assistants import get_driver_assistant
+from engine.circuit_metrics import build_target_vs_actual_summary
+from engine.parser import load_all_race_results
 from utils.style import apply_srcs_style
 
 apply_srcs_style()
@@ -19,6 +22,17 @@ assistant = get_driver_assistant(track_key)
 if not benchmark:
     st.warning("No benchmark data found for this circuit.")
     st.stop()
+
+DATA_DIR = Path("data")
+raw_race_data = []
+
+if DATA_DIR.exists():
+    try:
+        _, _, _, raw_race_data = load_all_race_results(DATA_DIR)
+    except Exception:
+        raw_race_data = []
+
+actual_summary = build_target_vs_actual_summary(track_key, benchmark, raw_race_data)
 
 st.subheader(benchmark["round_name"])
 st.write(f"**Track:** {benchmark['track_name']}")
@@ -74,6 +88,23 @@ with col4:
 
 st.markdown("---")
 
+st.markdown("## Section 2B — Target vs Actual")
+col5, col6, col7 = st.columns(3)
+
+with col5:
+    st.metric("Actual Fastest SRCS Lap", actual_summary["actual_fastest_lap"])
+
+with col6:
+    st.metric("Fastest Driver", actual_summary["actual_driver"])
+
+with col7:
+    st.metric("Delta vs Target", actual_summary["delta_to_target"])
+
+if not actual_summary["actual_available"]:
+    st.info("No SRCS race result found yet for this circuit. After the round is uploaded, this section will fill automatically.")
+
+st.markdown("---")
+
 st.markdown("## Section 3 — Driver Assistant")
 
 if not assistant:
@@ -112,5 +143,5 @@ st.markdown("---")
 st.info(
     "Use this page as a pre-race benchmark guide. "
     "The F1 reference gives context for the circuit, the SRCS pace bands show likely competitiveness, "
-    "and the Driver Assistant provides tactical preparation for the round."
+    "and the target-vs-actual block updates automatically once SRCS race data exists."
 )
