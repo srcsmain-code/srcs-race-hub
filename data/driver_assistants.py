@@ -214,7 +214,7 @@ Choose before lights out.
 """
     },
 
-    "japan": {
+    "suzuka": {
         "event_overview": """
 Round 2 of the SRCS Grand Prix Season 2026 moves to one of the most iconic circuits in the world — Suzuka, Japan.
 
