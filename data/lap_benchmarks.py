@@ -22,7 +22,7 @@ TRACK_BENCHMARKS = {
 
     "suzuka": {
         "round_name": "Round 2 — Japan Grand Prix",
-        "track_name": "Japan Circuit, Suzuka",
+        "track_name": "Suzuka Circuit, Japan",
         "race_date": "2026-04-12",
 
         # Section 1 — Real-Life Reference (F1)
