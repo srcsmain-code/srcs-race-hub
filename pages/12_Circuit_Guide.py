@@ -16,6 +16,7 @@ track_options = get_track_options()
 selected_track_label = st.selectbox("Select a circuit", list(track_options.keys()))
 track_key = track_options[selected_track_label]
 track_map_paths = {
+    "melbourne": Path("assets/track_maps/melbourne.png"),
     "suzuka": Path("assets/track_maps/suzuka.png"),
 }
 
