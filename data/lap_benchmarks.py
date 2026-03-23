@@ -20,7 +20,7 @@ TRACK_BENCHMARKS = {
         "srcs_backmarker_pace": "1:29.0+",
     },
 
-    "Japan": {
+    "suzuka": {
         "round_name": "Round 2 — Japan Grand Prix",
         "track_name": "Japan Circuit, Suzuka",
         "race_date": "2026-04-12",
@@ -200,7 +200,7 @@ def get_track_benchmark(track_key: str) -> dict:
 def get_track_options() -> dict:
     return {
         "Melbourne": "melbourne",
-        "Japan": "Japan",
+        "Japan": "suzuka",
         "Miami": "miami",
         "Monaco": "monaco",
         "Silverstone": "silverstone",
