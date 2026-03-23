@@ -215,6 +215,240 @@ Choose before lights out.
     }
 }
 
+"suzuka": {
+    "event_overview": """
+Round 2 of the SRCS Grand Prix Season 2026 moves to one of the most iconic circuits in the world — Suzuka, Japan.
+
+This round continues the championship battle following Round 1, with early momentum becoming critical.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points (Top 10):
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap (must finish in Top 10)
+
+Momentum note:
+Drivers who performed well in Round 1 can consolidate early championship advantage here.
+""",
+
+    "circuit_breakdown": """
+**Track Length:** 5.807 km  
+**Turns:** 18  
+**Circuit Type:** High-speed technical circuit  
+**Layout:** Figure-eight (unique crossover design)
+
+**Track Characteristics**
+Suzuka is one of the most demanding driver circuits in the world:
+- High-speed flowing sections
+- Rapid direction changes
+- Limited margin for error
+- Heavy emphasis on rhythm and precision
+
+This is not a stop-start circuit — it rewards smooth, committed driving.
+
+**Sector 1 – Flow & Commitment (Esses)**
+- Continuous left-right sequence
+- Requires perfect rhythm and balance
+- Small errors compound rapidly
+- Overdriving destroys lap time
+
+**Sector 2 – Power & Precision**
+- Degner corners require precision entry
+- Hairpin provides overtaking opportunity
+- Spoon Curve exit is critical for straight-line speed
+
+**Sector 3 – High-Speed Courage**
+- 130R is a high-speed commitment corner
+- Final chicane is key overtaking zone
+- Mistakes here affect main straight performance
+
+**Critical Corners**
+**Esses (Turns 3–7)**
+- Rhythm section — smooth inputs only
+- Avoid aggressive steering corrections
+
+**Degner 1 & 2**
+- Precision braking required
+- Easy to invalidate lap or pick up penalties
+
+**Hairpin**
+- Best overtaking opportunity mid-lap
+- Requires clean braking and traction exit
+
+**Spoon Curve**
+- Long double-apex corner
+- Exit speed defines straight-line performance
+
+**130R**
+- High-speed commitment
+- Confidence corner — hesitation costs time
+
+**Final Chicane**
+- Heavy braking zone
+- Primary late-race overtaking opportunity
+""",
+
+    "strategic_guidance": """
+Suzuka is a rhythm and tire-management circuit where consistency beats aggression.
+
+**Tire Management Model**
+- Front tire load is significant through high-speed corners
+- Rear stability critical on corner exits
+- Overheating occurs from aggressive steering inputs
+
+Key risks:
+- Overdriving Sector 1 (Esses)
+- Excessive curb usage
+- Losing rear stability in Spoon exit
+
+**Engineer Directive**
+- Prioritize smooth steering inputs
+- Maintain rhythm over outright aggression
+- Build pace progressively through the stint
+
+**Pit Strategy Considerations**
+Undercut:
+- Powerful if stuck in traffic
+- Clean air advantage is significant
+
+Overcut:
+- Works if maintaining consistent lap times
+- Avoids rejoining into traffic
+
+**Critical Strategy Factor**
+- Clean laps matter more than peak pace
+- Errors cost more time than small pace deficits
+
+**Penalty Risks**
+- Track limits at Esses and Spoon
+- Late braking into chicane
+- Over-aggressive defending
+""",
+
+    "lap1_survival": """
+**Objective:** Survive Lap 1 without damage while maintaining competitive position.
+
+**Key Risk Areas**
+- Turn 1/2 opening sequence
+- Esses congestion
+- Hairpin compression zone
+
+**Key Principles**
+- Expect reduced grip on cold tires
+- Avoid side-by-side through Esses
+- Brake earlier than normal into heavy zones
+- Prioritize exit over entry
+
+**Critical Advice**
+- The Esses are NOT an overtaking zone on Lap 1
+- Be patient — opportunities come later in the lap
+
+**Priority Hierarchy**
+Survival → Position → Aggression
+
+A clean Lap 1 sets up your entire race at Suzuka.
+""",
+
+    "overtaking_defending": """
+**Primary Overtake Zones**
+
+**Hairpin**
+- Best mid-lap opportunity
+- Requires strong braking control
+
+**Final Chicane**
+- Highest probability move
+- Late braking zone
+- Critical for final laps
+
+**Main Straight (Turn 1 setup)**
+- Depends on chicane exit
+- Slipstream opportunity
+
+**Defensive Protocol**
+- One defensive move only
+- Protect inside line into chicane
+- No reactive weaving
+- Maintain predictable positioning
+
+**Key Insight**
+Most overtakes at Suzuka are set up 2–3 corners earlier — especially through Spoon.
+""",
+
+    "championship_mindset": """
+Round 2 is about momentum and control.
+
+**Strategic Thinking**
+- Strong result here builds early championship pressure
+- Back-to-back consistency > one-off result
+- Team scoring becomes increasingly important
+
+**Risk Management**
+- Suzuka punishes mistakes heavily
+- Over-aggression leads to large time loss or incidents
+
+**Mindset Model**
+- Precision over aggression
+- Consistency over heroics
+- Patience over desperation
+
+Drivers who master rhythm here gain a long-term advantage.
+""",
+
+    "common_mistakes": """
+- Overdriving the Esses (losing rhythm)
+- Excessive steering corrections
+- Poor Spoon exit compromising straight speed
+- Track limits violations in Sector 1
+- Late dive attempts into chicane
+""",
+
+    "preparation_checklist": """
+**Pre-Practice**
+- Study corner flow (especially Sector 1)
+- Identify braking references for Hairpin & Chicane
+- Define realistic race pace
+
+**During Practice**
+- Focus on consistency, not peak lap
+- Test tire behavior over multiple laps
+- Practice clean Spoon exits
+- Simulate pit entry
+
+**Pre-Qualifying**
+- Build rhythm progressively
+- Avoid pushing too early in lap
+- Commit fully once flow is established
+
+**Pre-Race**
+- Reset mindset
+- Focus on clean execution
+- Visualize Lap 1 survival
+- Confirm pit strategy
+
+Execution wins races at Suzuka — not aggression.
+"""
+}
 
 def get_driver_assistant(track_key: str) -> dict:
     return DRIVER_ASSISTANTS.get(track_key, {})
