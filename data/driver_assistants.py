@@ -212,11 +212,10 @@ Choose before lights out.
 - Confirm pit plan
 - Visualize Lap 1
 """
-    }
-},
+    },
 
-"suzuka": {
-    "event_overview": """
+    "suzuka": {
+        "event_overview": """
 Round 2 of the SRCS Grand Prix Season 2026 moves to one of the most iconic circuits in the world — Suzuka, Japan.
 
 This round continues the championship battle following Round 1, with early momentum becoming critical.
@@ -251,7 +250,7 @@ Momentum note:
 Drivers who performed well in Round 1 can consolidate early championship advantage here.
 """,
 
-    "circuit_breakdown": """
+        "circuit_breakdown": """
 **Track Length:** 5.807 km  
 **Turns:** 18  
 **Circuit Type:** High-speed technical circuit  
@@ -308,7 +307,7 @@ This is not a stop-start circuit — it rewards smooth, committed driving.
 - Primary late-race overtaking opportunity
 """,
 
-    "strategic_guidance": """
+        "strategic_guidance": """
 Suzuka is a rhythm and tire-management circuit where consistency beats aggression.
 
 **Tire Management Model**
@@ -345,7 +344,7 @@ Overcut:
 - Over-aggressive defending
 """,
 
-    "lap1_survival": """
+        "lap1_survival": """
 **Objective:** Survive Lap 1 without damage while maintaining competitive position.
 
 **Key Risk Areas**
@@ -369,7 +368,7 @@ Survival → Position → Aggression
 A clean Lap 1 sets up your entire race at Suzuka.
 """,
 
-    "overtaking_defending": """
+        "overtaking_defending": """
 **Primary Overtake Zones**
 
 **Hairpin**
@@ -395,7 +394,7 @@ A clean Lap 1 sets up your entire race at Suzuka.
 Most overtakes at Suzuka are set up 2–3 corners earlier — especially through Spoon.
 """,
 
-    "championship_mindset": """
+        "championship_mindset": """
 Round 2 is about momentum and control.
 
 **Strategic Thinking**
@@ -415,7 +414,7 @@ Round 2 is about momentum and control.
 Drivers who master rhythm here gain a long-term advantage.
 """,
 
-    "common_mistakes": """
+        "common_mistakes": """
 - Overdriving the Esses (losing rhythm)
 - Excessive steering corrections
 - Poor Spoon exit compromising straight speed
@@ -423,7 +422,7 @@ Drivers who master rhythm here gain a long-term advantage.
 - Late dive attempts into chicane
 """,
 
-    "preparation_checklist": """
+        "preparation_checklist": """
 **Pre-Practice**
 - Study corner flow (especially Sector 1)
 - Identify braking references for Hairpin & Chicane
@@ -448,7 +447,9 @@ Drivers who master rhythm here gain a long-term advantage.
 
 Execution wins races at Suzuka — not aggression.
 """
+    }
 }
+
 
 def get_driver_assistant(track_key: str) -> dict:
     return DRIVER_ASSISTANTS.get(track_key, {})
