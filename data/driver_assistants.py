@@ -213,7 +213,7 @@ Choose before lights out.
 - Visualize Lap 1
 """
     }
-}
+},
 
 "suzuka": {
     "event_overview": """
