@@ -221,6 +221,8 @@ with p6:
     st.metric("Max Impact Speed", round(max_impact, 1))
     st.caption("Highest recorded")
 
+profile_left, profile_right = st.columns([1.2, 1])
+
 with profile_left:
     profile_df = pd.DataFrame([
         {"Metric": "Races Entered", "Value": races},
