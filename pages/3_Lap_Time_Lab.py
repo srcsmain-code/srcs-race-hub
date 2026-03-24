@@ -89,13 +89,19 @@ color_scale = alt.Scale(domain=color_domain, range=color_range)
 # Round overview
 st.markdown('<div class="srcs-section">Round Overview</div>', unsafe_allow_html=True)
 
+round_short = f"Round {selected_index + 1}"
+
+track_display = str(selected_summary["Track"]).replace("_", " ").replace("gp21", "").strip()
+if len(track_display) > 18:
+    track_display = "Track File"
+
 c1, c2, c3, c4 = st.columns(4)
 with c1:
-    st.metric("Grand Prix", selected_summary["Round"])
+    st.metric("Grand Prix", round_short)
     st.caption(selected_summary["Grand Prix"])
 
 with c2:
-    st.metric("Track", selected_summary["Track"])
+    st.metric("Track", selected_summary["Grand Prix"])
     st.caption(selected_summary["Session Type"])
 
 with c3:
