@@ -84,14 +84,22 @@ pole_row = selected_results_df.sort_values("GridPosition").iloc[0]
 fastest_lap_driver = selected_summary["Fastest Lap Driver"]
 
 col1, col2, col3, col4 = st.columns(4)
+
 with col1:
     st.metric("Winner", winner_row["DriverName"])
+    st.caption(f"Team: {winner_row['Team']}")
+
 with col2:
-    st.metric("Pole", pole_row["DriverName"])
+    st.metric("Pole", ms_to_laptime(pole_row["BestLap"]))
+    st.caption(pole_row["DriverName"])
+
 with col3:
-    st.metric("Fastest Lap", fastest_lap_driver)
+    st.metric("Fastest Lap", selected_summary["Fastest Lap Time"])
+    st.caption(fastest_lap_driver)
+
 with col4:
     st.metric("Classified Drivers", len(selected_results_df))
+    st.caption("Official finishers in classification")
 
 st.caption(
     f"{selected_summary['Round']} • {selected_summary['Grand Prix']} • "
