@@ -78,15 +78,15 @@ with c1:
     st.metric("Rounds Loaded", len(race_files))
 
 with c2:
-    st.metric("Latest Round", "Current")
-    st.caption(latest_summary["Round"])
+    st.metric("Latest Round", "Round 1")
+    st.caption(latest_summary["Grand Prix"])
 
 with c3:
-    st.metric("Latest Winner", "Winner")
-    st.caption(winner_row["DriverName"])
+    st.metric("Latest Winner", winner_row["DriverName"])
+    st.caption(f"Team: {winner_row['Team']}")
 
 with c4:
-    st.metric("Fastest Lap", "Driver")
+    st.metric("Fastest Lap", latest_summary["Fastest Lap Time"])
     st.caption(latest_summary["Fastest Lap Driver"])
 
 left_col, right_col = st.columns([1.4, 1])
