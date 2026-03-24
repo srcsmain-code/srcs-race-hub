@@ -11,6 +11,7 @@ from engine.race_metrics import (
     build_estimated_overtake_summary,
 )
 from utils.style import apply_srcs_style
+from utils.formatting import ms_to_laptime
 
 st.set_page_config(page_title="Position Tracker", page_icon="📍", layout="wide")
 apply_srcs_style()
@@ -80,7 +81,7 @@ with c1:
     st.caption(f"Team: {winner_row['Team']}")
 
 with c2:
-    pole_lap = pole_row["BestLap"] if "BestLap" in pole_row.index else None
+    pole_lap = ms_to_laptime(pole_row["BestLap"]) if "BestLap" in pole_row.index else None
     st.metric("Pole", "Pole Sitter")
     st.caption(
         f"{pole_row['DriverName']}"
