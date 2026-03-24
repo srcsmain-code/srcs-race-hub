@@ -91,13 +91,21 @@ st.markdown('<div class="srcs-section">Round Overview</div>', unsafe_allow_html=
 
 c1, c2, c3, c4 = st.columns(4)
 with c1:
-    st.metric("Grand Prix", selected_summary["Grand Prix"])
+    st.metric("Grand Prix", selected_summary["Round"])
+    st.caption(selected_summary["Grand Prix"])
+
 with c2:
     st.metric("Track", selected_summary["Track"])
+    st.caption(selected_summary["Session Type"])
+
 with c3:
-    st.metric("Fastest Lap", selected_summary["Fastest Lap Driver"])
+    st.metric("Fastest Lap", selected_summary["Fastest Lap Time"])
+    st.caption(selected_summary["Fastest Lap Driver"])
+
 with c4:
-    st.metric("Fastest Time", selected_summary["Fastest Lap Time"])
+    total_valid_laps = int(len(laps_df))
+    st.metric("Valid Laps", total_valid_laps)
+    st.caption("Official laps in dataset")
 
 # Filters
 st.markdown('<div class="srcs-section">Lap Trace Filters</div>', unsafe_allow_html=True)
@@ -416,13 +424,20 @@ driver_team = driver_laps_df["Team"].iloc[0] if "Team" in driver_laps_df.columns
 
 d1, d2, d3, d4 = st.columns(4)
 with d1:
-    st.metric("Driver", selected_driver)
+    st.metric("Driver", "Selected")
+    st.caption(selected_driver)
+
 with d2:
-    st.metric("Team", driver_team)
+    st.metric("Team", "Current")
+    st.caption(driver_team)
+
 with d3:
     st.metric("Best Lap", ms_to_laptime(best_driver_lap))
+    st.caption(f"Average: {ms_to_laptime(avg_driver_lap)}")
+
 with d4:
     st.metric("Consistency", ms_to_laptime(driver_std_ms))
+    st.caption("Std. deviation")
 
 drilldown_chart_df = driver_laps_df[["LapNumber", "LapTime"]].copy()
 drilldown_chart_df["Lap Time Label"] = drilldown_chart_df["LapTime"].apply(ms_to_laptime)
