@@ -73,14 +73,21 @@ podium_df = latest_round_df.head(3).copy()
 st.subheader("Season Snapshot")
 
 c1, c2, c3, c4 = st.columns(4)
+
 with c1:
     st.metric("Rounds Loaded", len(race_files))
+
 with c2:
-    st.metric("Latest Round", latest_summary["Round"])
+    st.metric("Latest Round", "Current")
+    st.caption(latest_summary["Round"])
+
 with c3:
-    st.metric("Latest Winner", winner_row["DriverName"])
+    st.metric("Latest Winner", "Winner")
+    st.caption(winner_row["DriverName"])
+
 with c4:
-    st.metric("Fastest Lap", latest_summary["Fastest Lap Driver"])
+    st.metric("Fastest Lap", "Driver")
+    st.caption(latest_summary["Fastest Lap Driver"])
 
 left_col, right_col = st.columns([1.4, 1])
 
