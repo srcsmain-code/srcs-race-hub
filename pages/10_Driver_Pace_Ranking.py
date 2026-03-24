@@ -167,19 +167,28 @@ pace_df["Delta to Fastest Avg"] = pace_df["DeltaToFastestAvgMs"].apply(
 # -----------------------------------
 st.markdown('<div class="srcs-section">Pace Headlines</div>', unsafe_allow_html=True)
 
-top_pace_driver = pace_df.iloc[0]["DriverName"]
-top_bestlap_driver = pace_df.sort_values(["BestLapMs", "DriverName"], ascending=[True, True]).iloc[0]["DriverName"]
-top_consistency_driver = pace_df.sort_values(["StdDevMs", "DriverName"], ascending=[True, True]).iloc[0]["DriverName"]
+top_pace_row = pace_df.sort_values(["AverageLapMs", "DriverName"], ascending=[True, True]).iloc[0]
+top_bestlap_row = pace_df.sort_values(["BestLapMs", "DriverName"], ascending=[True, True]).iloc[0]
+top_consistency_row = pace_df.sort_values(["StdDevMs", "DriverName"], ascending=[True, True]).iloc[0]
 
-c1, c2, c3, c4 = st.columns(4)
-with c1:
-    st.metric("Fastest Average Pace", top_pace_driver)
-with c2:
-    st.metric("Best One-Lap Pace", top_bestlap_driver)
-with c3:
-    st.metric("Most Consistent", top_consistency_driver)
-with c4:
+headline_col1, headline_col2 = st.columns(2)
+headline_col3, headline_col4 = st.columns(2)
+
+with headline_col1:
+    st.metric("Fastest Average Pace", top_pace_row["Average Lap"])
+    st.caption(f"{top_pace_row['DriverName']} • {top_pace_row['Team']}")
+
+with headline_col2:
+    st.metric("Best One-Lap Pace", top_bestlap_row["Best Lap"])
+    st.caption(f"{top_bestlap_row['DriverName']} • {top_bestlap_row['Team']}")
+
+with headline_col3:
+    st.metric("Most Consistent", top_consistency_row["Consistency"])
+    st.caption(f"{top_consistency_row['DriverName']} • {top_consistency_row['Team']}")
+
+with headline_col4:
     st.metric("Drivers Ranked", len(pace_df))
+    st.caption(f"Minimum laps counted: {min_laps}")
 
 # -----------------------------------
 # Main ranking table
