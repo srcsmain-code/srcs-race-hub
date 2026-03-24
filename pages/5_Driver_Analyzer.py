@@ -49,7 +49,6 @@ driver_standings = calculate_driver_standings(season_results_df)
 drivers = sorted(season_results_df["DriverName"].dropna().unique().tolist())
 
 selected_driver = st.selectbox("Select Driver", drivers)
-st.caption(f"Current focus: {selected_driver}")
 
 driver_df = season_results_df[season_results_df["DriverName"] == selected_driver].copy()
 
