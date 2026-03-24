@@ -48,9 +48,16 @@ def apply_srcs_style():
         border-radius: 14px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.18);
         min-height: 120px;
+        height: auto !important;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+    }
+
+    div[data-testid="stMetric"] > div {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
     }
 
     /* Metric label */
@@ -60,7 +67,7 @@ def apply_srcs_style():
         overflow: visible !important;
         text-overflow: unset !important;
         word-break: break-word !important;
-        line-height: 1.2 !important;
+        line-height: 1.25 !important;
     }
 
     /* Metric value */
@@ -69,7 +76,7 @@ def apply_srcs_style():
         overflow: visible !important;
         text-overflow: unset !important;
         word-break: break-word !important;
-        line-height: 1.05 !important;
+        line-height: 1.15 !important;
     }
 
     div[data-testid="stMetricValue"] > div {
@@ -86,6 +93,43 @@ def apply_srcs_style():
         div[data-testid="stMetricValue"] > div {
             font-size: 1.8rem !important;
         }
+    }
+
+    /* Tabs: allow wrapping instead of ... */
+    button[data-baseweb="tab"] {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        height: auto !important;
+        min-height: 44px;
+        line-height: 1.2 !important;
+        padding-top: 0.45rem !important;
+        padding-bottom: 0.45rem !important;
+    }
+
+    /* Buttons */
+    .stButton > button {
+        border-radius: 10px;
+        border: 1px solid rgba(192,192,192,0.22);
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        height: auto !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Radio / checkbox / widget labels */
+    .stRadio label,
+    .stCheckbox label,
+    .stSelectbox label,
+    .stMultiSelect label,
+    .stTextInput label,
+    .stNumberInput label,
+    .stTextArea label {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        word-break: break-word !important;
     }
 
     /* Dataframes and tables */
@@ -117,15 +161,28 @@ def apply_srcs_style():
         color: #FFFFFF;
     }
 
-    /* Buttons */
-    .stButton > button {
-        border-radius: 10px;
-        border: 1px solid rgba(192,192,192,0.22);
+    /* Sidebar navigation links / page labels */
+    section[data-testid="stSidebar"] a,
+    section[data-testid="stSidebar"] button,
+    section[data-testid="stSidebar"] [data-testid="stSidebarNav"] * {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
     }
 
     /* Alerts */
     div[data-testid="stAlert"] {
         border-radius: 12px;
+    }
+
+    /* Markdown and text blocks inside columns/cards */
+    div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stMarkdownContainer"] li,
+    div[data-testid="stMarkdownContainer"] span {
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
 
     /* Hero panel utility */
@@ -150,31 +207,5 @@ def apply_srcs_style():
         font-size: 1rem;
         margin-bottom: 0;
     }
-    /* Fix truncated text in metric cards and info blocks */
-div[data-testid="stMetric"] {
-    height: auto !important;
-    min-height: 120px;
-}
-
-div[data-testid="stMetric"] > div {
-    white-space: normal !important;
-    overflow: visible !important;
-}
-
-div[data-testid="stMetricLabel"] {
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    line-height: 1.3 !important;
-}
-
-div[data-testid="stMetricValue"] {
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    line-height: 1.2 !important;
-    word-break: break-word !important;
-}
-    
     </style>
     """, unsafe_allow_html=True)
