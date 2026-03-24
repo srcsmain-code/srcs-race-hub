@@ -49,6 +49,7 @@ driver_standings = calculate_driver_standings(season_results_df)
 drivers = sorted(season_results_df["DriverName"].dropna().unique().tolist())
 
 selected_driver = st.selectbox("Select Driver", drivers)
+st.caption(f"Current focus: {selected_driver}")
 
 driver_df = season_results_df[season_results_df["DriverName"] == selected_driver].copy()
 
@@ -143,18 +144,30 @@ driver_position = int(driver_position_match.iloc[0])
 team = driver_df.iloc[-1]["Team"]
 
 c1, c2, c3, c4, c5, c6 = st.columns(6)
+
 with c1:
-    st.metric("Championship Pos", driver_position)
+    st.metric("Championship Pos", f"P{driver_position}")
+    st.caption(selected_driver)
+
 with c2:
-    st.metric("Team", team)
+    st.metric("Team", "Current")
+    st.caption(team)
+
 with c3:
     st.metric("Points", total_points)
+    st.caption(f"Races: {races}")
+
 with c4:
     st.metric("Best Finish", f"P{best_finish}")
+    st.caption(f"Best Grid: P{best_grid}")
+
 with c5:
     st.metric("Average Finish", avg_finish)
+    st.caption(f"Average Grid: {avg_grid}")
+
 with c6:
     st.metric("Avg Pos Gain/Loss", positions_gained_avg)
+    st.caption(f"Total: {positions_gained_total}")
 
 # ---------------------------------------------------
 # STRONGER PROFILE BLOCK
@@ -184,20 +197,30 @@ else:
     avg_impact = 0.0
 
 p1, p2, p3, p4, p5, p6 = st.columns(6)
+
 with p1:
     st.metric("Best Lap", ms_to_laptime(best_lap_ms) if best_lap_ms > 0 else "-")
+    st.caption("Season best")
+
 with p2:
     st.metric("Average Lap", ms_to_laptime(avg_lap_ms) if avg_lap_ms > 0 else "-")
+    st.caption(f"Laps counted: {laps_counted}")
+
 with p3:
     st.metric("Median Lap", ms_to_laptime(median_lap_ms) if median_lap_ms > 0 else "-")
+    st.caption("Middle lap value")
+
 with p4:
     st.metric("Consistency", ms_to_laptime(std_lap_ms) if std_lap_ms >= 0 else "-")
+    st.caption("Std. deviation")
+
 with p5:
     st.metric("Incident Count", incident_count)
+    st.caption(f"Avg impact: {avg_impact}")
+
 with p6:
     st.metric("Max Impact Speed", round(max_impact, 1))
-
-profile_left, profile_right = st.columns([1.2, 1])
+    st.caption("Highest recorded")
 
 with profile_left:
     profile_df = pd.DataFrame([
