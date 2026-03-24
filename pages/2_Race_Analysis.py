@@ -67,15 +67,24 @@ laps_df["LapNumber"] = laps_df["LapNumber"].astype(int)
 
 st.subheader(f"Round Overview — {selected_summary['Round']}")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2 = st.columns(2)
+col3, col4 = st.columns(2)
+
 with col1:
-    st.metric("Grand Prix", selected_summary["Grand Prix"])
+    st.metric("Grand Prix", selected_summary["Round"])
+    st.caption(selected_summary["Grand Prix"])
+
 with col2:
-    st.metric("Track", selected_summary["Track"])
+    st.metric("Track", "Session")
+    st.caption(f"{selected_summary['Track']} • {selected_summary['Session Type']}")
+
 with col3:
-    st.metric("Fastest Lap", selected_summary["Fastest Lap Driver"])
+    st.metric("Fastest Lap", selected_summary["Fastest Lap Time"])
+    st.caption(selected_summary["Fastest Lap Driver"])
+
 with col4:
-    st.metric("Fastest Time", selected_summary["Fastest Lap Time"])
+    st.metric("Valid Laps", len(laps_df))
+    st.caption("Official laps in dataset")
 
 st.subheader("Lap Time Trend by Driver")
 
