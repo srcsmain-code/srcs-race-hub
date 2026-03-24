@@ -54,13 +54,21 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.metric("Winner", winner_row["DriverName"])
-with col2:
-    st.metric("Pole", pole_row["DriverName"])
-with col3:
-    st.metric("Fastest Lap", selected_summary["Fastest Lap Driver"])
-with col4:
-    st.metric("Biggest Mover", biggest_mover_row["DriverName"])
+    st.caption(f"Team: {winner_row['Team']}")
 
+with col2:
+    st.metric("Pole", ms_to_laptime(pole_row["BestLap"]))
+    st.caption(pole_row["DriverName"])
+
+with col3:
+    st.metric("Fastest Lap", selected_summary["Fastest Lap Time"])
+    st.caption(selected_summary["Fastest Lap Driver"])
+
+with col4:
+    gain_value = int(biggest_mover_row["Positions Gained"])
+    st.metric("Biggest Mover", f"+{gain_value}" if gain_value >= 0 else str(gain_value))
+    st.caption(biggest_mover_row["DriverName"])
+    
 st.caption(
     f"{selected_summary['Grand Prix']} • {selected_summary['Track']} • {selected_summary['Session Type']}"
 )
