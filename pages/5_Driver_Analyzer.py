@@ -142,29 +142,30 @@ if driver_position_match.empty:
 driver_position = int(driver_position_match.iloc[0])
 team = driver_df.iloc[-1]["Team"]
 
-c1, c2, c3, c4, c5, c6 = st.columns(6)
+row1_col1, row1_col2, row1_col3 = st.columns(3)
+row2_col1, row2_col2, row2_col3 = st.columns(3)
 
-with c1:
+with row1_col1:
     st.metric("Championship Pos", f"P{driver_position}")
     st.caption(selected_driver)
 
-with c2:
+with row1_col2:
     st.metric("Team", "Current")
     st.caption(team)
 
-with c3:
+with row1_col3:
     st.metric("Points", total_points)
     st.caption(f"Races: {races}")
 
-with c4:
+with row2_col1:
     st.metric("Best Finish", f"P{best_finish}")
     st.caption(f"Best Grid: P{best_grid}")
 
-with c5:
+with row2_col2:
     st.metric("Average Finish", avg_finish)
     st.caption(f"Average Grid: {avg_grid}")
 
-with c6:
+with row2_col3:
     st.metric("Avg Pos Gain/Loss", positions_gained_avg)
     st.caption(f"Total: {positions_gained_total}")
 
@@ -195,29 +196,30 @@ else:
     max_impact = 0.0
     avg_impact = 0.0
 
-p1, p2, p3, p4, p5, p6 = st.columns(6)
+pace_row1_col1, pace_row1_col2, pace_row1_col3 = st.columns(3)
+pace_row2_col1, pace_row2_col2, pace_row2_col3 = st.columns(3)
 
-with p1:
+with pace_row1_col1:
     st.metric("Best Lap", ms_to_laptime(best_lap_ms) if best_lap_ms > 0 else "-")
     st.caption("Season best")
 
-with p2:
+with pace_row1_col2:
     st.metric("Average Lap", ms_to_laptime(avg_lap_ms) if avg_lap_ms > 0 else "-")
     st.caption(f"Laps counted: {laps_counted}")
 
-with p3:
+with pace_row1_col3:
     st.metric("Median Lap", ms_to_laptime(median_lap_ms) if median_lap_ms > 0 else "-")
     st.caption("Middle lap value")
 
-with p4:
+with pace_row2_col1:
     st.metric("Consistency", ms_to_laptime(std_lap_ms) if std_lap_ms >= 0 else "-")
     st.caption("Std. deviation")
 
-with p5:
+with pace_row2_col2:
     st.metric("Incident Count", incident_count)
     st.caption(f"Avg impact: {avg_impact}")
 
-with p6:
+with pace_row2_col3:
     st.metric("Max Impact Speed", round(max_impact, 1))
     st.caption("Highest recorded")
 
