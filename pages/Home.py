@@ -72,13 +72,17 @@ podium_df = latest_round_df.head(3).copy()
 
 st.subheader("Season Snapshot")
 
+round_label = str(latest_summary["Round"]).split("—")[0].strip()
+if round_label == latest_summary["Round"]:
+    round_label = str(latest_summary["Round"]).split("-")[0].strip()
+
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
     st.metric("Rounds Loaded", len(race_files))
 
 with c2:
-    st.metric("Latest Round", "Round 1")
+    st.metric("Latest Round", round_label)
     st.caption(latest_summary["Grand Prix"])
 
 with c3:
