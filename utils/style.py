@@ -150,5 +150,31 @@ def apply_srcs_style():
         font-size: 1rem;
         margin-bottom: 0;
     }
+    /* Fix truncated text in metric cards and info blocks */
+div[data-testid="stMetric"] {
+    height: auto !important;
+    min-height: 120px;
+}
+
+div[data-testid="stMetric"] > div {
+    white-space: normal !important;
+    overflow: visible !important;
+}
+
+div[data-testid="stMetricLabel"] {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    line-height: 1.3 !important;
+}
+
+div[data-testid="stMetricValue"] {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    line-height: 1.2 !important;
+    word-break: break-word !important;
+}
+    
     </style>
     """, unsafe_allow_html=True)
