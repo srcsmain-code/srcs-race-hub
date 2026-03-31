@@ -2,9 +2,10 @@ import math
 from pathlib import Path
 
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from streamlit.components.v1 import html as st_html
+from html import escape
 
 from utils.data_loader import load_all_race_results
 from utils.style import apply_srcs_style
@@ -913,68 +914,67 @@ def format_candidates_table(df):
     return out[existing_cols].sort_values(["Driver", "Lap"])
 
 def render_kpi_card(title, value, delta=None):
-    title = "-" if title is None or title == "" else str(title)
-    value = "-" if value is None or value == "" else str(value)
-    delta = None if delta is None or delta == "" else str(delta)
+    title = escape("-" if title is None or title == "" else str(title))
+    value = escape("-" if value is None or value == "" else str(value))
+    delta = None if delta is None or delta == "" else escape(str(delta))
 
     delta_block = ""
     if delta:
         delta_block = f"""
-            <div style="
-                display:inline-block;
-                margin-top:12px;
-                padding:5px 12px;
-                border-radius:999px;
-                background:rgba(50, 205, 50, 0.16);
-                color:#66E08A;
-                font-size:0.95rem;
-                font-weight:700;
-            ">
-                {delta}
-            </div>
+        <div style="
+            display:inline-block;
+            margin-top:12px;
+            padding:5px 12px;
+            border-radius:999px;
+            background:rgba(50, 205, 50, 0.16);
+            color:#66E08A;
+            font-size:15px;
+            font-weight:700;
+        ">
+            {delta}
+        </div>
         """
 
-    st.markdown(
-        f"""
+    card_html = f"""
+    <div style="
+        background:linear-gradient(180deg, rgba(10,26,102,0.55) 0%, rgba(5,10,25,0.88) 100%);
+        border:1px solid rgba(255,255,255,0.10);
+        border-radius:18px;
+        padding:20px 18px 18px 18px;
+        min-height:150px;
+        box-shadow:0 6px 18px rgba(0,0,0,0.18);
+        color:white;
+        font-family:Arial, Helvetica, sans-serif;
+    ">
         <div style="
-            background:linear-gradient(180deg, rgba(10,26,102,0.55) 0%, rgba(5,10,25,0.88) 100%);
-            border:1px solid rgba(255,255,255,0.10);
-            border-radius:18px;
-            padding:20px 18px 18px 18px;
-            min-height:150px;
-            box-shadow:0 6px 18px rgba(0,0,0,0.18);
+            font-size:18px;
+            font-weight:700;
+            line-height:1.2;
+            margin-bottom:14px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
         ">
-            <div style="
-                color:#FFFFFF;
-                font-size:1.05rem;
-                font-weight:700;
-                line-height:1.2;
-                margin-bottom:14px;
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;
-            ">
-                {title}
-            </div>
-
-            <div style="
-                color:#FFFFFF;
-                font-size:1.9rem;
-                font-weight:800;
-                line-height:1.1;
-                letter-spacing:-0.02em;
-                min-height:64px;
-                overflow-wrap:anywhere;
-                word-break:break-word;
-            ">
-                {value}
-            </div>
-
-            {delta_block}
+            {title}
         </div>
-        """,
-        unsafe_allow_html=True,
-    ) 
+
+        <div style="
+            font-size:34px;
+            font-weight:800;
+            line-height:1.1;
+            letter-spacing:-0.02em;
+            min-height:64px;
+            overflow-wrap:anywhere;
+            word-break:break-word;
+        ">
+            {value}
+        </div>
+
+        {delta_block}
+    </div>
+    """
+
+    st_html(card_html, height=170, scrolling=False)
 
 # =========================================================
 # LOAD DATA
