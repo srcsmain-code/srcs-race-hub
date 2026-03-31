@@ -25,6 +25,35 @@ st.caption("Pit windows, stint phases, position swings, and race strategy outcom
 # HELPERS
 # =========================================================
 
+TEAM_ID_TO_NAME = {
+    "483068": "Ferrari",
+    "483069": "Red Bull",
+    "483070": "Mercedes",
+    "483071": "McLaren",
+    "483072": "Aston Martin",
+    "483073": "Racing Bulls",
+    "483074": "Haas F1",
+    "483075": "Williams",
+    "483076": "Audi",
+    "483077": "Alpine",
+    "483078": "Ferrari",
+    "483079": "Red Bull",
+    "483080": "Mercedes",
+    "483081": "McLaren",
+    "483082": "Aston Martin",
+    "483083": "Racing Bulls",
+    "483084": "Haas F1",
+    "483085": "Williams",
+    "483086": "Audi",
+    "483087": "Alpine",
+}
+
+def normalize_team_name(team_value):
+    if team_value is None or team_value == "":
+        return "Unknown"
+    team_value = str(team_value).strip()
+    return TEAM_ID_TO_NAME.get(team_value, team_value)
+
 DATA_DIR = Path("data")
 
 
@@ -77,9 +106,7 @@ def get_driver_name_from_car(car):
 def get_team_from_car(car):
     driver = car.get("Driver", {}) if isinstance(car, dict) else {}
     team = driver.get("Team")
-    if team is None or team == "":
-        return "Unknown"
-    return str(team)
+    return normalize_team_name(team)
 
 
 def build_car_lookup(selected_race_data):
@@ -165,7 +192,7 @@ def extract_lap_rows(selected_race_data):
         # Team is usually not on lap rows, so infer from Cars via CarId
         team = "Unknown"
         if car_id in car_map:
-            team = car_map[car_id]["Team"]
+           team = normalize_team_name(car_map[car_id]["Team"])
 
         lap_time_ms = safe_int(
             lap.get("LapTime")
