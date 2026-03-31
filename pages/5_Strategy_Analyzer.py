@@ -912,6 +912,66 @@ def format_candidates_table(df):
     existing_cols = [c for c in cols if c in out.columns]
     return out[existing_cols].sort_values(["Driver", "Lap"])
 
+def render_kpi_card(title, value, delta=None):
+    value = "-" if value is None or value == "" else str(value)
+    delta_html = ""
+    if delta not in [None, ""]:
+        delta_html = f"""
+        <div style="
+            display:inline-block;
+            margin-top:10px;
+            padding:4px 10px;
+            border-radius:999px;
+            background:rgba(50, 205, 50, 0.16);
+            color:#66E08A;
+            font-size:0.95rem;
+            font-weight:600;
+        ">
+            {delta}
+        </div>
+        """
+
+    st.markdown(
+        f"""
+        <div style="
+            background:linear-gradient(180deg, rgba(10,26,102,0.55) 0%, rgba(5,10,25,0.88) 100%);
+            border:1px solid rgba(255,255,255,0.10);
+            border-radius:18px;
+            padding:20px 18px 18px 18px;
+            min-height:150px;
+            box-shadow:0 6px 18px rgba(0,0,0,0.18);
+        ">
+            <div style="
+                color:#FFFFFF;
+                font-size:1.05rem;
+                font-weight:700;
+                line-height:1.2;
+                margin-bottom:12px;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            ">
+                {title}
+            </div>
+
+            <div style="
+                color:#FFFFFF;
+                font-size:2.2rem;
+                font-weight:800;
+                line-height:1.05;
+                letter-spacing:-0.02em;
+                white-space:normal;
+                overflow-wrap:anywhere;
+                word-break:break-word;
+            ">
+                {value}
+            </div>
+
+            {delta_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # =========================================================
 # LOAD DATA
@@ -1021,24 +1081,24 @@ card1, card2, card3, card4, card5, card6 = st.columns(6)
 with card1:
     if not pit_rows.empty:
         earliest = pit_rows.sort_values("PitLap").iloc[0]
-        st.metric("Earliest Stop", earliest["Driver"], f"Lap {int(earliest['PitLap'])}")
+        render_kpi_card("Earliest Stop", earliest["Driver"], f"Lap {int(earliest['PitLap'])}")
     else:
-        st.metric("Earliest Stop", "-", "-")
+        render_kpi_card("Earliest Stop", "-", "-")
 
 with card2:
     if not pit_rows.empty:
         latest = pit_rows.sort_values("PitLap", ascending=False).iloc[0]
-        st.metric("Latest Stop", latest["Driver"], f"Lap {int(latest['PitLap'])}")
+        render_kpi_card("Latest Stop", latest["Driver"], f"Lap {int(latest['PitLap'])}")
     else:
-        st.metric("Latest Stop", "-", "-")
+        render_kpi_card("Latest Stop", "-", "-")
 
 with card3:
     best_loss_rows = pit_rows.dropna(subset=["PitLossMs"]).sort_values("PitLossMs").head(1)
     if not best_loss_rows.empty:
         row = best_loss_rows.iloc[0]
-        st.metric("Lowest Pit Loss", row["Driver"], ms_to_seconds_str(row["PitLossMs"]))
+        render_kpi_card("Lowest Pit Loss", row["Driver"], ms_to_seconds_str(row["PitLossMs"]))
     else:
-        st.metric("Lowest Pit Loss", "-", "-")
+        render_kpi_card("Lowest Pit Loss", "-", "-")
 
 with card4:
     gain_rows = filtered_strategy_df.dropna(subset=["NetStrategyGain"]).sort_values(
@@ -1046,9 +1106,9 @@ with card4:
     )
     if not gain_rows.empty:
         row = gain_rows.iloc[0]
-        st.metric("Biggest Gain", row["Driver"], f"+{int(row['NetStrategyGain'])}")
+        render_kpi_card("Biggest Gain", row["Driver"], f"+{int(row['NetStrategyGain'])}")
     else:
-        st.metric("Biggest Gain", "-", "-")
+        render_kpi_card("Biggest Gain", "-", "-")
 
 with card5:
     loss_rows = filtered_strategy_df.dropna(subset=["NetStrategyGain"]).sort_values(
@@ -1056,17 +1116,17 @@ with card5:
     )
     if not loss_rows.empty:
         row = loss_rows.iloc[0]
-        st.metric("Biggest Loss", row["Driver"], str(int(row["NetStrategyGain"])))
+        render_kpi_card("Biggest Loss", row["Driver"], str(int(row["NetStrategyGain"])))
     else:
-        st.metric("Biggest Loss", "-", "-")
+        render_kpi_card("Biggest Loss", "-", "-")
 
 with card6:
     if not pit_rows.empty:
         lap_counts = pit_rows["PitLap"].value_counts().sort_index()
         common_lap = int(lap_counts.idxmax())
-        st.metric("Common Stop Window", f"Lap {common_lap}", f"{int(lap_counts.max())} driver(s)")
+        render_kpi_card("Common Stop Window", f"Lap {common_lap}", f"{int(lap_counts.max())} driver(s)")
     else:
-        st.metric("Common Stop Window", "-", "-")
+        render_kpi_card("Common Stop Window", "-", "-")
 
 
 # =========================================================
