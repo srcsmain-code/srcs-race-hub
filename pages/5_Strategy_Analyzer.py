@@ -913,65 +913,65 @@ def format_candidates_table(df):
     return out[existing_cols].sort_values(["Driver", "Lap"])
 
 def render_kpi_card(title, value, delta=None):
+    title = "-" if title is None or title == "" else str(title)
     value = "-" if value is None or value == "" else str(value)
-    delta_html = ""
-    if delta not in [None, ""]:
-        delta_html = f"""
+    delta = None if delta is None or delta == "" else str(delta)
+
+    html = f"""
+    <div style="
+        background: linear-gradient(180deg, rgba(10,26,102,0.55) 0%, rgba(5,10,25,0.88) 100%);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 18px;
+        padding: 20px 18px 18px 18px;
+        min-height: 150px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    ">
         <div style="
-            display:inline-block;
-            margin-top:10px;
-            padding:4px 10px;
-            border-radius:999px;
-            background:rgba(50, 205, 50, 0.16);
-            color:#66E08A;
-            font-size:0.95rem;
-            font-weight:600;
+            color: #FFFFFF;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        ">
+            {title}
+        </div>
+
+        <div style="
+            color: #FFFFFF;
+            font-size: 2.0rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            min-height: 70px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        ">
+            {value}
+        </div>
+    """
+
+    if delta:
+        html += f"""
+        <div style="
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(50, 205, 50, 0.16);
+            color: #66E08A;
+            font-size: 0.95rem;
+            font-weight: 600;
         ">
             {delta}
         </div>
         """
 
-    st.markdown(
-        f"""
-        <div style="
-            background:linear-gradient(180deg, rgba(10,26,102,0.55) 0%, rgba(5,10,25,0.88) 100%);
-            border:1px solid rgba(255,255,255,0.10);
-            border-radius:18px;
-            padding:20px 18px 18px 18px;
-            min-height:150px;
-            box-shadow:0 6px 18px rgba(0,0,0,0.18);
-        ">
-            <div style="
-                color:#FFFFFF;
-                font-size:1.05rem;
-                font-weight:700;
-                line-height:1.2;
-                margin-bottom:12px;
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;
-            ">
-                {title}
-            </div>
+    html += "</div>"
 
-            <div style="
-                color:#FFFFFF;
-                font-size:2.2rem;
-                font-weight:800;
-                line-height:1.05;
-                letter-spacing:-0.02em;
-                white-space:normal;
-                overflow-wrap:anywhere;
-                word-break:break-word;
-            ">
-                {value}
-            </div>
-
-            {delta_html}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown(html, unsafe_allow_html=True) 
 
 # =========================================================
 # LOAD DATA
