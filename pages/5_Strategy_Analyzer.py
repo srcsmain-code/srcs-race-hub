@@ -1079,7 +1079,7 @@ pit_rows = filtered_strategy_df[
     filtered_strategy_df["PitDetected"] & filtered_strategy_df["PitLap"].notna()
 ].copy()
 
-card1, card2, card3, card4, card5, card6 = st.columns(6)
+card1, card2, card3, card4, card5, card6 = st.columns([1, 1, 1, 1, 1, 1], gap="medium")
 
 with card1:
     if not pit_rows.empty:
