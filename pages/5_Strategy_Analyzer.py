@@ -131,7 +131,8 @@ def find_laps_list(selected_race_data):
 def extract_lap_rows(selected_race_data):
     """
     Converts the raw lap objects into a driver-lap table.
-    This function is intentionally defensive because JSON exports vary.
+    Supports SRCS / Race Square race JSON where Laps is a top-level list and
+    lap rows contain fields like DriverName, DriverGuid, CarId, LapTime, Timestamp, Tyre, Sectors.
     """
     laps = find_laps_list(selected_race_data)
     car_lookup = build_car_lookup(selected_race_data)
@@ -142,29 +143,35 @@ def extract_lap_rows(selected_race_data):
 
     rows = []
 
+    # Per-driver lap counter because the JSON lap rows do not contain LapNumber
+    lap_counter = {}
+
     for lap in laps:
         if not isinstance(lap, dict):
             continue
 
-        # Common field names seen in race exports
         car_id = safe_int(lap.get("CarId"))
-        lap_no = safe_int(
-            lap.get("Lap")
-            if "Lap" in lap
-            else lap.get("LapNumber")
-            if "LapNumber" in lap
-            else lap.get("lap")
-            if "lap" in lap
-            else None
+
+        # Driver name is directly on the lap row in this export
+        driver_name = normalize_driver_name(
+            lap.get("DriverName")
+            if "DriverName" in lap
+            else lap.get("Driver", {}).get("Name") if isinstance(lap.get("Driver"), dict) else None
         )
+
+        if not driver_name or driver_name in {"Unknown", "Server - Spectator"}:
+            continue
+
+        # Team is usually not on lap rows, so infer from Cars via CarId
+        team = "Unknown"
+        if car_id in car_map:
+            team = car_map[car_id]["Team"]
 
         lap_time_ms = safe_int(
             lap.get("LapTime")
             if "LapTime" in lap
             else lap.get("LapTimeMs")
             if "LapTimeMs" in lap
-            else lap.get("Time")
-            if "Time" in lap
             else None
         )
 
@@ -176,40 +183,9 @@ def extract_lap_rows(selected_race_data):
             else None
         )
 
-        position = safe_int(
-            lap.get("Position")
-            if "Position" in lap
-            else lap.get("RacePosition")
-            if "RacePosition" in lap
-            else lap.get("Pos")
-            if "Pos" in lap
-            else None
-        )
-
-        tyre = lap.get("Tyre") if "Tyre" in lap else lap.get("Compound") if "Compound" in lap else None
+        tyre = lap.get("Tyre") if "Tyre" in lap else "Unknown"
         sectors = lap.get("Sectors", [])
-
-        # Driver/team can be attached directly, or inferred from CarId
-        driver_name = None
-        team = None
-
-        if "Driver" in lap and isinstance(lap["Driver"], dict):
-            driver_name = normalize_driver_name(lap["Driver"].get("Name"))
-            team = lap["Driver"].get("Team", "Unknown")
-            if team in [None, ""]:
-                team = "Unknown"
-
-        if not driver_name and car_id in car_map:
-            driver_name = car_map[car_id]["Driver"]
-            team = car_map[car_id]["Team"]
-
-        if not driver_name:
-            continue
-        if driver_name == "Server - Spectator":
-            continue
-
-        if lap_no is None:
-            continue
+        cuts = safe_int(lap.get("Cuts"), 0)
 
         if lap_time_ms is not None and lap_time_ms <= 0:
             lap_time_ms = None
@@ -220,6 +196,10 @@ def extract_lap_rows(selected_race_data):
             s2 = safe_int(sectors[1])
             s3 = safe_int(sectors[2])
 
+        # Since no lap number exists, derive it by counting laps per driver in timestamp order
+        lap_counter[driver_name] = lap_counter.get(driver_name, 0) + 1
+        lap_no = lap_counter[driver_name]
+
         rows.append(
             {
                 "CarId": car_id,
@@ -228,8 +208,9 @@ def extract_lap_rows(selected_race_data):
                 "Lap": lap_no,
                 "LapTimeMs": lap_time_ms,
                 "Timestamp": timestamp,
-                "Position": position,
+                "Position": None,   # not present in this JSON lap row
                 "Tyre": tyre if tyre not in ["", None] else "Unknown",
+                "Cuts": cuts,
                 "S1": s1,
                 "S2": s2,
                 "S3": s3,
@@ -247,22 +228,26 @@ def extract_lap_rows(selected_race_data):
                 "Timestamp",
                 "Position",
                 "Tyre",
+                "Cuts",
                 "S1",
                 "S2",
                 "S3",
             ]
         )
 
-    df = pd.DataFrame(rows).sort_values(["Driver", "Lap"]).reset_index(drop=True)
+    df = pd.DataFrame(rows)
 
-    # Remove duplicate driver/lap rows by keeping the fastest valid lap
+    # Sort correctly before deduping / later logic
+    df = df.sort_values(["Driver", "Lap", "Timestamp"], na_position="last").reset_index(drop=True)
+
+    # Keep one row per driver/lap if duplicates ever occur
     df = (
         df.sort_values(["Driver", "Lap", "LapTimeMs"], na_position="last")
         .drop_duplicates(subset=["Driver", "Lap"], keep="first")
         .reset_index(drop=True)
     )
 
-    return df
+    return df 
 
 
 def derive_position_trace(driver_laps_df):
