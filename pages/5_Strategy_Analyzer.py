@@ -1079,23 +1079,23 @@ pit_rows = filtered_strategy_df[
     filtered_strategy_df["PitDetected"] & filtered_strategy_df["PitLap"].notna()
 ].copy()
 
-card1, card2, card3, card4, card5, card6 = st.columns([1, 1, 1, 1, 1, 1], gap="medium")
+row1_col1, row1_col2, row1_col3 = st.columns(3, gap="medium")
 
-with card1:
+with row1_col1:
     if not pit_rows.empty:
         earliest = pit_rows.sort_values("PitLap").iloc[0]
         render_kpi_card("Earliest Stop", earliest["Driver"], f"Lap {int(earliest['PitLap'])}")
     else:
         render_kpi_card("Earliest Stop", "-", "-")
 
-with card2:
+with row1_col2:
     if not pit_rows.empty:
         latest = pit_rows.sort_values("PitLap", ascending=False).iloc[0]
         render_kpi_card("Latest Stop", latest["Driver"], f"Lap {int(latest['PitLap'])}")
     else:
         render_kpi_card("Latest Stop", "-", "-")
 
-with card3:
+with row1_col3:
     best_loss_rows = pit_rows.dropna(subset=["PitLossMs"]).sort_values("PitLossMs").head(1)
     if not best_loss_rows.empty:
         row = best_loss_rows.iloc[0]
@@ -1103,7 +1103,11 @@ with card3:
     else:
         render_kpi_card("Lowest Pit Loss", "-", "-")
 
-with card4:
+st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
+
+row2_col1, row2_col2, row2_col3 = st.columns(3, gap="medium")
+
+with row2_col1:
     gain_rows = filtered_strategy_df.dropna(subset=["NetStrategyGain"]).sort_values(
         "NetStrategyGain", ascending=False
     )
@@ -1113,7 +1117,7 @@ with card4:
     else:
         render_kpi_card("Biggest Gain", "-", "-")
 
-with card5:
+with row2_col2:
     loss_rows = filtered_strategy_df.dropna(subset=["NetStrategyGain"]).sort_values(
         "NetStrategyGain", ascending=True
     )
@@ -1123,7 +1127,7 @@ with card5:
     else:
         render_kpi_card("Biggest Loss", "-", "-")
 
-with card6:
+with row2_col3:
     if not pit_rows.empty:
         lap_counts = pit_rows["PitLap"].value_counts().sort_index()
         common_lap = int(lap_counts.idxmax())
