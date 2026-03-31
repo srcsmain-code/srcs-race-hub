@@ -32,7 +32,7 @@ pages = {
         st.Page("pages/11_Team_Pace_Ranking.py", title="Team Pace Ranking", icon="🏁"),
         st.Page("pages/6_Team_Battle.py", title="Team Battle", icon="⚔️"),
         st.Page("pages/2_Race_Analysis.py", title="Race Analysis", icon="⏱️"),
-        st.Page("pages/5_Strategy_Analyzer.py", label="Strategy Analyzer", icon="🧠"),
+        st.Page("pages/5_Strategy_Analyzer.py", title="Strategy Analyzer", icon="🧠"),
     ],
 
     "STEWARDING": [
