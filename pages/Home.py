@@ -126,14 +126,21 @@ with right_col:
 
     nav_df = pd.DataFrame([
         {"Page": "Overview", "Purpose": "Round summary and headline race story"},
-        {"Page": "Results Center", "Purpose": "Official classification and points"},
-        {"Page": "Lap Time Lab", "Purpose": "Pace, fastest laps, and driver drill-down"},
-        {"Page": "Position Tracker", "Purpose": "Grid vs finish and positions gained/lost"},
-        {"Page": "Driver Analyzer", "Purpose": "Season-long view of one driver"},
-        {"Page": "Team Battle", "Purpose": "Constructors' Championship and team trends"},
-        {"Page": "Incident Center", "Purpose": "Steward notes, penalties, and incidents"},
+        {"Page": "Results Center", "Purpose": "Official classification, finish gaps, and points"},
+        {"Page": "Lap Time Lab", "Purpose": "Pace analysis, fastest laps, average pace, and driver lap traces"},
+        {"Page": "Position Tracker", "Purpose": "Grid vs finish, race movement, and estimated lap-end positions"},
+        {"Page": "Driver Analyzer", "Purpose": "Season performance intelligence, pace profile, and incident review"},
+        {"Page": "Driver Pace Ranking", "Purpose": "Season-wide driver pace leaderboard based on lap performance"},
+        {"Page": "Team Pace Ranking", "Purpose": "Season-wide team pace leaderboard based on official lap data"},
+        {"Page": "Team Battle", "Purpose": "Constructors' Championship trends and team-vs-team comparison"},
+        {"Page": "Race Analysis", "Purpose": "Round-level lap trends, fastest laps, average pace, and driver drill-down"},
+        {"Page": "Strategy Analyzer", "Purpose": "Pit windows, stint phases, position swings, and race strategy outcomes"},
+        {"Page": "Incident Center", "Purpose": "Steward notes, penalties, incidents, and contact review"},
+        {"Page": "Championship Dashboard", "Purpose": "Current drivers' and teams' championship standings overview"},
         {"Page": "Awards", "Purpose": "Round awards and standout performers"},
         {"Page": "Season Impact", "Purpose": "How a round changed both championships"},
+        {"Page": "Circuit Guide", "Purpose": "F1 reference data, SRCS target pace, circuit map, and driver assistant"},
+        {"Page": "Race Archive", "Purpose": "Historical round records and season results archive"},
     ])
 
     st.dataframe(nav_df, use_container_width=True, hide_index=True)
