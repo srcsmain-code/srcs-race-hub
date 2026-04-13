@@ -448,6 +448,237 @@ Drivers who master rhythm here gain a long-term advantage.
 Execution wins races at Suzuka — not aggression.
 """
     }
+    "miami": {
+        "event_overview": """
+Round 3 of the SRCS Grand Prix Season 2026 heads to Miami — a circuit that blends long straights, heavy braking zones, and a technical middle sector.
+
+This round comes at an important stage of the championship:
+- Early title contenders can strengthen momentum
+- Midfield drivers can reset their campaign
+- Teams begin to show whether their early results were pace or circumstance
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points (Top 10):
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap (must finish in Top 10)
+
+Momentum note:
+Miami rewards drivers who can combine raw speed with discipline under braking.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 5.412 km  
+**Turns:** 19  
+**Circuit Type:** Permanent street-style circuit  
+**Layout:** Long straights + technical low-speed section
+
+**Track Characteristics**
+Miami is a hybrid challenge:
+- Strong overtaking potential on the straights
+- Heavy braking zones
+- Slow, technical sector in the middle of the lap
+- Traction and stability are both critical
+
+This is a circuit where lap time comes from linking together very different corner types cleanly.
+
+**Sector 1 – Launch & Commitment**
+- Fast opening sequence
+- Confidence under direction change matters
+- Good exit speed sets up the long run ahead
+
+**Sector 2 – Precision & Patience**
+- Tightest and slowest section of the lap
+- Rear traction is heavily tested
+- Mistakes here cost both lap time and tire life
+
+**Sector 3 – Straight-Line Opportunity**
+- Heavy braking into overtaking zones
+- Strong exits are essential
+- Drivers can attack or defend aggressively here — but must stay controlled
+
+**Critical Corners**
+**Turn 1**
+- Lap 1 compression risk
+- Important for early positioning
+- Easy to lose time with over-caution or over-commitment
+
+**Turns 11–16 complex**
+- Slow-speed technical section
+- Traction-sensitive
+- Overdriving leads to rear instability and poor exits
+
+**End-of-straight braking zones**
+- Prime overtaking areas
+- Lockup risk is high
+- Precision matters more than desperation
+
+**Final corner**
+- Crucial for defending and attacking into the next lap
+- Clean traction exit creates straight-line advantage
+""",
+
+        "strategic_guidance": """
+Miami is a race of braking discipline, traction control, and timing your attacks properly.
+
+**Tire Management Model**
+- Rear tires are stressed in the slow technical section
+- Front tires take punishment under repeated heavy braking
+- Excessive wheelspin will hurt stint consistency quickly
+
+Key risks:
+- Rear overheating out of slow corners
+- Front lockups into major braking zones
+- Losing rhythm in the middle sector and overheating tires while recovering
+
+**Engineer Directive**
+- Be decisive under braking, but not optimistic
+- Prioritize traction over corner-entry heroics
+- Build pressure on rivals through exits, not just divebomb attempts
+
+**Pit Strategy Considerations**
+Undercut:
+- Strong if trapped behind a slower driver
+- Useful if clean air is available after the stop
+
+Overcut:
+- Can work if your tire wear is under control
+- Valuable if rivals are likely to rejoin in traffic
+
+**Critical Strategy Factor**
+- A clean out-lap and in-lap can swing the race
+- Penalties and lockups are often more costly than slightly conservative pace
+
+**Penalty Risks**
+- Late braking into overtaking zones
+- Track limits while chasing exit speed
+- Moving under braking during defense
+""",
+
+        "lap1_survival": """
+**Objective:** Survive the opening lap with a clean car and usable strategy options.
+
+**Key Risk Areas**
+- Turn 1 compression
+- Midfield bunching into heavy braking zones
+- Concertina effect in the technical middle sector
+
+**Key Principles**
+- Brake earlier than qualifying references
+- Expect chaos into Turn 1
+- Avoid forcing side-by-side fights through the tighter middle section
+- Focus on exits and positioning rather than winning every corner
+
+**Critical Advice**
+- Miami rewards patience early and punishment later
+- Lap 1 over-aggression often creates race-ending damage or penalties
+
+**Priority Hierarchy**
+Survival → Position → Aggression
+
+A clean first lap gives you multiple strategic paths later in the race.
+""",
+
+        "overtaking_defending": """
+**Primary Overtake Zones**
+
+**Turn 1**
+- Viable with a strong launch and good prior exit
+- High risk on Lap 1, better later in the race
+
+**Heavy braking zones at the end of the long straights**
+- Best overtaking opportunities
+- Requires stable braking and early commitment
+
+**Main straight**
+- Exit quality from the previous corner determines move success
+- Slipstream can create pressure even without full overlap
+
+**Defensive Protocol**
+- One defensive move only
+- Protect the inside early
+- No weaving under braking
+- Stay predictable under pressure
+- Prioritize strong exits to break tow range
+
+**Key Insight**
+In Miami, many passes are created one corner earlier through superior traction, not just braking bravery.
+""",
+
+        "championship_mindset": """
+Round 3 is where patterns start becoming meaningful.
+
+**Strategic Thinking**
+- By Miami, the table begins to reflect genuine form
+- A strong finish here can establish championship identity
+- Teams should begin maximizing combined points, not just individual attacks
+
+**Risk Management**
+- Miami offers overtaking, but also invites overconfidence
+- Smart aggression beats reckless ambition
+
+**Mindset Model**
+- Attack with structure
+- Defend with clarity
+- Think in sequences, not isolated corners
+
+The drivers who stay calm under pressure usually leave Miami with the strongest result.
+""",
+
+        "common_mistakes": """
+- Locking fronts into major braking zones
+- Overheating rears in the slow middle sector
+- Overcommitting to low-probability overtakes
+- Poor traction out of slow corners
+- Defending too late and picking up penalties
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Study the biggest braking zones
+- Identify best overtaking opportunities
+- Learn where traction matters most
+
+**During Practice**
+- Test braking consistency under fuel load
+- Monitor rear tire behavior in the technical section
+- Practice clean pit entry
+- Build a realistic race pace target
+
+**Pre-Qualifying**
+- Maximize tire preparation for braking confidence
+- Build speed progressively through the lap
+- Avoid overdriving the middle sector
+
+**Pre-Race**
+- Confirm pit plan
+- Visualize Lap 1 survival
+- Commit to a risk profile
+- Focus on exits, not just entries
+
+Miami rewards control under pressure.
+"""
+    },
 }
 
 
