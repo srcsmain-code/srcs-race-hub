@@ -18,6 +18,7 @@ track_key = track_options[selected_track_label]
 track_map_paths = {
     "melbourne": Path("assets/track_maps/melbourne.png"),
     "suzuka": Path("assets/track_maps/suzuka.png"),
+    "miami": Path("assets/track_maps/miami.png"),
 }
 
 benchmark = get_track_benchmark(track_key)
