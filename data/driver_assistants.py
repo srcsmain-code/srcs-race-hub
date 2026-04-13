@@ -447,7 +447,7 @@ Drivers who master rhythm here gain a long-term advantage.
 
 Execution wins races at Suzuka — not aggression.
 """
-    }
+    },
     "miami": {
         "event_overview": """
 Round 3 of the SRCS Grand Prix Season 2026 heads to Miami — a circuit that blends long straights, heavy braking zones, and a technical middle sector.
