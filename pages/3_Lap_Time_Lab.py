@@ -63,17 +63,17 @@ laps_df = laps_df.merge(driver_team_df, on="DriverName", how="left")
 laps_df["Team"] = laps_df["Team"].fillna("Unknown")
 
 team_colors = {
-    "McLaren": "#FF8700",
+      "McLaren": "#FF8700",
     "Ferrari": "#C00000",
     "Mercedes": "#00A19B",
-    "Red Bull": "#0B1E3C",
+    "Red Bull Racing": "#0B1E3C",
     "Williams": "#005AFF",
     "Aston Martin": "#006F62",
     "Alpine": "#0090FF",
-    "Haas": "#8B0000",
+    "Haas F1": "#8B0000",
     "Audi": "#BB0A30",
+    "Cadillac": "#B22222",
     "Racing Bulls": "#1A1F3B",
-    "Unknown": "#C0C0C0",
 }
 
 teams_present = laps_df["Team"].dropna().unique().tolist()
