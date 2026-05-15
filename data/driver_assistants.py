@@ -679,6 +679,295 @@ The drivers who stay calm under pressure usually leave Miami with the strongest 
 Miami rewards control under pressure.
 """
     },
+
+"red_bull_ring": {
+        "event_overview": """
+Round 4 of the SRCS Grand Prix Season 2026 takes us to the Red Bull Ring in Spielberg, Austria.
+
+This is the first race of the revised second phase of the SRCS calendar and carries its own identity:
+
+**The Sprint Battle**
+
+Flat-out racing. No excuses. Constant pressure.
+
+The Red Bull Ring is short, fast, aggressive, and deceptively simple. Because the lap is so short, the field compresses quickly. Small mistakes become big losses. A poor exit, one missed braking point, or a track-limits warning can immediately pull another driver into range.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+- SRCS start tire compound: Soft
+
+Championship Points (Top 10):
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap (must finish in Top 10)
+
+Round identity:
+The field compresses here. There is nowhere to hide. You survive the battlefield.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 4.318 km  
+**Turns:** 10  
+**Circuit Type:** Permanent racing circuit  
+**Layout:** Short lap, heavy braking zones, long straights, elevation change
+
+**Track Characteristics**
+The Red Bull Ring is built around:
+- Heavy braking
+- Traction exits
+- Slipstream battles
+- Short-lap pressure
+- Repeated overtaking opportunities
+- Constant pack racing
+
+This circuit looks simple, but that is the trap. With fewer corners, every braking zone matters more. Every exit matters more. Every mistake is visible.
+
+**Sector 1 – Launch, Turn 1, and the uphill drag**
+- Turn 1 exit is critical
+- Poor traction here compromises the long climb
+- Drivers behind can use the slipstream immediately
+- Track limits and exit kerbs can punish overcommitment
+
+**Sector 2 – The combat zone**
+- Turns 3 and 4 are the main battle areas
+- Heavy braking creates overtaking chances
+- Late braking is tempting, but running deep destroys exit speed
+- Side-by-side racing is likely here throughout the race
+
+**Sector 3 – Rhythm, precision, and penalties**
+- Faster, more flowing section
+- Easy to overdrive while chasing
+- Track limits can become a serious problem
+- Final-corner exit decides whether you attack or defend on the next lap
+
+**Critical Corners**
+
+**Turn 1**
+- Important exit onto the uphill section
+- Easy to run wide
+- Avoid excessive kerb use
+- Strong exit creates attacking potential
+
+**Turn 3**
+- Prime overtaking zone
+- Heavy braking after uphill run
+- High risk of divebombs
+- Defenders must be clear and early
+
+**Turn 4**
+- Another major braking zone
+- Great for switchbacks
+- Poor exit opens the door into the next sequence
+
+**Final Corner**
+- Critical for the main straight
+- Track limits risk
+- Exit speed decides the next-lap battle
+""",
+
+        "strategic_guidance": """
+The Red Bull Ring rewards controlled aggression.
+
+Because SRCS starts on Soft tires, the opening phase will be intense. The grip will be high, the pack will be close, and drivers will feel like they can attack everywhere. That is where mistakes happen.
+
+**Tire Management Model**
+Primary tire risks:
+- Rear wheelspin out of Turns 1, 3 and 4
+- Front lockups into the heavy braking zones
+- Sliding through the final sector
+- Overheating tires while fighting in traffic
+
+**Engineer Directive**
+- First 3 laps: survive the compression
+- Do not burn the Soft tires fighting every car immediately
+- Prioritize exits over heroic entries
+- Stay close and force mistakes rather than forcing desperate moves
+- Keep penalties under control
+
+**Pit Strategy Considerations**
+
+Undercut is viable if:
+- You are stuck behind a slower car
+- You can rejoin into clean air
+- Your out-lap can be clean and aggressive
+
+Overcut is viable if:
+- Your tire wear is under control
+- The cars ahead are fighting
+- You can keep consistent lap times while others lose time battling
+
+**Critical Strategy Factor**
+Because the lap is short, traffic matters. Rejoining into a pack can ruin a good strategy. Clean air is powerful, but only if you can use it immediately.
+
+**Penalty Risks**
+- Track limits at Turn 1
+- Track limits in the final sector
+- Late braking contact into Turn 3
+- Moving under braking while defending
+""",
+
+        "lap1_survival": """
+**Objective:** Survive Lap 1 without damage, penalties, or unnecessary position loss.
+
+The Red Bull Ring opening lap is dangerous because the field reaches the first braking zones quickly and remains tightly packed.
+
+**Key Risk Areas**
+- Turn 1 compression
+- Uphill run into Turn 3
+- Late braking into Turn 4
+- Cars rejoining after running wide
+- Side-by-side exits onto traction zones
+
+**Key Principles**
+- Brake earlier than qualifying reference
+- Expect cars to appear late on the inside
+- Leave space on corner exit
+- Do not force three-wide situations into Turn 3
+- Avoid panic if you lose one position early
+- Think about the next straight, not only the current corner
+
+**Critical Advice**
+Turn 1 does not win the race. Turn 3 can lose it.
+
+The field will compress. Stay calm, keep the car clean, and attack once the race settles.
+
+**Priority Hierarchy**
+Survival → Exit Speed → Position → Aggression
+
+A clean Lap 1 gives you many chances to fight back.
+""",
+
+        "overtaking_defending": """
+**Primary Overtake Zones**
+
+**Turn 3**
+- Best overtaking opportunity
+- Heavy braking after the uphill straight
+- Strong slipstream effect
+- Requires decisive but controlled braking
+
+**Turn 4**
+- Excellent secondary attack zone
+- Useful for switchbacks after Turn 3
+- Easy to overcommit and run deep
+
+**Turn 1**
+- Possible if the car ahead has poor final-corner exit
+- Higher risk on Lap 1
+- Better used as a pressure point than a desperation move
+
+**Attacking Protocol**
+- Set up the pass one corner earlier
+- Prioritize exit speed
+- Use slipstream patiently
+- Force the defender to choose a line early
+- Commit only when overlap is realistic
+- If the move is not on, live to attack at the next braking zone
+
+**Defensive Protocol**
+- One clear defensive move only
+- Defend early, not reactively
+- Do not weave on the uphill run
+- Protect the inside but preserve exit speed
+- Avoid parking the car on the apex
+- Think two corners ahead
+
+**Key Insight**
+At Red Bull Ring, a bad defence can cost more than simply conceding the corner and fighting back on the next straight.
+""",
+
+        "championship_mindset": """
+Round 4 starts the next phase of the SRCS season.
+
+By this point, championship patterns are forming:
+- Front-runners are defending momentum
+- Midfield drivers are trying to break through
+- New or reserve drivers can influence the team battle
+- Every point is starting to matter more
+
+**Strategic Thinking**
+The Red Bull Ring will tempt drivers into constant fighting. But the smartest drivers will know when to attack and when to let the race come back to them.
+
+This is a short lap. If you lose touch, it hurts. If you stay close, opportunities keep coming.
+
+**Risk Management**
+- Avoid penalties
+- Avoid emotional retaliation
+- Avoid low-percentage lunges
+- Avoid destroying the tires in early fights
+- Keep the car in points contention
+
+**Mindset Model**
+Aggressive, but not reckless.  
+Fast, but not frantic.  
+Brave, but not desperate.
+
+The driver who wins here will be the one who survives pressure without losing discipline.
+
+**Round 4 Identity**
+You survived the battlefield.
+""",
+
+        "common_mistakes": """
+- Braking too late into Turn 3
+- Running deep and losing exit speed
+- Overusing kerbs at Turn 1
+- Picking up track-limit warnings in the final sector
+- Fighting too hard during the first five laps
+- Defending reactively instead of early
+- Burning the Soft tires with wheelspin
+- Trying to win every straight-line battle
+- Forgetting that the car behind will likely get another chance on the next straight
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Learn braking references for Turns 1, 3 and 4
+- Identify safe overtaking zones
+- Review track-limit danger areas
+- Decide your aggression level before driving
+
+**During Practice**
+- Test heavy braking consistency
+- Practise clean exits from Turns 1, 3 and 4
+- Run several laps without track-limit warnings
+- Practise following another car closely if possible
+- Simulate pit entry and pit exit rhythm
+
+**Pre-Qualifying**
+- Build tire temperature gradually
+- Focus on exit speed, not only late braking
+- Avoid invalidating laps through overcommitment
+- Give yourself space for a clean lap
+
+**Pre-Race**
+- Confirm pit strategy
+- Visualize Lap 1 into Turn 1 and Turn 3
+- Prepare for close racing
+- Stay calm if boxed in early
+- Remember: clean pressure beats chaos
+
+Red Bull Ring rewards drivers who can fight hard without losing control.
+"""
+    },
 }
 
 
