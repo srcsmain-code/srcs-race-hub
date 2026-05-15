@@ -19,6 +19,13 @@ track_map_paths = {
     "melbourne": Path("assets/track_maps/melbourne.png"),
     "suzuka": Path("assets/track_maps/suzuka.png"),
     "miami": Path("assets/track_maps/miami.png"),
+    "red_bull_ring": Path("assets/track_maps/red_bull_ring.png"),
+    "silverstone": Path("assets/track_maps/silverstone.png"),
+    "spa": Path("assets/track_maps/spa.png"),
+    "zandvoort": Path("assets/track_maps/zandvoort.png"),
+    "monza": Path("assets/track_maps/monza.png"),
+    "canada": Path("assets/track_maps/canada.png"),
+    "interlagos": Path("assets/track_maps/interlagos.png"),
 }
 
 benchmark = get_track_benchmark(track_key)
