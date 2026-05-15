@@ -58,23 +58,23 @@ TRACK_BENCHMARKS = {
         "srcs_backmarker_pace": "1:40.0+",
     },
 
-    "monaco": {
-        "round_name": "Round 4 — Monaco Grand Prix",
-        "track_name": "Circuit de Monaco, Monte Carlo",
-        "race_date": "2026-06-07",
+    "red_bull_ring": {
+        "round_name": "Round 4 — Austrian Grand Prix",
+        "track_name": "Red Bull Ring, Spielberg",
+        "race_date": "2026-06-07 17:00",
 
         # Section 1 — Real-Life Reference (F1)
-        "official_race_lap_record": "1:12.909",
-        "lap_record_driver": "Lewis Hamilton",
-        "lap_record_year": 2021,
-        "pole_position_benchmark": "~1:10.0 – 1:11.5",
+        "official_race_lap_record": "1:07.475",
+        "lap_record_driver": "Lando Norris",
+        "lap_record_year": 2020,
+        "pole_position_benchmark": "~1:04.0 – 1:05.5",
 
         # Section 2 — SRCS Target Pace
-        "srcs_target_lap_time": "1:19.500",
-        "srcs_race_winning_pace": "1:19–1:20",
-        "srcs_podium_pace": "1:20–1:22",
-        "srcs_points_pace": "1:22–1:24",
-        "srcs_backmarker_pace": "1:24.0+",
+        "srcs_target_lap_time": "1:10.500",
+        "srcs_race_winning_pace": "1:10–1:11",
+        "srcs_podium_pace": "1:11–1:13",
+        "srcs_points_pace": "1:13–1:15",
+        "srcs_backmarker_pace": "1:15.0+",
     },
 
     "silverstone": {
@@ -96,10 +96,29 @@ TRACK_BENCHMARKS = {
         "srcs_backmarker_pace": "1:37.0+",
     },
 
+    "spa": {
+        "round_name": "Round 6 — Belgian Grand Prix",
+        "track_name": "Circuit de Spa-Francorchamps",
+        "race_date": "2026-08-02 16:00",
+
+        # Section 1 — Real-Life Reference (F1)
+        "official_race_lap_record": "1:46.286",
+        "lap_record_driver": "Valtteri Bottas",
+        "lap_record_year": 2018,
+        "pole_position_benchmark": "~1:41.0 – 1:43.0",
+
+        # Section 2 — SRCS Target Pace
+        "srcs_target_lap_time": "1:52.500",
+        "srcs_race_winning_pace": "1:52–1:54",
+        "srcs_podium_pace": "1:54–1:56",
+        "srcs_points_pace": "1:56–1:59",
+        "srcs_backmarker_pace": "1:59.0+",
+    },
+
     "zandvoort": {
-        "round_name": "Round 6 — Dutch Grand Prix",
+        "round_name": "Round 7 — Dutch Grand Prix",
         "track_name": "Circuit Zandvoort",
-        "race_date": "2026-08-23",
+        "race_date": "2026-09-06 16:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:11.097",
@@ -116,9 +135,9 @@ TRACK_BENCHMARKS = {
     },
 
     "monza": {
-        "round_name": "Round 7 — Italian Grand Prix",
+        "round_name": "Round 8 — Italian Grand Prix",
         "track_name": "Autodromo Nazionale Monza",
-        "race_date": "2026-09-06",
+        "race_date": "2026-10-04 16:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:21.046",
@@ -134,29 +153,29 @@ TRACK_BENCHMARKS = {
         "srcs_backmarker_pace": "1:31.0+",
     },
 
-    "singapore": {
-        "round_name": "Round 8 — Singapore Grand Prix",
-        "track_name": "Marina Bay Street Circuit",
-        "race_date": "2026-10-11",
+    "canada": {
+        "round_name": "Round 9 — Canadian Grand Prix",
+        "track_name": "Circuit Gilles Villeneuve, Montreal",
+        "race_date": "2026-11-01 16:00",
 
         # Section 1 — Real-Life Reference (F1)
-        "official_race_lap_record": "1:34.486",
-        "lap_record_driver": "Daniel Ricciardo",
-        "lap_record_year": 2024,
-        "pole_position_benchmark": "~1:29.5 – 1:31.0",
+        "official_race_lap_record": "1:13.078",
+        "lap_record_driver": "Valtteri Bottas",
+        "lap_record_year": 2019,
+        "pole_position_benchmark": "~1:10.0 – 1:12.0",
 
         # Section 2 — SRCS Target Pace
-        "srcs_target_lap_time": "1:41.000",
-        "srcs_race_winning_pace": "1:41–1:42",
-        "srcs_podium_pace": "1:42–1:44",
-        "srcs_points_pace": "1:44–1:46",
-        "srcs_backmarker_pace": "1:46.0+",
+        "srcs_target_lap_time": "1:18.500",
+        "srcs_race_winning_pace": "1:18–1:19",
+        "srcs_podium_pace": "1:19–1:21",
+        "srcs_points_pace": "1:21–1:23",
+        "srcs_backmarker_pace": "1:23.0+",
     },
 
     "interlagos": {
-        "round_name": "Round 9 — Brazilian Grand Prix",
+        "round_name": "Round 10 — Brazilian Grand Prix",
         "track_name": "Interlagos, Sao Paulo",
-        "race_date": "2026-11-08",
+        "race_date": "2026-12-06 16:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:10.540",
@@ -172,24 +191,7 @@ TRACK_BENCHMARKS = {
         "srcs_backmarker_pace": "1:21.0+",
     },
 
-    "abu_dhabi": {
-        "round_name": "Round 10 — Abu Dhabi Grand Prix",
-        "track_name": "Yas Marina Circuit",
-        "race_date": "2026-12-06",
-
-        # Section 1 — Real-Life Reference (F1)
-        "official_race_lap_record": "1:26.103",
-        "lap_record_driver": "Max Verstappen",
-        "lap_record_year": 2021,
-        "pole_position_benchmark": "~1:22.5 – 1:24.0",
-
-        # Section 2 — SRCS Target Pace
-        "srcs_target_lap_time": "1:31.500",
-        "srcs_race_winning_pace": "1:31–1:32",
-        "srcs_podium_pace": "1:32–1:34",
-        "srcs_points_pace": "1:34–1:36",
-        "srcs_backmarker_pace": "1:36.0+",
-    },
+    
 }
 
 
@@ -199,14 +201,14 @@ def get_track_benchmark(track_key: str) -> dict:
 
 def get_track_options() -> dict:
     return {
-        "Melbourne": "melbourne",
-        "Japan": "suzuka",
-        "Miami": "miami",
-        "Monaco": "monaco",
-        "Silverstone": "silverstone",
-        "Zandvoort": "zandvoort",
-        "Monza": "monza",
-        "Singapore": "singapore",
-        "Interlagos": "interlagos",
-        "Abu Dhabi": "abu_dhabi",
+        "Round 1 — Melbourne": "melbourne",
+        "Round 2 — Suzuka": "suzuka",
+        "Round 3 — Miami": "miami",
+        "Round 4 — Red Bull Ring": "red_bull_ring",
+        "Round 5 — Silverstone": "silverstone",
+        "Round 6 — Spa-Francorchamps": "spa",
+        "Round 7 — Zandvoort": "zandvoort",
+        "Round 8 — Monza": "monza",
+        "Round 9 — Canada": "canada",
+        "Round 10 — Interlagos": "interlagos",
     }
