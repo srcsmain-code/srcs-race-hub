@@ -28685,23 +28685,7 @@
 			"LapPenalty": 0,
 			"Disqualified": false
 		},
-		{
-			"BallastKG": 0,
-			"BestLap": 999999999,
-			"CarId": 0,
-			"CarModel": "rsq_formula_hybrid_1",
-			"DriverGuid": "60855141584586594",
-			"DriverName": "Server - Spectator",
-			"Restrictor": 0,
-			"TotalTime": 0,
-			"NumLaps": 0,
-			"ClassID": "00000000-0000-0000-0000-000000000000",
-			"GridPosition": 21,
-			"HasPenalty": false,
-			"PenaltyTime": 0,
-			"LapPenalty": 0,
-			"Disqualified": false
-		}
+		
 	],
 	"Penalties": null,
 	"TrackConfig": "1gp",
