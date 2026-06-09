@@ -45,6 +45,28 @@ else:
 drivers_standings_df = calculate_driver_standings(season_results_df)
 teams_standings_df = calculate_team_standings(season_results_df)
 
+st.subheader("Export / Test Tables")
+
+st.write("Drivers Championship")
+st.dataframe(drivers_standings_df, use_container_width=True, hide_index=True)
+
+st.download_button(
+    label="Download Drivers Championship CSV",
+    data=drivers_standings_df.to_csv(index=False),
+    file_name="drivers_championship_test.csv",
+    mime="text/csv",
+)
+
+st.write("Constructors Championship")
+st.dataframe(teams_standings_df, use_container_width=True, hide_index=True)
+
+st.download_button(
+    label="Download Constructors Championship CSV",
+    data=teams_standings_df.to_csv(index=False),
+    file_name="constructors_championship_test.csv",
+    mime="text/csv",
+)
+
 latest_round_df = season_results_df[season_results_df["Round"] == season_results_df["Round"].iloc[-1]].copy()
 latest_summary = round_summaries[-1]
 
