@@ -1501,6 +1501,254 @@ Possible if the exit from Bus Stop was strong.
 Spa rewards exit speed more than desperate braking manoeuvres.
 """
     },
+    "zandvoort": {
+        "event_overview": """
+Round 7 takes the SRCS Grand Prix Season to Zandvoort — a narrow, technical circuit where rhythm, precision and patience matter more than outright aggression.
+
+Zandvoort combines banked corners, fast direction changes and very limited room for error. Overtaking is difficult, so qualifying position, consistency and clean race execution become especially important.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points:
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap when finishing in the Top 10.
+
+At Zandvoort, speed comes from flow. A driver who remains smooth and controlled will usually outperform a driver who tries to force the lap.
+""",
+
+        "championship_mindset": """
+Round 7 is where championship pressure starts to build.
+
+With only a few rounds remaining:
+- Every mistake becomes more expensive
+- Qualifying position matters more
+- Clean points finishes become increasingly valuable
+- Team points can shift quickly
+
+Strategic questions:
+- Is this a race to attack, or protect a strong championship position?
+- Is defending against one rival worth losing time to several others?
+- Can patience create a better opportunity later?
+
+Zandvoort rewards discipline. The circuit punishes rushed decisions.
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Learn the banking at Tarzan, Hugenholtz and Arie Luyendyk.
+- Identify safe overtaking opportunities.
+- Review track-limit warning areas.
+- Understand pit entry and pit exit.
+
+**During Practice**
+- Build rhythm through the middle sector.
+- Practise alternative lines through Tarzan.
+- Focus on clean exits from Hugenholtz.
+- Test tire behaviour through long loaded corners.
+- Complete a consistent race run.
+
+**Pre-Qualifying**
+- Create a clear gap before starting the lap.
+- Build tire temperature progressively.
+- Avoid over-attacking the opening sector.
+- Prioritise a complete, valid lap.
+
+**Pre-Race**
+- Confirm pit strategy.
+- Visualise the opening lap.
+- Decide how aggressively to defend.
+- Prepare for long periods in traffic.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 4.259 km
+**Turns:** 14
+**Circuit Type:** Narrow, high-speed permanent circuit
+**Primary Challenge:** Maintaining rhythm while managing banking, tire load and limited overtaking opportunities.
+
+**Sector 1**
+- Tarzan
+- Gerlach
+- Hugenholtz
+
+Tarzan is the main overtaking zone.
+
+Gerlach and Hugenholtz demand precision. Hugenholtz exit is critical because poor traction affects the entire run uphill.
+
+**Sector 2**
+- Hunserug
+- Rob Slotemaker
+- Scheivlak
+
+This is the fastest and most flowing part of the circuit.
+
+Scheivlak requires confidence, but excessive steering input quickly overheats the front tires.
+
+**Sector 3**
+- Masters
+- Bocht 11 and Bocht 12
+- Kumho
+- Arie Luyendyk
+
+The final sector is technical and traction-sensitive.
+
+Arie Luyendyk is fully banked and leads onto the main straight. Exit speed is essential for both lap time and overtaking opportunities into Tarzan.
+
+**Critical Corners**
+
+**Tarzan**
+- Heavy braking
+- Primary overtaking opportunity
+- Multiple lines possible due to banking
+- Contact risk is high on Lap 1
+
+**Hugenholtz**
+- Steep banking
+- Slow corner with difficult traction
+- Prioritise exit over entry
+
+**Scheivlak**
+- Fast right-hander
+- Requires confidence and commitment
+- Avoid abrupt steering corrections
+
+**Bocht 11 and Bocht 12**
+- Tight sequence
+- Easy to lose rhythm
+- Important to stay patient on entry
+
+**Arie Luyendyk**
+- High-speed banked final corner
+- Full commitment requires stable steering
+- Exit determines speed onto the main straight
+""",
+
+        "strategic_guidance": """
+Zandvoort places significant load on the tires and offers limited passing opportunities.
+
+**Tire Management**
+Main risks:
+- Front-left overheating
+- Understeer through long loaded corners
+- Rear wheelspin from Hugenholtz
+- Tire scrub from repeated steering corrections
+
+**Engineer Directive**
+- Drive within the grip window.
+- Avoid forcing overtakes where the circuit does not support them.
+- Preserve front tire performance.
+- Build pressure rather than making desperate moves.
+
+**Pit Strategy**
+The undercut can be powerful because overtaking on track is difficult.
+
+Undercut works best when:
+- You are stuck behind a slower car.
+- Tire drop-off has started.
+- Clean air is available after the stop.
+
+Overcut works when:
+- Your pace remains stable.
+- Rivals rejoin in traffic.
+- You can maintain consistent lap times.
+
+**Race Pace Guidance**
+- Avoid qualifying-style commitment every lap.
+- Protect the front tires through Scheivlak.
+- Prioritise exits from Hugenholtz and Arie Luyendyk.
+- Accept that some laps will be compromised by traffic.
+
+**Penalty Risk**
+High-risk areas:
+- Tarzan entry
+- Hugenholtz exit
+- Scheivlak
+- Bocht 11 and 12
+- Arie Luyendyk exit
+""",
+
+        "common_mistakes": """
+- Braking too late into Tarzan
+- Forcing the car into Hugenholtz
+- Applying throttle too early on corner exit
+- Overdriving Scheivlak
+- Losing rhythm through the middle sector
+- Becoming impatient in traffic
+- Defending too aggressively on a narrow circuit
+- Overheating the front tires
+- Compromising Arie Luyendyk exit
+""",
+
+        "lap1_survival": """
+**Objective:** Complete Lap 1 without contact or damage.
+
+**Tarzan**
+- Brake earlier than normal.
+- Expect multiple cars to choose different lines.
+- Do not assume the outside line will remain open.
+
+**Hugenholtz**
+- Expect cars to bunch up.
+- Prioritise traction.
+- Avoid accelerating into the rear of another car.
+
+**Scheivlak**
+- Stay predictable.
+- Do not force side-by-side racing where there is insufficient room.
+
+**Final Sector**
+- Cars may remain tightly grouped.
+- Protect your line without making sudden moves.
+- Focus on getting a clean run onto the main straight.
+
+Lap 1 at Zandvoort is about survival, not heroics.
+""",
+
+        "overtaking_defending": """
+**Primary Overtaking Zones**
+
+**Tarzan**
+- Main overtaking opportunity.
+- Slipstream from the final corner is essential.
+- Banking allows multiple lines.
+- Clear overlap before turn-in is important.
+
+**Bocht 11**
+- Possible under braking.
+- High risk if the move begins too late.
+- Exit from Bocht 12 must still be protected.
+
+**Defensive Principles**
+- Choose the defensive line early.
+- Make one clear move.
+- Do not react late under braking.
+- Avoid forcing rivals onto grass or barriers.
+- Prioritise exit speed.
+
+**Racecraft Principle**
+At Zandvoort, pressure creates mistakes. A clean series of laps is often more effective than one desperate move.
+"""
+    },
 }
 
 
