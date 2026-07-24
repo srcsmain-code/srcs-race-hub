@@ -4,7 +4,7 @@ TRACK_BENCHMARKS = {
     "melbourne": {
         "round_name": "Round 1 — Australian Grand Prix",
         "track_name": "Albert Park, Melbourne",
-        "race_date": "2026-03-08",
+        "race_date": "2026-03-08 11:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:19.813",
@@ -23,7 +23,7 @@ TRACK_BENCHMARKS = {
     "suzuka": {
         "round_name": "Round 2 — Japan Grand Prix",
         "track_name": "Suzuka Circuit, Japan",
-        "race_date": "2026-04-12",
+        "race_date": "2026-04-12 15:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:30.983",
@@ -42,7 +42,7 @@ TRACK_BENCHMARKS = {
     "miami": {
         "round_name": "Round 3 — Miami Grand Prix",
         "track_name": "Miami International Autodrome",
-        "race_date": "2026-05-03",
+        "race_date": "2026-05-03 16:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:29.708",
@@ -80,7 +80,7 @@ TRACK_BENCHMARKS = {
     "silverstone": {
         "round_name": "Round 5 — British Grand Prix",
         "track_name": "Silverstone Circuit",
-        "race_date": "2026-07-05",
+        "race_date": "2026-07-05 14:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:27.097",
@@ -118,7 +118,7 @@ TRACK_BENCHMARKS = {
     "zandvoort": {
         "round_name": "Round 7 — Dutch Grand Prix",
         "track_name": "Circuit Zandvoort",
-        "race_date": "2026-09-06 16:00",
+        "race_date": "2026-09-06 17:00",
 
         # Section 1 — Real-Life Reference (F1)
         "official_race_lap_record": "1:11.097",
