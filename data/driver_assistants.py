@@ -972,7 +972,7 @@ Red Bull Ring rewards drivers who can fight hard without losing control.
         "event_overview": """
 Round 5 of the SRCS Grand Prix Season 2026 takes the championship to Silverstone — one of the fastest and most demanding circuits on the calendar.
 
-Silverstone rewards confidence, rhythm and precision. Drivers must balance high-speed commitment with tire management and disciplined racecraft.
+Silverstone rewards confidence more than anything, rhythm and precision. Drivers must balance high-speed commitment with tire management and disciplined racecraft.
 
 Race format includes:
 - Practice
