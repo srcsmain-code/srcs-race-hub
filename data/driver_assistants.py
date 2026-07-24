@@ -968,6 +968,290 @@ You survived the battlefield.
 Red Bull Ring rewards drivers who can fight hard without losing control.
 """
     },
+    "silverstone": {
+        "event_overview": """
+Round 5 of the SRCS Grand Prix Season 2026 takes the championship to Silverstone — one of the fastest and most demanding circuits on the calendar.
+
+Silverstone rewards confidence, rhythm and precision. Drivers must balance high-speed commitment with tire management and disciplined racecraft.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points:
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap when finishing in the Top 10.
+
+Silverstone is a circuit where one small mistake can affect several corners. Smoothness and consistency are more valuable than forcing every entry.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 5.891 km  
+**Turns:** 18  
+**Circuit Type:** High-speed permanent circuit  
+**Primary Challenge:** Sustained cornering load and high-speed direction changes
+
+**Track Characteristics**
+Silverstone combines:
+- Very high-speed corners
+- Long, loaded corner sequences
+- Heavy braking zones
+- Multiple overtaking opportunities
+- Significant front-tire stress
+
+The circuit rewards drivers who can carry speed without creating excessive understeer or tire temperature.
+
+**Sector 1 – Braking and Positioning**
+- Abbey is fast and requires confidence
+- Village is one of the main overtaking zones
+- The Loop is slow and traction-limited
+- A poor exit from The Loop compromises the run through Aintree
+
+**Sector 2 – Rhythm and Commitment**
+- Brooklands and Luffield require patience
+- Woodcote exit determines speed onto the old pit straight
+- Copse is a high-speed confidence corner
+- Entry mistakes at Copse create large time loss
+
+**Sector 3 – Maximum Commitment**
+- Maggotts, Becketts and Chapel form the defining sequence
+- Rhythm is more important than aggressive steering
+- Chapel exit determines speed down Hangar Straight
+- Stowe is a major overtaking and defensive zone
+- Club exit is vital for the run to the finish line
+
+**Critical Corners**
+
+**Village**
+- Heavy braking
+- Strong overtaking opportunity
+- High risk of Lap 1 contact
+- Avoid turning in too early
+
+**The Loop**
+- Slowest part of the circuit
+- Rear traction is critical
+- Patience on throttle prevents wheelspin
+
+**Brooklands**
+- Long braking zone
+- Inside line useful for defending
+- Easy to carry too much speed and miss Luffield
+
+**Copse**
+- High-speed commitment corner
+- Small steering corrections cost speed
+- Avoid forcing the car beyond front-grip limits
+
+**Maggotts–Becketts–Chapel**
+- Most important rhythm section
+- First input determines the entire sequence
+- Smooth direction changes reduce tire stress
+- Chapel exit is more important than attacking every apex
+
+**Stowe**
+- Primary overtaking opportunity after Hangar Straight
+- Late braking is possible, but overshooting ruins the run into Vale
+
+**Vale and Club**
+- Heavy braking followed by traction demand
+- Important final-lap overtaking zone
+- Club exit determines start-finish straight speed
+""",
+
+        "strategic_guidance": """
+Silverstone places high loads on the tires, especially the front axle.
+
+**Tire Management Model**
+Main risks:
+- Front-left overheating
+- Persistent understeer through long corners
+- Sliding through Maggotts and Becketts
+- Rear wheelspin from slow corners
+- Excessive curb use destabilising the car
+
+**Engineer Directive**
+- Build pace progressively
+- Avoid forcing the front tires during the opening laps
+- Prioritise clean exits over maximum entry speed
+- Use smooth steering through sustained corners
+
+**Pit Strategy Considerations**
+The undercut can be effective if:
+- Tire performance has clearly dropped
+- You are trapped behind slower traffic
+- You can rejoin in clean air
+
+The overcut may work if:
+- Your tires remain stable
+- Rivals rejoin in traffic
+- You can maintain consistent pace without sliding
+
+Practice:
+- Pit entry positioning
+- Braking for the pit lane
+- Pit exit under cold-tire conditions
+- Rejoining safely near the racing line
+
+**Race Pace Guidance**
+- Avoid qualifying-style commitment on every lap
+- Protect front tires in long loaded corners
+- Accept a small time loss rather than creating a large slide
+- Consistency through Sector 3 creates better race pace than isolated fast corners
+
+**Penalty Risk**
+High-risk areas include:
+- Track limits at Copse
+- Maggotts and Becketts cut warnings
+- Stowe exit
+- Vale and Club
+- Late contact under braking into Village
+""",
+
+        "lap1_survival": """
+**Objective:** Complete Lap 1 with the car intact and without penalties.
+
+**Turn 1 – Abbey**
+- Expect cars to arrive side-by-side
+- Do not assume the normal qualifying line is available
+- Leave room on corner exit
+
+**Village**
+- Brake earlier than your normal reference
+- Expect concertina effects
+- Avoid diving into a disappearing gap
+
+**The Loop**
+- Low-speed contact is common
+- Prioritise rotation and traction
+- Do not accelerate into the rear of a slower car
+
+**Brooklands**
+- Cars may arrive in groups
+- Protect the inside only if fully alongside
+- Avoid squeezing another driver off the circuit
+
+**Lap 1 Principle**
+Silverstone offers several overtaking opportunities. There is no need to settle the race in the opening sector.
+
+Survival → Position → Pace.
+""",
+
+        "overtaking_defending": """
+**Primary Overtaking Zones**
+
+**Village**
+- Strong braking opportunity
+- Best attempted with clear overlap before turn-in
+- Defending driver should choose a line early
+
+**Brooklands**
+- Good overtaking zone after the Wellington Straight
+- Inside line controls corner entry
+- Exit remains important for Luffield and Woodcote
+
+**Stowe**
+- Best high-speed overtaking opportunity
+- Strong exit from Chapel is essential
+- Late braking carries risk of running wide
+
+**Vale**
+- Effective late-race overtaking location
+- Heavy braking creates opportunity
+- Contact risk increases when cars arrive side-by-side
+
+**Defensive Protocol**
+- Make one clear defensive move
+- Do not move under braking
+- Protect the inside early
+- Avoid forcing rivals onto grass or outside circuit limits
+- Focus on exit speed when defending through a sequence
+
+**Racecraft Principle**
+At Silverstone, a good exit often creates a better overtaking opportunity than a desperate entry.
+""",
+
+        "championship_mindset": """
+Round 5 marks the midpoint of the SRCS Grand Prix Season.
+
+At this stage:
+- Championship gaps begin to matter
+- Consistency becomes increasingly valuable
+- Team points can change significantly in one race
+- Drivers must balance aggression with season objectives
+
+**Strategic Questions**
+- Are you racing for the win, podium or points?
+- Is the driver ahead a direct championship rival?
+- Is defending the position worth the tire cost?
+- Would a clean result strengthen your season more than a high-risk move?
+
+**Mindset**
+Silverstone rewards confident drivers, but confidence must remain controlled.
+
+A driver who finishes every lap strongly will usually outperform a driver chasing one spectacular sector.
+""",
+
+        "common_mistakes": """
+- Carrying too much speed into Village
+- Applying throttle too early through The Loop
+- Missing the Brooklands braking point
+- Forcing Copse entry and creating understeer
+- Overdriving Maggotts and Becketts
+- Sacrificing Chapel exit for an aggressive apex
+- Late braking into Stowe without control
+- Track-limit penalties through high-speed corners
+- Excessive front-tire wear from repeated steering corrections
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Review Village, Brooklands and Stowe braking references
+- Learn the Maggotts–Becketts–Chapel sequence
+- Decide where overtaking attempts are realistic
+- Identify track-limit risk areas
+
+**During Practice**
+- Build confidence through Copse
+- Test several lines through Maggotts and Becketts
+- Focus on Chapel exit speed
+- Practise pit entry and pit exit
+- Test race pace with controlled steering inputs
+- Monitor front-tire behaviour
+
+**Pre-Qualifying**
+- Create space before starting the lap
+- Build tire temperature progressively
+- Avoid overcommitting at Copse
+- Prioritise a clean Sector 3
+- Remember that a valid lap is better than a faster deleted lap
+
+**Pre-Race**
+- Confirm pit strategy
+- Visualise the Lap 1 braking zones
+- Decide your opening-lap aggression level
+- Prepare for side-by-side racing
+- Stay patient through traffic
+"""
+    },
 }
 
 
