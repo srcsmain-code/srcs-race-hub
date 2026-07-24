@@ -1749,6 +1749,822 @@ Lap 1 at Zandvoort is about survival, not heroics.
 At Zandvoort, pressure creates mistakes. A clean series of laps is often more effective than one desperate move.
 """
     },
+    "monza": {
+        "event_overview": """
+Round 8 takes the SRCS Grand Prix Season to Monza — the Temple of Speed.
+
+Monza is defined by long straights, heavy braking zones and low-downforce racing. It looks simple on paper, but the margins are tiny. Braking accuracy, traction and slipstream management decide the race.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points:
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap when finishing in the Top 10.
+
+Monza rewards drivers who remain calm under braking and disciplined in traffic. Straight-line speed helps, but clean exits and controlled racecraft matter more.
+""",
+
+        "championship_mindset": """
+Round 8 arrives with the championship entering its decisive phase.
+
+At Monza:
+- Slipstream battles can rapidly change track position
+- One braking mistake can erase an entire race
+- Teamwork and strategic awareness become increasingly valuable
+- Championship rivals may arrive together at the same braking zone
+
+Strategic questions:
+- Is the position worth risking contact?
+- Can you use the slipstream instead of defending aggressively?
+- Would patience create a stronger move on the next straight?
+- Is a secure points finish more valuable than a desperate attack?
+
+Monza rewards drivers who think one braking zone ahead.
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Learn braking references for Rettifilo, Roggia and Ascari.
+- Identify safe escape routes.
+- Review track-limit areas.
+- Understand pit entry positioning.
+
+**During Practice**
+- Practise braking from maximum speed.
+- Test alternative lines through Rettifilo.
+- Focus on traction from Roggia and Lesmo 2.
+- Build confidence through Ascari.
+- Complete a race run in traffic.
+- Practise slipstream positioning.
+
+**Pre-Qualifying**
+- Create enough space for the flying lap.
+- Avoid being compromised by traffic.
+- Build brake confidence progressively.
+- Prioritise clean exits.
+- Avoid invalidating the lap at Ascari or Parabolica.
+
+**Pre-Race**
+- Confirm pit strategy.
+- Visualise the first braking zone.
+- Decide how aggressively to use the slipstream.
+- Prepare for three-wide approaches.
+- Stay predictable.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 5.793 km
+**Turns:** 11
+**Circuit Type:** High-speed permanent circuit
+**Primary Challenge:** Heavy braking from maximum speed while maintaining traction and stability.
+
+**Sector 1**
+- Rettifilo
+- Curva Grande
+- Roggia
+
+Rettifilo is the biggest braking zone on the circuit and the highest-risk area on Lap 1.
+
+Curva Grande rewards a clean exit from the first chicane.
+
+Roggia requires firm braking and precise curb use.
+
+**Sector 2**
+- Lesmo 1
+- Lesmo 2
+- Serraglio
+
+Lesmo 1 requires patience on entry.
+
+Lesmo 2 exit is critical because it determines speed down the Serraglio straight.
+
+**Sector 3**
+- Ascari
+- Parabolica
+
+Ascari is the most technical section of the lap. Rhythm and curb control are essential.
+
+Parabolica requires patience and progressive throttle. Exit speed determines the run to the finish line.
+
+**Critical Corners**
+
+**Rettifilo**
+- Maximum-speed braking zone
+- Primary overtaking opportunity
+- High Lap 1 contact risk
+- Easy to lock the front tires
+- Escape route must be used safely
+
+**Roggia**
+- Heavy braking
+- Aggressive curb use can destabilise the car
+- Exit traction is important
+
+**Lesmo 1**
+- Medium-speed right-hander
+- Easy to carry too much entry speed
+- Avoid running wide
+
+**Lesmo 2**
+- Important acceleration corner
+- Exit speed matters more than entry aggression
+- Rear traction is critical
+
+**Ascari**
+- Fast left-right-left sequence
+- First curb determines the entire section
+- Smooth steering prevents instability
+- Exit speed strongly affects the following straight
+
+**Parabolica**
+- Long final corner
+- Patience on entry
+- Progressive throttle application
+- Strong exit creates overtaking opportunities into Rettifilo
+""",
+
+        "strategic_guidance": """
+Monza is highly sensitive to traffic, slipstream and braking confidence.
+
+**Tire Management**
+Main risks:
+- Front locking under heavy braking
+- Rear wheelspin from slow chicanes
+- Tire temperature loss on long straights
+- Excessive curb use
+- Flat-spot style vibration after repeated lockups
+
+**Engineer Directive**
+- Brake in a straight line where possible.
+- Release brake pressure smoothly.
+- Prioritise traction from slow corners.
+- Avoid repeated locking.
+- Use slipstream intelligently rather than overheating the tires in dirty air.
+
+**Pit Strategy**
+The undercut can be effective when:
+- You are trapped in a DRS or slipstream train.
+- Braking performance has deteriorated.
+- Clean air is available after the stop.
+
+The overcut may work when:
+- Tire pace remains stable.
+- Rivals rejoin into traffic.
+- You can continue using the slipstream effectively.
+
+**Race Pace Guidance**
+- Do not attack every braking zone.
+- Preserve braking consistency.
+- Use the car ahead to gain speed on straights.
+- Avoid sacrificing corner exit for a low-percentage move.
+- Remain patient when several cars are grouped together.
+
+**Penalty Risk**
+High-risk areas:
+- Rettifilo
+- Roggia
+- Lesmo exits
+- Ascari
+- Parabolica exit
+- Unsafe re-entry after using an escape road
+""",
+
+        "common_mistakes": """
+- Braking too late into Rettifilo
+- Releasing the brakes too quickly
+- Cutting across another car after missing a chicane
+- Using too much curb at Roggia
+- Carrying excessive speed into Lesmo 1
+- Losing traction from Lesmo 2
+- Overdriving Ascari
+- Applying throttle too early through Parabolica
+- Defending too late under braking
+- Fighting every car in a slipstream train
+""",
+
+        "lap1_survival": """
+**Objective:** Complete Lap 1 without damage or penalties.
+
+**Rettifilo**
+- Brake significantly earlier than qualifying.
+- Expect cars to arrive three-wide.
+- Hold a predictable line.
+- Do not force a gap that is already closing.
+- Use the escape route safely if necessary.
+
+**Curva Grande**
+- Expect cars to remain side-by-side.
+- Leave room on corner exit.
+- Avoid sudden movements.
+
+**Roggia**
+- The field may still be compressed.
+- Brake earlier than normal.
+- Avoid launching over the curbs.
+- Expect cars ahead to slow unexpectedly.
+
+**Lesmos**
+- Prioritise clean exits.
+- Do not force side-by-side racing where there is insufficient room.
+
+Lap 1 at Monza is won by restraint, not by being the latest braker.
+""",
+
+        "overtaking_defending": """
+**Primary Overtaking Zones**
+
+**Rettifilo**
+- Best overtaking opportunity.
+- Slipstream is crucial.
+- Clear overlap should exist before turn-in.
+- Late braking without control creates major contact risk.
+
+**Roggia**
+- Strong secondary overtaking zone.
+- Best attempted after a good exit from Curva Grande.
+- Inside line controls entry but can compromise exit.
+
+**Ascari**
+- Possible after a strong run from Lesmo 2.
+- High risk because the sequence is fast and narrow.
+- Only attempt with clear overlap.
+
+**Parabolica**
+- Possible if the driver ahead makes an error.
+- Exit speed matters more than entry aggression.
+
+**Defensive Principles**
+- Make one clear defensive move.
+- Choose the line before the braking zone.
+- Do not move under braking.
+- Avoid blocking the escape route.
+- Focus on exits rather than stopping the rival at all costs.
+
+**Racecraft Principle**
+At Monza, the slipstream is a weapon. Use it before using the brakes.
+"""
+    },
+    "canada": {
+        "event_overview": """
+Round 9 takes the SRCS Grand Prix Season to Circuit Gilles Villeneuve in Montreal.
+
+Canada is a stop-start circuit built around heavy braking, traction zones and close walls. The lap is short, but the pressure is constant. Drivers must attack the curbs without destabilising the car and remain precise under repeated braking.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points:
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap when finishing in the Top 10.
+
+Canada rewards drivers who can brake late without losing control and who remain patient when the circuit becomes crowded.
+""",
+
+        "championship_mindset": """
+Round 9 is one of the final major opportunities to change the championship order.
+
+At this stage:
+- Every point matters
+- Incidents are especially costly
+- Championship rivals may be separated by only a few positions
+- Strategy can decide the race as much as outright pace
+
+Strategic questions:
+- Do you need to attack, or simply finish ahead of a rival?
+- Is defending now worth compromising the next straight?
+- Can pit timing create a cleaner route through traffic?
+- Is a podium enough to keep the championship alive?
+
+Canada rewards controlled aggression.
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Learn braking references for Turn 1, the hairpin and final chicane.
+- Review the pit entry.
+- Identify wall contact risk areas.
+- Understand track-limit and cut penalties.
+
+**During Practice**
+- Test curb usage through the chicanes.
+- Practise traction from the hairpin.
+- Build braking confidence progressively.
+- Complete several laps in traffic.
+- Practise pit entry and pit exit.
+- Monitor rear tire behaviour.
+
+**Pre-Qualifying**
+- Create enough space before starting the lap.
+- Build brake temperature carefully.
+- Avoid over-attacking the first chicane.
+- Prioritise a clean final chicane.
+- Remember that one wall touch can destroy the lap.
+
+**Pre-Race**
+- Confirm pit strategy.
+- Visualise Lap 1 braking zones.
+- Decide how aggressively to defend the inside.
+- Prepare for safety-first decisions near the walls.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 4.361 km
+**Turns:** 14
+**Circuit Type:** Semi-permanent street circuit
+**Primary Challenge:** Repeated heavy braking combined with traction-limited exits and close barriers.
+
+**Sector 1**
+- Turn 1 and Turn 2
+- Turns 3 and 4
+- Turns 6 and 7
+
+Turn 1 is a major overtaking zone.
+
+The opening complex is tight and can create contact if drivers arrive side-by-side.
+
+Turns 3 and 4 require committed curb use, but wall contact is always close.
+
+**Sector 2**
+- Turns 8 and 9
+- Hairpin
+
+The hairpin is the slowest corner on the circuit and one of the best overtaking opportunities.
+
+Exit traction from the hairpin determines speed down the longest straight.
+
+**Sector 3**
+- Long straight
+- Final chicane
+- Wall of Champions
+
+The final chicane is decisive.
+
+Too much curb can unsettle the car, while too little commitment costs significant lap time.
+
+**Critical Corners**
+
+**Turn 1**
+- Heavy braking
+- Strong overtaking opportunity
+- High Lap 1 contact risk
+- Easy to run deep
+
+**Turns 3 and 4**
+- Fast chicane
+- Requires precision
+- Wall contact is possible on exit
+- Avoid excessive steering correction
+
+**Turns 6 and 7**
+- Braking and traction sequence
+- Poor exit compromises the following straight
+- Rear stability is important
+
+**Hairpin**
+- Primary overtaking zone
+- Slow rotation required
+- Traction is more important than entry speed
+- Exit determines the run down the back straight
+
+**Final Chicane**
+- Heavy braking from high speed
+- High penalty and wall-contact risk
+- Smooth curb use is essential
+- A poor exit exposes the car into Turn 1
+""",
+
+        "strategic_guidance": """
+Canada is a circuit where braking performance and traction determine race pace.
+
+**Tire Management**
+Main risks:
+- Rear tire overheating
+- Wheelspin from slow corners
+- Front locking under heavy braking
+- Tire damage from repeated curb strikes
+- Loss of grip when following closely
+
+**Engineer Directive**
+- Brake in a straight line.
+- Release pressure progressively.
+- Prioritise traction from the hairpin.
+- Avoid unnecessary curb aggression.
+- Build consistency before chasing maximum pace.
+
+**Pit Strategy**
+The undercut can be powerful when:
+- Rear traction has dropped away.
+- You are trapped behind a slower car.
+- Clean air is available.
+
+The overcut may work when:
+- Tire performance remains stable.
+- Rivals rejoin into traffic.
+- You can continue setting clean laps.
+
+**Race Pace Guidance**
+- Do not overuse the brakes early in the stint.
+- Protect rear traction.
+- Avoid repeated wheelspin.
+- Focus on clean exits.
+- Use the long straight to plan overtakes rather than forcing moves in narrow sections.
+
+**Penalty Risk**
+High-risk areas:
+- Turn 1
+- Turns 3 and 4
+- Turns 8 and 9
+- Final chicane
+- Unsafe re-entry after missing a corner
+""",
+
+        "common_mistakes": """
+- Braking too late into Turn 1
+- Taking too much curb through Turns 3 and 4
+- Losing traction from Turns 6 and 7
+- Overdriving the hairpin entry
+- Applying throttle too early from the hairpin
+- Locking the front tires into the final chicane
+- Hitting the Wall of Champions
+- Rejoining unsafely after missing a chicane
+- Defending too late on the back straight
+- Becoming impatient in traffic
+""",
+
+        "lap1_survival": """
+**Objective:** Complete Lap 1 without damage.
+
+**Turn 1**
+- Brake earlier than normal.
+- Expect multiple cars alongside.
+- Hold a predictable line.
+- Avoid cutting across another car.
+
+**Turns 3 and 4**
+- Expect the field to remain compressed.
+- Do not force side-by-side racing through the chicane.
+- Leave margin to the walls.
+
+**Turns 6 and 7**
+- Watch for concertina effects.
+- Prioritise traction.
+- Avoid contact with cars slowing ahead.
+
+**Hairpin**
+- Expect several cars to arrive together.
+- Brake early enough to maintain control.
+- Avoid turning in across another car.
+
+Lap 1 in Canada rewards restraint and awareness.
+""",
+
+        "overtaking_defending": """
+**Primary Overtaking Zones**
+
+**Turn 1**
+- Strong overtaking opportunity.
+- Slipstream from the final chicane helps.
+- Clear overlap should exist before turn-in.
+
+**Hairpin**
+- One of the best passing zones.
+- Inside line controls entry.
+- Exit traction remains important.
+
+**Final Chicane**
+- Possible after a strong run from the hairpin.
+- High risk because the braking zone is short and the walls are close.
+- Only attempt with clear overlap.
+
+**Defensive Principles**
+- Choose the defensive line early.
+- Make one clear move.
+- Do not move under braking.
+- Avoid squeezing rivals into the wall.
+- Prioritise exit speed when defending the hairpin.
+
+**Racecraft Principle**
+Canada rewards drivers who finish the braking zone in control. Being latest on the brakes is useless if the exit is lost.
+"""
+    },
+    "interlagos": {
+        "event_overview": """
+Round 10 brings the SRCS Grand Prix Season to Interlagos for the season finale.
+
+Interlagos is short, intense and physically demanding. Elevation changes, technical corners and a long uphill run to the finish create constant strategic pressure. The lap rewards rhythm, traction and race awareness.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+- Dry weather conditions
+
+Championship Points:
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap when finishing in the Top 10.
+
+Interlagos rewards drivers who can remain calm under championship pressure and execute every phase of the race cleanly.
+""",
+
+        "championship_mindset": """
+This is the final round of the SRCS Grand Prix Season.
+
+At Interlagos:
+- Championships may be decided by a single position
+- Team points can still change the final order
+- Pressure will be higher than at any previous round
+- Drivers may need to race differently depending on the standings
+
+Strategic questions:
+- What result do you actually need?
+- Is the driver ahead a direct championship rival?
+- Is fastest lap worth the extra risk?
+- Should you attack, defend or protect the car?
+- Does your team need both cars to finish?
+
+Season finales are rarely won by emotion alone.
+
+Make decisions based on the championship situation, not the noise around it.
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Learn braking references for the Senna S, Descida do Lago and Turn 10.
+- Review pit entry and pit exit.
+- Identify track-limit warning areas.
+- Understand the uphill run from Juncao to the finish line.
+
+**During Practice**
+- Practise multiple lines through the Senna S.
+- Focus on traction from Turn 3.
+- Build rhythm through the middle sector.
+- Test long-run tire behaviour.
+- Practise pit entry under pressure.
+- Complete laps in traffic.
+
+**Pre-Qualifying**
+- Create enough space before the flying lap.
+- Build tire temperature progressively.
+- Prioritise a clean Senna S.
+- Avoid overdriving the middle sector.
+- Protect the exit from Juncao.
+
+**Pre-Race**
+- Confirm championship requirements.
+- Confirm pit strategy.
+- Visualise Lap 1.
+- Decide how aggressively to fight direct rivals.
+- Prepare for changing race situations.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 4.309 km
+**Turns:** 15
+**Circuit Type:** Technical permanent circuit
+**Primary Challenge:** Combining downhill braking, low-speed traction and sustained uphill acceleration.
+
+**Sector 1**
+- Senna S
+- Curva do Sol
+- Descida do Lago
+
+The Senna S is the main overtaking zone and the highest-risk area on Lap 1.
+
+Turn 3 exit is critical because it determines speed down the following straight.
+
+Descida do Lago is another strong overtaking opportunity.
+
+**Sector 2**
+- Ferradura
+- Laranjinha
+- Pinheirinho
+- Bico de Pato
+- Turn 10
+
+This is the most technical part of the lap.
+
+Rhythm matters more than aggression. One poor corner can compromise several that follow.
+
+**Sector 3**
+- Mergulho
+- Juncao
+- Uphill run to the finish
+
+Juncao is one of the most important corners on the circuit.
+
+A strong exit determines speed for the entire climb to the start-finish straight.
+
+**Critical Corners**
+
+**Senna S**
+- Heavy downhill braking
+- Primary overtaking opportunity
+- Multiple lines possible
+- High Lap 1 contact risk
+- Exit positioning affects Turn 3
+
+**Turn 3**
+- Long left-hander
+- Traction and line discipline matter
+- Poor exit costs time down the straight
+
+**Descida do Lago**
+- Heavy braking
+- Strong overtaking opportunity
+- Easy to carry too much speed
+- Exit must remain controlled
+
+**Ferradura and Laranjinha**
+- Fast, flowing sequence
+- Smooth steering is essential
+- Front-tire management matters
+
+**Bico de Pato**
+- Slowest corner on the circuit
+- Rotation and traction are critical
+- Easy to overdrive entry
+
+**Juncao**
+- Most important exit on the lap
+- Progressive throttle required
+- Rear wheelspin costs significant time uphill
+- A poor exit leaves the car vulnerable
+""",
+
+        "strategic_guidance": """
+Interlagos combines technical tire management with strong overtaking potential.
+
+**Tire Management**
+Main risks:
+- Rear tire overheating
+- Wheelspin from slow corners
+- Front-left stress through long loaded turns
+- Sliding in the middle sector
+- Tire temperature variation across elevation changes
+
+**Engineer Directive**
+- Protect traction from slow corners.
+- Avoid forcing the car through the middle sector.
+- Build race pace gradually.
+- Prioritise Juncao exit on every lap.
+- Stay disciplined when following closely.
+
+**Pit Strategy**
+The undercut can be effective when:
+- You are trapped behind a slower car.
+- Tire performance has dropped.
+- Clean air is available.
+
+The overcut may work when:
+- Lap times remain stable.
+- Rivals rejoin into traffic.
+- Tire wear is under control.
+
+**Race Pace Guidance**
+- Avoid qualifying-style aggression every lap.
+- Protect rear tires early in the stint.
+- Use elevation and slipstream to create overtaking opportunities.
+- Focus on exits from Turn 3 and Juncao.
+- Manage pressure from championship rivals.
+
+**Penalty Risk**
+High-risk areas:
+- Senna S
+- Descida do Lago
+- Middle-sector track limits
+- Juncao exit
+- Unsafe re-entry after missing Turn 1
+""",
+
+        "common_mistakes": """
+- Braking too late into the Senna S
+- Cutting across another car in Turn 2
+- Losing traction from Turn 3
+- Overdriving Descida do Lago
+- Sliding through Ferradura
+- Missing the rhythm in the middle sector
+- Carrying too much speed into Bico de Pato
+- Applying throttle too early at Juncao
+- Defending emotionally because of championship pressure
+- Ignoring the result actually needed
+""",
+
+        "lap1_survival": """
+**Objective:** Complete Lap 1 with the car intact and the championship still alive.
+
+**Senna S**
+- Brake earlier than normal.
+- Expect cars to arrive three-wide.
+- Hold a predictable line.
+- Leave room through Turn 2.
+- Avoid cutting across another car.
+
+**Turn 3**
+- Expect reduced traction.
+- Avoid contact while accelerating uphill.
+- Stay patient if boxed in.
+
+**Descida do Lago**
+- The field may still be compressed.
+- Brake early enough to maintain control.
+- Do not force a move from too far back.
+
+**Middle Sector**
+- Side-by-side racing is difficult.
+- Prioritise survival and rhythm.
+- Avoid sudden defensive moves.
+
+Lap 1 in the season finale is about preserving opportunity.
+
+You cannot win the championship in the opening corners, but you can lose it.
+""",
+
+        "overtaking_defending": """
+**Primary Overtaking Zones**
+
+**Senna S**
+- Best overtaking opportunity.
+- Slipstream up the hill is crucial.
+- Inside and outside lines are both possible.
+- Clear overlap should exist before turn-in.
+
+**Descida do Lago**
+- Strong secondary overtaking zone.
+- Best attempted after a good exit from Turn 3.
+- Inside line controls entry.
+- Avoid running the rival off on exit.
+
+**Bico de Pato**
+- Possible if the driver ahead makes a mistake.
+- Low-speed corner with limited space.
+- High contact risk if the move begins too late.
+
+**Defensive Principles**
+- Choose the defensive line early.
+- Make one clear move.
+- Do not move under braking.
+- Protect the inside without compromising Juncao exit.
+- Avoid emotional blocking against championship rivals.
+
+**Racecraft Principle**
+Interlagos rewards drivers who understand the next corner, the next lap and the championship situation at the same time.
+"""
+    },
 }
 
 
