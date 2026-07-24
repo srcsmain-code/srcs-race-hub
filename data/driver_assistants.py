@@ -1252,6 +1252,255 @@ A driver who finishes every lap strongly will usually outperform a driver chasin
 - Stay patient through traffic
 """
     },
+    "spa": {
+        "event_overview": """
+Round 6 brings the SRCS Grand Prix Season to Spa-Francorchamps — widely regarded as one of the greatest racing circuits in the world.
+
+Spa rewards bravery, precision and patience. Long straights, dramatic elevation changes and several high-speed corners mean every lap feels different. A small mistake in Sector 2 can cost tenths, while confidence through Eau Rouge and Blanchimont can make the difference between attacking and defending.
+
+Race format includes:
+- Practice
+- Qualifying
+- Grand Prix race simulation
+
+Race conditions:
+- Tire wear ON
+- Compulsory pit stop
+- Collisions ON
+- Penalties ON
+
+Championship Points:
+1st – 25
+2nd – 18
+3rd – 15
+4th – 12
+5th – 10
+6th – 8
+7th – 6
+8th – 4
+9th – 2
+10th – 1
+
++1 point for Fastest Lap when finishing in the Top 10.
+
+Spa rewards drivers who build rhythm rather than chasing perfection. Confidence should increase throughout the session—not all at once.
+""",
+
+        "championship_mindset": """
+Spa is often where championship momentum changes.
+
+Drivers who have remained consistent can begin closing large gaps, while championship leaders must balance outright pace with risk management.
+
+Questions to ask yourself:
+- Is this the day to attack or consolidate?
+- Is your rival worth fighting now, or later?
+- Can you win by remaining patient?
+
+Spa rewards intelligent decisions more often than spectacular ones.
+""",
+
+        "preparation_checklist": """
+**Pre-Practice**
+- Learn braking references for Les Combes and the Bus Stop.
+- Build confidence through Eau Rouge gradually.
+- Identify overtaking opportunities.
+- Review track-limit warning locations.
+
+**During Practice**
+- Focus on consistent exits from La Source.
+- Build speed progressively through Eau Rouge.
+- Experiment with lines through Pouhon.
+- Practise pit entry.
+- Complete a race-length tyre run.
+
+**Pre-Qualifying**
+- Leave enough space ahead.
+- Warm tyres carefully.
+- Avoid unnecessary risks on the first flying lap.
+- Prioritise a clean final sector.
+
+**Pre-Race**
+- Confirm pit strategy.
+- Visualise Lap 1.
+- Decide where overtaking is realistic.
+- Prepare mentally for changing grip conditions.
+""",
+
+        "circuit_breakdown": """
+**Track Length:** 7.004 km
+**Turns:** 19
+**Circuit Type:** High-speed permanent circuit
+**Primary Challenge:** Commitment through fast corners while maintaining traction on long acceleration zones.
+
+**Sector 1**
+- La Source hairpin
+- Eau Rouge
+- Raidillon
+- Kemmel Straight
+
+The exit from La Source is more important than entry speed.
+
+Eau Rouge and Raidillon require commitment and precision. Smooth steering is significantly faster than aggressive corrections.
+
+**Sector 2**
+- Les Combes
+- Bruxelles
+- No Name
+- Pouhon
+
+This is where rhythm matters most.
+
+Les Combes provides the best overtaking opportunity after Kemmel.
+
+Pouhon rewards confidence without exceeding front grip.
+
+**Sector 3**
+- Fagnes
+- Campus
+- Stavelot
+- Blanchimont
+- Bus Stop
+
+Exit speed from Stavelot determines straight-line performance.
+
+Blanchimont is another confidence corner.
+
+The Bus Stop provides the final overtaking opportunity before completing the lap.
+
+**Critical Corners**
+
+**La Source**
+- Slow hairpin
+- Prioritise exit
+- Avoid wheelspin
+
+**Eau Rouge / Raidillon**
+- Build confidence progressively
+- Keep steering smooth
+- Avoid unnecessary corrections
+
+**Les Combes**
+- Heavy braking
+- Prime overtaking opportunity
+- Easy to lock fronts
+
+**Pouhon**
+- Long double-apex
+- Maintain minimum steering angle
+- Avoid scrubbing speed
+
+**Blanchimont**
+- High-speed commitment corner
+- Small mistakes become large time losses
+
+**Bus Stop**
+- Heavy braking
+- Final overtaking chance
+- Easy to over-attack on worn tyres
+""",
+
+        "strategic_guidance": """
+Spa combines long straights with high-speed loaded corners.
+
+**Tyre Management**
+Primary risks:
+- Front-left overheating
+- Rear traction from La Source
+- Sliding through Pouhon
+- Excessive steering corrections
+
+**Engineer Directive**
+- Build pace over several laps.
+- Preserve tyre performance during the opening phase.
+- Focus on exits rather than aggressive entries.
+
+**Pit Strategy**
+Undercut works if:
+- Traffic can be avoided.
+- Tyres have dropped away.
+
+Overcut works if:
+- Pace remains consistent.
+- Rivals rejoin into traffic.
+
+Practise:
+- Pit entry
+- Pit limiter activation
+- Cold tyre management
+
+**Penalty Risk**
+Highest risk:
+- Eau Rouge exit
+- Raidillon exit
+- Les Combes
+- Bus Stop
+- Track limits through final sector
+""",
+
+        "common_mistakes": """
+- Overdriving La Source
+- Turning too aggressively through Eau Rouge
+- Missing Les Combes braking point
+- Sliding through Pouhon
+- Sacrificing Stavelot exit
+- Braking too late into Bus Stop
+- Using excessive steering inputs
+- Chasing qualifying pace throughout the race
+""",
+
+        "lap1_survival": """
+**Objective:** Leave Lap 1 with an undamaged car.
+
+**La Source**
+Brake earlier than normal.
+
+Expect multiple cars alongside.
+
+Prioritise exit.
+
+**Eau Rouge**
+Remain predictable.
+
+Do not weave.
+
+Trust the car.
+
+**Kemmel**
+Slipstream battles begin immediately.
+
+Choose one defensive move.
+
+**Les Combes**
+Expect optimistic divebombs.
+
+Brake slightly earlier than qualifying.
+
+Leave racing room.
+
+Lap 1 at Spa rewards patience.
+""",
+
+        "overtaking_defending": """
+**Primary Overtaking Zones**
+
+**Les Combes**
+Best overtaking opportunity after Kemmel.
+
+**Bus Stop**
+Late-race passing opportunity.
+
+**La Source**
+Possible if the exit from Bus Stop was strong.
+
+**Defensive Principles**
+- Defend once.
+- Avoid moving under braking.
+- Prioritise exits over entries.
+- Stay predictable.
+
+Spa rewards exit speed more than desperate braking manoeuvres.
+"""
+    },
 }
 
 
