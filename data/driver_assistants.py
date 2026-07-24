@@ -5,7 +5,7 @@ DRIVER_ASSISTANTS = {
         "event_overview": """
 Round 1 of the SRCS Grand Prix Season 2026 marks the beginning of both the Drivers’ and Teams’ Championships.
 
-This event follows the official SRCS race structure:
+This event follows the official SRCS race structure: 
 - Practice
 - Qualifying
 - Grand Prix race simulation
